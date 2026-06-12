@@ -2,7 +2,7 @@
 
 Designer apparel, footwear, accessories, and fragrance — verified, always below retail. Out of Birmingham, UK.
 
-**Stack:** Next.js 15 (App Router · RSC · Server Actions) · Tailwind · Prisma · PostgreSQL (Neon) · Mollie · Resend · UploadThing · TypeScript
+**Stack:** Next.js 15 (App Router · RSC · Server Actions) · Tailwind · Prisma · PostgreSQL · Mollie · Resend · UploadThing · TypeScript
 
 ---
 
@@ -11,7 +11,7 @@ Designer apparel, footwear, accessories, and fragrance — verified, always belo
 ```bash
 cp .env.example .env       # fill in real values
 npm install
-npx prisma migrate dev     # creates tables on your Neon DB
+npx prisma migrate dev     # creates tables on your Postgres
 npm run db:seed            # 16 placeholder products, 6 brands, 4 categories
 npm run dev                # http://localhost:3000
 ```
@@ -24,7 +24,7 @@ Then open `http://localhost:3000/setup` and create the first admin account.
 
 | Key | Notes |
 |---|---|
-| `DATABASE_URL` | Neon **pooled** Postgres connection string |
+| `DATABASE_URL` | PostgreSQL connection string. On Replit this is auto-injected by the built-in Database. |
 | `NEXT_PUBLIC_SITE_URL` | Site origin, no trailing slash. Used by Mollie redirects + webhooks. |
 | `AUTH_SECRET` | 64-char random hex — `openssl rand -hex 32`. Signs sessions and cart cookie. |
 | `MOLLIE_API_KEY` | `test_…` to start, `live_…` on go-live |
@@ -37,12 +37,13 @@ Then open `http://localhost:3000/setup` and create the first admin account.
 
 ## Deployment — Replit
 
-1. **Create a Neon Postgres project** (neon.tech) and copy the **pooled** connection string.
-2. **Create a Resend account**, verify your sending domain.
-3. **Create a Mollie account**, generate a test API key. Enable cards, Apple Pay, Google Pay, PayPal, Klarna in your Mollie profile.
-4. **Create an UploadThing app** (uploadthing.com) and copy the API token.
-5. **Replit** → New Repl → **Import from GitHub** → pick this repo. When asked to pick a template, choose **Node.js** (do NOT let Replit pick Vite/React — that overrides our `.replit`).
-6. Add all the env vars above as **Secrets**.
+1. **Replit** → New Repl → **Import from GitHub** → pick this repo. When asked to pick a template, choose **Node.js** (do NOT let Replit pick Vite/React — that overrides our `.replit`).
+2. **Enable Replit's PostgreSQL** — Tools → Database → PostgreSQL. Replit auto-injects `DATABASE_URL` as a Secret. (Ignore the "External database detected" warning if you've previously set DATABASE_URL manually — remove that manual entry first so the built-in one takes over.)
+3. **Resend** — create account, verify your sending domain, copy API key.
+4. **Mollie** — create account, generate a test API key. Enable cards, Apple Pay, Google Pay, PayPal, Klarna in your Mollie profile.
+5. **UploadThing** — create app at uploadthing.com, copy the API token.
+6. Add the remaining env vars as **Secrets** (everything except `DATABASE_URL`, which Replit provides):
+   - `NEXT_PUBLIC_SITE_URL`, `AUTH_SECRET`, `MOLLIE_API_KEY`, `RESEND_API_KEY`, `EMAIL_FROM`, `UPLOADTHING_TOKEN`
 7. In the Replit Shell:
    ```bash
    npx prisma migrate deploy
