@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Big_Shoulders_Display, Inter_Tight } from "next/font/google";
+import { Anton, Inter_Tight } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
-const display = Big_Shoulders_Display({
+// Anton: heavy condensed varsity sans — same energy as the RADNAR wordmark.
+// Single weight (400), which renders as black because of its display nature.
+const display = Anton({
   subsets: ["latin"],
-  weight: ["700", "800", "900"],
+  weight: "400",
   variable: "--font-display",
   display: "swap",
 });
