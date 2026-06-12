@@ -1,0 +1,14 @@
+run = "npm run start"
+modules = ["nodejs-22", "postgresql-16"]
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "npm run start"]
+deploymentTarget = "cloudrun"
+build = ["sh", "-c", "npm install && npx prisma migrate deploy && npm run build"]
+
+[[ports]]
+localPort = 3000
+externalPort = 80

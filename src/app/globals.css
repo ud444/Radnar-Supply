@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-display: ui-sans-serif, system-ui, -apple-system, "Inter", "Helvetica Neue", Arial, sans-serif;
+}
+
+html, body { background: #fff; color: #0A0A0A; }
+body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.hero-h { letter-spacing: -0.04em; line-height: 0.94; }
