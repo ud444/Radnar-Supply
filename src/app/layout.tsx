@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import { Anton, Inter_Tight } from "next/font/google";
+import { Barlow_Semi_Condensed, Inter_Tight } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
-// Anton: heavy condensed varsity sans — same energy as the RADNAR wordmark.
-// Single weight (400), which renders as black because of its display nature.
-const display = Anton({
+const display = Barlow_Semi_Condensed({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["600", "700", "800", "900"],
+  style: ["normal", "italic"],
   variable: "--font-display",
   display: "swap",
 });
