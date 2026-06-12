@@ -34,47 +34,56 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-5 md:px-8 py-8 md:py-10">
-      <div className="text-[11px] tracking-[0.16em] uppercase text-muted">
-        <Link href="/">Home</Link> &nbsp;/&nbsp; <Link href="/shop">Shop</Link> &nbsp;/&nbsp;
-        <Link href={`/shop?category=${product.category.slug}`}>{product.category.name}</Link> &nbsp;/&nbsp;
-        <span className="text-ink">{product.name}</span>
+    <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-8 md:py-10">
+      <div className="rule-eyebrow text-ink/70">
+        <Link href="/">Home</Link><span>/</span>
+        <Link href="/shop">Shop</Link><span>/</span>
+        <Link href={`/shop?category=${product.category.slug}`}>{product.category.name}</Link>
       </div>
 
-      <div className="grid grid-cols-12 gap-8 md:gap-12 mt-5">
+      <div className="grid grid-cols-12 gap-8 md:gap-12 mt-6">
         <div className="col-span-12 md:col-span-7 grid grid-cols-2 gap-3">
           {product.images.map((img, i) => (
-            <div key={img.id} className={`aspect-[4/5] bg-soft overflow-hidden rounded ${i === 0 ? "col-span-2" : ""}`}>
+            <div key={img.id} className={`aspect-[4/5] bg-cream overflow-hidden ${i === 0 ? "col-span-2" : ""}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={img.url} alt={img.alt ?? product.name} className="w-full h-full object-cover" />
             </div>
           ))}
         </div>
 
-        <aside className="col-span-12 md:col-span-5 md:sticky md:top-24 self-start">
-          <Link href={`/shop?brand=${product.brand.slug}`} className="text-[11px] tracking-[0.18em] uppercase text-muted hover:text-ink">
+        <aside className="col-span-12 md:col-span-5 md:sticky md:top-32 self-start">
+          <Link href={`/shop?brand=${product.brand.slug}`}
+            className="font-display font-black text-2xl uppercase tracking-tight text-ink hover:text-accent transition-colors">
             {product.brand.name}
           </Link>
-          <h1 className="text-2xl md:text-3xl font-display font-semibold tracking-tightest mt-1">{product.name}</h1>
-          <div className="mt-4 text-2xl font-semibold">{money(product.priceCents)}</div>
-          <div className="text-xs text-muted mt-1">or 3 interest-free payments with Klarna</div>
+          <h1 className="text-2xl md:text-3xl font-display font-bold uppercase tracking-tight mt-2">{product.name}</h1>
+
+          <div className="mt-5 flex items-baseline gap-3">
+            <div className="font-display font-black text-3xl">{money(product.priceCents)}</div>
+          </div>
+          <div className="text-xs text-ink/65 mt-1 tracking-wider uppercase">or 3 interest-free payments with Klarna</div>
 
           <AddToCartForm variants={product.variants.map((v) => ({ id: v.id, size: v.size, stock: v.stock }))} />
 
-          <div className="mt-10 border-t border-line pt-6 text-sm leading-relaxed">{product.description}</div>
+          <div className="mt-10 border-t border-ink/15 pt-6 text-sm leading-relaxed">{product.description}</div>
 
-          <ul className="mt-6 space-y-2 text-sm">
-            <li>· Verified designer — authenticated in-house</li>
-            <li>· Free UK delivery over £75 · 30-day returns</li>
-            <li>· Klarna, Apple Pay, PayPal at checkout</li>
+          <ul className="mt-8 grid grid-cols-1 gap-2.5 text-[12px] tracking-[0.06em]">
+            {[
+              "Verified Designer · Authenticated In-House",
+              "Free UK Delivery Over £75 · 30-Day Returns",
+              "Klarna · Apple Pay · PayPal at Checkout",
+            ].map((s) => (
+              <li key={s} className="flex items-start gap-3 border-l-2 border-accent pl-3 py-1 uppercase font-semibold">{s}</li>
+            ))}
           </ul>
         </aside>
       </div>
 
       {related.length > 0 && (
-        <section className="mt-24">
-          <h2 className="text-xl font-display font-semibold tracking-tightest mb-6">You might also like</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-10">
+        <section className="mt-28">
+          <div className="rule-eyebrow mb-3">More like this</div>
+          <h2 className="font-display font-black text-4xl md:text-5xl uppercase display-tight mb-8">You might also like.</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-12">
             {related.map((p) => <ProductCard key={p.id} {...p} />)}
           </div>
         </section>

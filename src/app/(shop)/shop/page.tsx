@@ -23,10 +23,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
   ];
 
   const [products, categories, brands] = await Promise.all([
-    db.product.findMany({
-      where, orderBy,
-      include: { brand: true, images: { orderBy: { position: "asc" }, take: 2 } },
-    }),
+    db.product.findMany({ where, orderBy, include: { brand: true, images: { orderBy: { position: "asc" }, take: 2 } } }),
     db.category.findMany({ orderBy: { name: "asc" } }),
     db.brand.findMany({    orderBy: { name: "asc" } }),
   ]);
@@ -40,25 +37,30 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
     return `/shop${u.toString() ? `?${u}` : ""}`;
   }
 
+  const heading = sp.q ? `"${sp.q}"` : sp.category ? categories.find((c) => c.slug === sp.category)?.name : "Shop All";
+
   return (
-    <div className="max-w-7xl mx-auto px-5 md:px-8 py-10">
-      <div className="text-[11px] tracking-[0.16em] uppercase text-muted">
-        <Link href="/">Home</Link> &nbsp;/&nbsp; <Link href="/shop">Shop</Link>
-        {sp.category ? <> &nbsp;/&nbsp; <span className="text-ink">{categories.find((c) => c.slug === sp.category)?.name}</span></> : null}
-      </div>
-      <div className="mt-3 flex items-end justify-between gap-4 flex-wrap">
-        <h1 className="text-3xl md:text-4xl font-display font-semibold tracking-tightest">{sp.category ? categories.find((c) => c.slug === sp.category)?.name : "Shop all"}</h1>
-        <div className="text-sm text-muted">{products.length} products</div>
+    <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-10">
+      <div className="rule-eyebrow text-ink/70">
+        <Link href="/">Home</Link>
+        <span>/</span>
+        <Link href="/shop">Shop</Link>
+        {sp.category ? <><span>/</span><span className="text-ink">{categories.find((c) => c.slug === sp.category)?.name}</span></> : null}
       </div>
 
-      <div className="grid grid-cols-12 gap-8 mt-8">
+      <div className="mt-5 flex items-end justify-between gap-4 flex-wrap">
+        <h1 className="font-display font-black text-5xl md:text-7xl uppercase display-tight">{heading}</h1>
+        <div className="text-[11px] tracking-[0.22em] uppercase font-bold text-ink/70">{products.length} Products</div>
+      </div>
+
+      <div className="grid grid-cols-12 gap-8 mt-10">
         <aside className="col-span-12 md:col-span-3 text-sm">
-          <form action="/shop" className="mb-6">
+          <form action="/shop" className="mb-8">
             {sp.category && <input type="hidden" name="category" value={sp.category} />}
             {sp.brand    && <input type="hidden" name="brand"    value={sp.brand} />}
             {sp.size     && <input type="hidden" name="size"     value={sp.size} />}
             {sp.sort     && <input type="hidden" name="sort"     value={sp.sort} />}
-            <input name="q" defaultValue={sp.q ?? ""} placeholder="Search…" className="w-full border border-line rounded px-3 py-2 text-sm focus:outline-none focus:border-ink" />
+            <input name="q" defaultValue={sp.q ?? ""} placeholder="Search…" className="w-full bg-cream border-2 border-ink px-3 py-3 text-sm focus:outline-none focus:border-accent" />
           </form>
 
           <Section title="Category">
@@ -77,9 +79,9 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
 
           <Section title="Size">
             <div className="grid grid-cols-3 gap-1.5">
-              <Link href={urlFor({ size: undefined })} className={`text-xs px-2 py-1.5 border rounded text-center ${!sp.size ? "border-ink" : "border-line text-muted hover:border-ink"}`}>All</Link>
+              <Link href={urlFor({ size: undefined })} className={`text-[11px] px-2 py-1.5 border-2 text-center font-bold uppercase tracking-wider ${!sp.size ? "border-ink bg-ink text-paper" : "border-ink/30 text-ink/70 hover:border-ink"}`}>All</Link>
               {ALL_SIZES.map((s) => (
-                <Link key={s} href={urlFor({ size: s })} className={`text-xs px-2 py-1.5 border rounded text-center ${sp.size === s ? "border-ink" : "border-line text-muted hover:border-ink"}`}>{s}</Link>
+                <Link key={s} href={urlFor({ size: s })} className={`text-[11px] px-2 py-1.5 border-2 text-center font-bold uppercase tracking-wider ${sp.size === s ? "border-ink bg-ink text-paper" : "border-ink/30 text-ink/70 hover:border-ink"}`}>{s}</Link>
               ))}
             </div>
           </Section>
@@ -88,15 +90,15 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
             {[
               ["featured",    "Featured"],
               ["newest",      "Newest"],
-              ["price-asc",   "Price · Low to high"],
-              ["price-desc",  "Price · High to low"],
+              ["price-asc",   "Price · Low to High"],
+              ["price-desc",  "Price · High to Low"],
             ].map(([v, l]) => (
               <Item key={v} href={urlFor({ sort: v })} active={sort === v}>{l}</Item>
             ))}
           </Section>
         </aside>
 
-        <section className="col-span-12 md:col-span-9 grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-10">
+        <section className="col-span-12 md:col-span-9 grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-12">
           {products.length === 0
             ? <div className="col-span-full text-muted text-sm py-12 text-center">Nothing matches those filters.</div>
             : products.map((p) => <ProductCard key={p.id} {...p} />)}
@@ -108,15 +110,15 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="mb-7">
-      <div className="text-[11px] tracking-[0.18em] uppercase text-muted mb-2">{title}</div>
+    <div className="mb-8">
+      <div className="text-[10px] tracking-[0.22em] uppercase font-bold mb-3 pb-2 border-b border-ink">{title}</div>
       {children}
     </div>
   );
 }
 function Item({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
   return (
-    <Link href={href} className={`block py-1 ${active ? "text-ink font-medium" : "text-muted hover:text-ink"}`}>
+    <Link href={href} className={`block py-1.5 text-[13px] ${active ? "text-accent font-bold" : "text-ink/75 hover:text-ink"}`}>
       {children}
     </Link>
   );

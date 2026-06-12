@@ -3,7 +3,7 @@ import { db } from "@/lib/prisma";
 import { ProductCard } from "@/components/shop/ProductCard";
 
 export default async function Home() {
-  const [featured, newest, categories] = await Promise.all([
+  const [featured, newest, categories, brands] = await Promise.all([
     db.product.findMany({
       where: { active: true, featured: true }, take: 8,
       include: { brand: true, images: { orderBy: { position: "asc" }, take: 2 } },
@@ -13,82 +13,147 @@ export default async function Home() {
       include: { brand: true, images: { orderBy: { position: "asc" }, take: 2 } },
     }),
     db.category.findMany({ orderBy: { name: "asc" } }),
+    db.brand.findMany({ orderBy: { name: "asc" } }),
   ]);
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative bg-soft border-b border-line">
-        <div className="max-w-7xl mx-auto px-6 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <div className="text-[11px] tracking-[0.22em] uppercase text-muted mb-5">AW26 · New Drop</div>
-            <h1 className="hero-h font-display font-semibold text-[44px] md:text-[76px]">
-              Verified<br/>designer.<br/>Always <em className="not-italic text-muted">below retail.</em>
-            </h1>
-            <p className="mt-6 max-w-md text-muted leading-relaxed">
-              Hand-picked apparel, footwear, fragrance and accessories from the houses you actually wear — without the markup. Out of Birmingham, UK.
-            </p>
-            <div className="mt-8 flex gap-3">
-              <Link href="/shop" className="bg-ink text-white px-6 py-3 text-sm font-medium rounded-full hover:bg-ink/85 transition-colors">Shop the drop</Link>
-              <Link href="/about" className="border border-ink text-ink px-6 py-3 text-sm font-medium rounded-full hover:bg-ink hover:text-white transition-colors">Our story</Link>
+      {/* HERO */}
+      <section className="relative border-b border-ink/15 overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-5 md:px-8 pt-10 md:pt-16 pb-20 md:pb-24 grid md:grid-cols-12 gap-10 items-stretch">
+          <div className="md:col-span-7 flex flex-col justify-between gap-10">
+            <div>
+              <div className="rule-eyebrow">AW26 · New Drop</div>
+              <h1 className="display-tight font-display font-black text-[18vw] md:text-[10.5vw] uppercase mt-6">
+                Below<br/>
+                <span className="text-accent">Retail.</span><br/>
+                <span className="block">Always.</span>
+              </h1>
+              <p className="mt-8 max-w-md text-[15px] leading-relaxed text-ink/75">
+                Hand-picked apparel, footwear, fragrance and accessories from the houses you actually wear — without the markup. Verified, authenticated, shipped from Birmingham.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/shop" className="bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
+                Shop The Drop →
+              </Link>
+              <Link href="/about" className="border-2 border-ink text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-colors">
+                Our Story
+              </Link>
             </div>
           </div>
-          <div className="relative aspect-[4/5] bg-white rounded overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://picsum.photos/seed/radnar-hero-aw26/1000/1250" alt="" className="w-full h-full object-cover" />
+
+          <div className="md:col-span-5 relative">
+            <div className="aspect-[4/5] bg-cream overflow-hidden relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="https://picsum.photos/seed/radnar-hero-aw26/900/1125" alt="" className="w-full h-full object-cover" />
+              <div className="absolute top-4 left-4 bg-paper text-ink px-3 py-1.5 text-[10px] tracking-[0.22em] uppercase font-bold">
+                AW26 — Look 01
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Category tiles */}
-      <section className="max-w-7xl mx-auto px-6 mt-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {categories.map((c, i) => (
-            <Link key={c.id} href={`/shop?category=${c.slug}`} className="relative aspect-[4/5] overflow-hidden rounded group">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`https://picsum.photos/seed/${c.slug}-${i}/700/875`} alt={c.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
-              <div className="absolute bottom-4 left-4 text-white text-lg font-medium">{c.name}</div>
+      {/* MARQUEE BRAND STRIP */}
+      <section className="border-b border-ink/15 bg-cream overflow-hidden py-6">
+        <div className="marquee-track gap-16 px-8 items-center">
+          {[...brands, ...brands].map((b, i) => (
+            <Link key={`${b.id}-${i}`} href={`/shop?brand=${b.slug}`}
+              className="font-display font-black text-3xl md:text-4xl uppercase tracking-tightest text-ink/75 hover:text-accent shrink-0">
+              {b.name}
+              <span className="text-ink/25 ml-16">/</span>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Featured */}
-      <section className="max-w-7xl mx-auto px-6 mt-24">
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <div className="text-[11px] tracking-[0.22em] uppercase text-muted">Best Sellers</div>
-            <h2 className="text-2xl md:text-3xl font-display font-semibold tracking-tightest mt-1">Most loved this season</h2>
-          </div>
-          <Link href="/shop" className="text-sm underline underline-offset-4">View all</Link>
+      {/* CATEGORY GRID */}
+      <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-24">
+        <div className="rule-eyebrow mb-3">Shop By Category</div>
+        <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight">
+          Find your<br/>weapon.
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-10">
+          {categories.map((c, i) => (
+            <Link key={c.id} href={`/shop?category=${c.slug}`} className="relative aspect-[4/5] overflow-hidden group bg-cream">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`https://picsum.photos/seed/${c.slug}-${i}-radnar/700/875`} alt={c.name} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/15 to-transparent" />
+              <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between text-paper">
+                <div className="font-display font-black text-3xl md:text-4xl uppercase display-tight">{c.name}</div>
+                <div className="text-[10px] tracking-[0.22em] uppercase font-bold opacity-90 group-hover:text-accent transition-colors">Shop →</div>
+              </div>
+            </Link>
+          ))}
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-10">
+      </section>
+
+      {/* FEATURED */}
+      <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28">
+        <div className="flex items-end justify-between mb-8 gap-6 flex-wrap">
+          <div>
+            <div className="rule-eyebrow mb-3">Most Wanted</div>
+            <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight">
+              Best sellers.
+            </h2>
+          </div>
+          <Link href="/shop" className="text-[11px] tracking-[0.22em] uppercase font-bold border-b-2 border-ink hover:text-accent hover:border-accent transition-colors">View Everything →</Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-12">
           {featured.map((p) => <ProductCard key={p.id} {...p} />)}
         </div>
       </section>
 
-      {/* New In */}
-      <section className="max-w-7xl mx-auto px-6 mt-24">
-        <div className="flex items-end justify-between mb-6">
-          <h2 className="text-2xl md:text-3xl font-display font-semibold tracking-tightest">New In</h2>
-          <Link href="/shop?sort=newest" className="text-sm underline underline-offset-4">View all</Link>
+      {/* EDITORIAL */}
+      <section className="mt-32 bg-ink text-paper">
+        <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-10 items-center">
+          <div className="md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://picsum.photos/seed/radnar-editorial/800/1000" alt="" className="w-full h-full object-cover" />
+          </div>
+          <div className="md:col-span-7">
+            <div className="rule-eyebrow text-paper">Why Radnar</div>
+            <h2 className="mt-4 font-display font-black text-5xl md:text-7xl uppercase display-tight">
+              No drop hype.<br/>
+              <span className="text-accent">No middlemen.</span><br/>
+              Just product.
+            </h2>
+            <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-paper/75">
+              We negotiate stock directly with verified sources, authenticate every item in-house, and pass the saving on. Birmingham-built. Daily shipping. Designer prices, dismantled.
+            </p>
+            <Link href="/about" className="inline-block mt-8 bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-colors">
+              Read The Manifesto →
+            </Link>
+          </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-10">
+      </section>
+
+      {/* NEW IN */}
+      <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28">
+        <div className="flex items-end justify-between mb-8 gap-6 flex-wrap">
+          <div>
+            <div className="rule-eyebrow mb-3">Fresh Stock</div>
+            <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight">New in.</h2>
+          </div>
+          <Link href="/shop?sort=newest" className="text-[11px] tracking-[0.22em] uppercase font-bold border-b-2 border-ink hover:text-accent hover:border-accent transition-colors">View All →</Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-12">
           {newest.map((p) => <ProductCard key={p.id} {...p} />)}
         </div>
       </section>
 
-      {/* Trust */}
-      <section className="max-w-7xl mx-auto px-6 mt-24 grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* TRUST STRIP */}
+      <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28 grid grid-cols-1 md:grid-cols-3 gap-0 border border-ink">
         {[
-          { h: "Verified designer", p: "Every piece authenticated in-house before it ships." },
-          { h: "Always below retail", p: "Negotiated stock, no middlemen — savings passed to you." },
-          { h: "Pay your way", p: "Cards, Klarna, Apple Pay, PayPal — all at checkout." },
-        ].map((t) => (
-          <div key={t.h} className="border border-line rounded p-6">
-            <div className="text-sm font-semibold text-ink">{t.h}</div>
-            <div className="text-sm text-muted mt-1">{t.p}</div>
+          { n: "01", h: "Verified Designer", p: "Every piece authenticated in-house before it ships. No exceptions." },
+          { n: "02", h: "Always Below Retail", p: "Negotiated stock, no middlemen — the saving goes to you, not the markup." },
+          { n: "03", h: "Pay Your Way",       p: "Cards, Klarna, Apple Pay, PayPal. All at checkout." },
+        ].map((t, i) => (
+          <div key={t.h} className={`p-8 md:p-10 ${i < 2 ? "md:border-r" : ""} border-ink`}>
+            <div className="font-display font-black text-5xl text-accent">{t.n}</div>
+            <div className="font-display font-black text-2xl uppercase mt-4 tracking-tight">{t.h}</div>
+            <div className="text-sm text-ink/75 mt-2 leading-relaxed">{t.p}</div>
           </div>
         ))}
       </section>
