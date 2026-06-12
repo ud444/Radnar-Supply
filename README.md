@@ -11,7 +11,7 @@ Designer apparel, footwear, accessories, and fragrance — verified, always belo
 ```bash
 cp .env.example .env       # fill in real values
 npm install
-npx prisma migrate dev     # creates tables on your Postgres
+npx prisma db push         # creates tables on your Postgres
 npm run db:seed            # 16 placeholder products, 6 brands, 4 categories
 npm run dev                # http://localhost:3000
 ```
@@ -46,10 +46,10 @@ Then open `http://localhost:3000/setup` and create the first admin account.
    - `NEXT_PUBLIC_SITE_URL`, `AUTH_SECRET`, `MOLLIE_API_KEY`, `RESEND_API_KEY`, `EMAIL_FROM`, `UPLOADTHING_TOKEN`
 7. In the Replit Shell:
    ```bash
-   npx prisma migrate deploy
+   npx prisma db push
    npm run db:seed
    ```
-8. Hit **Run** — the `.replit` config runs `npm install && prisma migrate deploy && npm run build && npm start`.
+8. Hit **Run** — the `.replit` config runs `npm install && prisma db push && npm run build && npm start`.
 9. Open the public URL and visit `/setup` to create the first admin.
 
 ### Custom domain
