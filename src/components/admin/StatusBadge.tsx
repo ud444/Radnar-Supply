@@ -1,0 +1,12 @@
+export function StatusBadge({ value }: { value: string }) {
+  const map: Record<string, string> = {
+    PAID:      "bg-green-100 text-green-800 border-green-300",
+    SHIPPED:   "bg-blue-100 text-blue-800 border-blue-300",
+    DELIVERED: "bg-purple-100 text-purple-800 border-purple-300",
+    PENDING:   "bg-cream text-ink/65 border-ink/20",
+    CANCELLED: "bg-red-100 text-red-800 border-red-300",
+    FAILED:    "bg-red-100 text-red-800 border-red-300",
+    REFUNDED:  "bg-orange-100 text-orange-800 border-orange-300",
+  };
+  return <span className={`text-[10px] px-2 py-1 border tracking-[0.14em] uppercase font-bold ${map[value] ?? "bg-cream text-ink/65 border-ink/20"}`}>{value.toLowerCase()}</span>;
+}

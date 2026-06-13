@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
 import { Icon } from "@/components/admin/icons";
-import { StatusBadge } from "../page";
+import { StatusBadge } from "@/components/admin/StatusBadge";
 
 type SP = { q?: string; status?: string };
 
