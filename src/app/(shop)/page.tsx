@@ -72,7 +72,7 @@ export default async function Home() {
       <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-24">
         <div className="rule-eyebrow mb-3">Shop By Category</div>
         <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight">
-          Find your<br/>weapon.
+          Find your<br/>fit.
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-10">
           {categories.map((c, i) => (
