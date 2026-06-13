@@ -1,25 +1,18 @@
-import { Html, Head, Body, Container, Text, Heading, Hr, Link, Button } from "@react-email/components";
+import { Html, Head } from "@react-email/components";
+import { EmailShell, E } from "./EmailShell";
 
 export default function ShippingUpdate({ order, trackingUrl }: { order: any; trackingUrl?: string }) {
   return (
     <Html>
       <Head />
-      <Body style={{ background: "#fafafa", fontFamily: "Inter, -apple-system, sans-serif", color: "#0a0a0a", margin: 0 }}>
-        <Container style={{ maxWidth: 560, margin: "0 auto", padding: 32, background: "#fff" }}>
-          <Text style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#9ca3af", margin: 0 }}>Radnar Supply</Text>
-          <Heading style={{ fontSize: 26, letterSpacing: "-0.02em", margin: "8px 0 4px" }}>Your order is on its way.</Heading>
-          <Text style={{ color: "#6b7280" }}>Order <strong>{order.number}</strong> has shipped.</Text>
-          <Hr style={{ borderColor: "#e5e7eb" }} />
-          {trackingUrl ? (
-            <Button href={trackingUrl} style={{ background: "#0a0a0a", color: "#fff", padding: "12px 20px", borderRadius: 999, fontSize: 14, textDecoration: "none", display: "inline-block", marginTop: 12 }}>
-              Track shipment
-            </Button>
-          ) : null}
-          <Text style={{ fontSize: 12, color: "#9ca3af", marginTop: 24 }}>
-            Shipping to {order.shipName}, {order.shipCity}, {order.shipPostcode}.
-          </Text>
-        </Container>
-      </Body>
+      <EmailShell preview={`Order ${order.number} has shipped`}>
+        <E.eyebrow>Dispatched</E.eyebrow>
+        <E.h1>On its way.</E.h1>
+        <E.p>Order <strong style={{ color: E.colors.ink }}>{order.number}</strong> has left our Birmingham warehouse and is heading to {order.shipCity}.</E.p>
+        {trackingUrl ? <E.button href={trackingUrl}>Track Shipment →</E.button> : null}
+        <E.hr />
+        <E.p style={{ fontSize: 12 }}>Most UK orders arrive in 2–4 working days. If it doesn't show up by day 5, hit reply and we'll chase it.</E.p>
+      </EmailShell>
     </Html>
   );
 }

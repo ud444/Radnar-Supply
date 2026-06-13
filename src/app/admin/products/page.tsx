@@ -2,56 +2,96 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
+import { Icon } from "@/components/admin/icons";
 
-export default async function AdminProducts() {
+type SP = { q?: string; status?: "live" | "hidden" };
+
+export default async function AdminProducts({ searchParams }: { searchParams: Promise<SP> }) {
   await requireAdmin();
+  const sp = await searchParams;
+
+  const where: any = {};
+  if (sp.q) where.OR = [
+    { name: { contains: sp.q, mode: "insensitive" } },
+    { slug: { contains: sp.q, mode: "insensitive" } },
+    { brand: { name: { contains: sp.q, mode: "insensitive" } } },
+  ];
+  if (sp.status === "live")   where.active = true;
+  if (sp.status === "hidden") where.active = false;
+
   const products = await db.product.findMany({
-    orderBy: { createdAt: "desc" },
+    where, orderBy: { createdAt: "desc" },
     include: { brand: true, variants: true, images: { take: 1, orderBy: { position: "asc" } } },
   });
+
   return (
     <div>
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-display font-semibold tracking-tightest">Products</h1>
-        <Link href="/admin/products/new" className="bg-ink text-white px-4 py-2 rounded text-sm">New product</Link>
+      <div className="flex items-end justify-between flex-wrap gap-3">
+        <div>
+          <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Catalogue</div>
+          <h1 className="font-display font-black text-4xl md:text-5xl uppercase display-tight mt-1">Products</h1>
+        </div>
+        <Link href="/admin/products/new" className="bg-ink text-paper inline-flex items-center gap-2 px-4 py-2.5 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
+          <Icon.plus /> New Product
+        </Link>
       </div>
-      <div className="mt-6 bg-white border border-line rounded overflow-hidden">
+
+      <div className="mt-6 flex flex-wrap gap-3 items-center">
+        <form action="/admin/products" className="flex-1 min-w-[260px] relative">
+          {sp.status && <input type="hidden" name="status" value={sp.status} />}
+          <Icon.search className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40" />
+          <input name="q" defaultValue={sp.q ?? ""} placeholder="Search by name, slug, brand…" className="w-full bg-bone border border-ink/20 pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:border-ink" />
+        </form>
+        <div className="flex gap-1.5">
+          <Link href={`/admin/products${sp.q ? `?q=${sp.q}` : ""}`} className={`text-[11px] tracking-[0.18em] uppercase font-bold px-3 py-2 border ${!sp.status ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"}`}>All</Link>
+          <Link href={`/admin/products?status=live${sp.q ? `&q=${sp.q}` : ""}`} className={`text-[11px] tracking-[0.18em] uppercase font-bold px-3 py-2 border ${sp.status === "live" ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"}`}>Live</Link>
+          <Link href={`/admin/products?status=hidden${sp.q ? `&q=${sp.q}` : ""}`} className={`text-[11px] tracking-[0.18em] uppercase font-bold px-3 py-2 border ${sp.status === "hidden" ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"}`}>Hidden</Link>
+        </div>
+      </div>
+
+      <div className="mt-6 bg-bone border border-ink/15 overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-soft text-muted">
+          <thead className="bg-cream text-ink/65">
             <tr>
-              <th className="text-left px-4 py-2">Product</th>
-              <th className="text-left px-4 py-2">Brand</th>
-              <th className="text-right px-4 py-2">Price</th>
-              <th className="text-right px-4 py-2">Stock</th>
-              <th className="text-right px-4 py-2">Status</th>
+              <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Product</th>
+              <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Brand</th>
+              <th className="text-right px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Price</th>
+              <th className="text-right px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Stock</th>
+              <th className="text-right px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Status</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((p) => {
+            {products.length === 0 ? (
+              <tr><td colSpan={5} className="px-4 py-16 text-center text-ink/55">
+                {sp.q ? "Nothing matches." : <>No products yet — <Link href="/admin/products/new" className="underline text-ink">create one</Link>.</>}
+              </td></tr>
+            ) : products.map((p) => {
               const stock = p.variants.reduce((a, v) => a + v.stock, 0);
+              const oos = stock === 0;
               return (
-                <tr key={p.id} className="border-t border-line">
+                <tr key={p.id} className="border-t border-ink/10 hover:bg-cream/50">
                   <td className="px-4 py-3">
                     <Link href={`/admin/products/${p.id}`} className="flex items-center gap-3">
-                      {p.images[0] && (/* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={p.images[0].url} alt="" className="w-10 h-12 object-cover rounded bg-soft" />
-                      )}
+                      {p.images[0] ? (/* eslint-disable-next-line @next/next/no-img-element */
+                        <img src={p.images[0].url} alt="" className="w-10 h-12 object-cover bg-cream" />
+                      ) : <div className="w-10 h-12 bg-cream border border-ink/10" />}
                       <div>
-                        <div className="font-medium">{p.name}</div>
-                        <div className="text-xs text-muted">/{p.slug}</div>
+                        <div className="font-medium hover:text-accent">{p.name}</div>
+                        <div className="text-xs text-ink/55">/{p.slug}</div>
                       </div>
                     </Link>
                   </td>
                   <td className="px-4 py-3">{p.brand.name}</td>
-                  <td className="px-4 py-3 text-right">{money(p.priceCents)}</td>
-                  <td className="px-4 py-3 text-right">{stock}</td>
+                  <td className="px-4 py-3 text-right font-medium">{money(p.priceCents)}</td>
+                  <td className={`px-4 py-3 text-right font-medium ${oos ? "text-red-600" : ""}`}>{stock}</td>
                   <td className="px-4 py-3 text-right">
-                    <span className={`text-xs px-2 py-1 rounded ${p.active ? "bg-green-100 text-green-700" : "bg-soft text-muted"}`}>{p.active ? "Live" : "Hidden"}</span>
+                    <span className={`text-[10px] px-2 py-1 border tracking-[0.14em] uppercase font-bold ${p.active ? "bg-green-100 text-green-800 border-green-300" : "bg-cream text-ink/55 border-ink/20"}`}>
+                      {p.active ? "Live" : "Hidden"}
+                    </span>
                   </td>
                 </tr>
               );
             })}
-            {products.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-muted">No products yet — <Link href="/admin/products/new" className="underline">create one</Link>.</td></tr>}
           </tbody>
         </table>
       </div>
