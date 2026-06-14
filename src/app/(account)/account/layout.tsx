@@ -15,6 +15,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
             <Link href="/account" className="block py-1 hover:text-ink">Dashboard</Link>
             <Link href="/account/orders" className="block py-1 hover:text-ink">Orders</Link>
             <Link href="/account/addresses" className="block py-1 hover:text-ink">Addresses</Link>
+            <Link href="/account/security" className="block py-1 hover:text-ink">Security</Link>
             <form action="/api/auth/logout" method="post"><button className="text-muted underline pt-2">Sign out</button></form>
           </nav>
         </aside>
