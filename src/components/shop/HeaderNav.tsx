@@ -133,7 +133,10 @@ export function HeaderNav({
               </nav>
 
               {/* Brands */}
-              <div className="mt-8 text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 mb-3">Brands</div>
+              <div className="mt-8 flex items-center justify-between mb-3">
+                <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Brands</div>
+                <Link href="/brands" onClick={close} className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink hover:text-accent">View Roster →</Link>
+              </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
                 {brands.map((b) => (
                   <Link key={b.id} href={`/shop?brand=${b.slug}`} onClick={close}
