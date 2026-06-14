@@ -7,7 +7,7 @@ channel = "stable-24_05"
 [deployment]
 run = ["sh", "-c", "npm run start"]
 deploymentTarget = "cloudrun"
-build = ["sh", "-c", "npm install && npx prisma db push --accept-data-loss && npm run build"]
+build = ["sh", "-c", "npm install && npx prisma db push --accept-data-loss && npm run db:seed && npm run build"]
 
 [[ports]]
 localPort = 3000
