@@ -24,6 +24,7 @@ const SECTIONS: { label: string; items: { href: string; label: string; icon: key
     label: "Store",
     items: [
       { href: "/admin/users",    label: "Customers", icon: "users" },
+      { href: "/admin/api-keys", label: "API Keys",  icon: "settings" },
       { href: "/admin/settings", label: "Settings",  icon: "settings" },
     ],
   },

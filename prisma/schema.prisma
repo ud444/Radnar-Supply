@@ -191,3 +191,17 @@ model Setting {
   value     String
   updatedAt DateTime @updatedAt
 }
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  name       String                  // user-given label, e.g. "Synclayer Production"
+  prefix     String                  // first 12 chars of full key, shown in lists
+  hash       String    @unique       // sha256 of full key (full key never stored)
+  scopes     String                  // comma-separated: products.read,orders.read,inventory.write,…
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  createdBy  String?                 // userId who created it
+  @@index([prefix])
+  @@index([revokedAt])
+}
