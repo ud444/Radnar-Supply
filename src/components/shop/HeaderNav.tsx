@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -8,11 +8,10 @@ type Item = { id: string; slug: string; name: string };
 type Feat = { id: string; slug: string; name: string; imageUrl: string; brandName: string };
 
 const TOP_NAV = [
-  { key: "clothing",    label: "Clothing"    },
-  { key: "shoes",       label: "Shoes"       },
-  { key: "accessories", label: "Accessories" },
-  { key: "fragrance",   label: "Fragrance"   },
-  { key: "brands",      label: "Brands"      },
+  { slug: "clothing",    label: "Clothing" },
+  { slug: "shoes",       label: "Shoes" },
+  { slug: "accessories", label: "Accessories" },
+  { slug: "fragrance",   label: "Fragrance" },
 ];
 
 export function HeaderNav({
@@ -21,23 +20,20 @@ export function HeaderNav({
   categories: Item[]; brands: Item[]; featured: Feat[];
   cartCount: number; signedIn: boolean;
 }) {
-  const [open, setOpen] = useState<string | null>(null);
-  const [mobile, setMobile] = useState(false);
+  const [drawer, setDrawer] = useState(false);
   const [search, setSearch] = useState(false);
-  const closeT = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
 
-  const enter = (k: string) => {
-    if (closeT.current) clearTimeout(closeT.current);
-    setOpen(k);
-  };
-  const leave = () => {
-    if (closeT.current) clearTimeout(closeT.current);
-    closeT.current = setTimeout(() => setOpen(null), 120);
-  };
+  // Body scroll lock when drawer is open
+  useEffect(() => {
+    document.body.style.overflow = drawer ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [drawer]);
 
   useEffect(() => {
-    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { setOpen(null); setMobile(false); setSearch(false); } };
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setDrawer(false); setSearch(false); }
+    };
     window.addEventListener("keydown", esc);
     return () => window.removeEventListener("keydown", esc);
   }, []);
@@ -47,37 +43,33 @@ export function HeaderNav({
     const fd = new FormData(e.currentTarget);
     const q = String(fd.get("q") || "").trim();
     setSearch(false);
+    setDrawer(false);
     router.push(q ? `/shop?q=${encodeURIComponent(q)}` : "/shop");
   };
 
+  const close = () => setDrawer(false);
+
   return (
     <>
-      {/* Main bar */}
-      <div className="max-w-[1400px] mx-auto px-5 md:px-8 h-20 flex items-center justify-between gap-6">
-        <div className="flex items-center gap-3">
-          <button onClick={() => setMobile(true)} className="md:hidden p-2 -ml-2" aria-label="Open menu">
-            <span className="block w-5 h-[2px] bg-ink mb-1.5" />
-            <span className="block w-5 h-[2px] bg-ink mb-1.5" />
-            <span className="block w-5 h-[2px] bg-ink" />
+      {/* Top bar — burger, logo, search, account, bag */}
+      <div className="max-w-[1400px] mx-auto px-5 md:px-8 h-20 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3 md:gap-5">
+          <button
+            onClick={() => setDrawer(true)}
+            className="p-2 -ml-2 inline-flex flex-col gap-[5px] hover:opacity-70"
+            aria-label="Open menu"
+          >
+            <span className="block w-6 h-[2px] bg-ink" />
+            <span className="block w-6 h-[2px] bg-ink" />
+            <span className="block w-6 h-[2px] bg-ink" />
           </button>
           <Link href="/" className="shrink-0">
             <Image src="/radnar-mark.png" alt="Radnar Supply" width={1600} height={535} priority className="h-9 md:h-10 w-auto" />
           </Link>
         </div>
 
-        <nav className="hidden md:flex items-center gap-8 text-[11px] tracking-[0.18em] uppercase font-semibold" onMouseLeave={leave}>
-          {TOP_NAV.map((n) => (
-            <button key={n.key} onMouseEnter={() => enter(n.key)} onFocus={() => enter(n.key)}
-              className={`relative py-2 transition-colors ${open === n.key ? "text-accent" : "hover:text-accent"}`}>
-              {n.label}
-              {open === n.key ? <span className="absolute -bottom-px left-0 right-0 h-[2px] bg-accent" /> : null}
-            </button>
-          ))}
-          <Link href="/shop" className="py-2 hover:text-accent">Shop All</Link>
-        </nav>
-
-        <div className="flex items-center gap-4 text-[11px] tracking-[0.18em] uppercase font-semibold">
-          <button onClick={() => setSearch((s) => !s)} className="hover:text-accent hidden sm:inline-flex items-center gap-1.5" aria-label="Search">
+        <div className="flex items-center gap-3 md:gap-5 text-[11px] tracking-[0.18em] uppercase font-semibold">
+          <button onClick={() => setSearch((s) => !s)} className="hover:text-accent inline-flex items-center gap-1.5 p-1" aria-label="Search">
             <SearchIcon /> <span className="hidden md:inline">Search</span>
           </button>
           <Link href={signedIn ? "/account" : "/login"} className="hidden sm:inline hover:text-accent">
@@ -92,7 +84,7 @@ export function HeaderNav({
         </div>
       </div>
 
-      {/* Search bar drawer */}
+      {/* Search drawer (full width, slides down) */}
       {search ? (
         <div className="border-t border-ink/15 bg-paper">
           <form onSubmit={submitSearch} className="max-w-[1400px] mx-auto px-5 md:px-8 py-5 flex gap-3">
@@ -106,76 +98,77 @@ export function HeaderNav({
         </div>
       ) : null}
 
-      {/* Desktop mega-menu */}
-      {open ? (
-        <div className="hidden md:block border-t border-ink/15 bg-paper shadow-[0_20px_40px_-20px_rgba(0,0,0,0.18)]" onMouseEnter={() => enter(open)} onMouseLeave={leave}>
-          <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-10 grid grid-cols-12 gap-10">
-            {open === "brands" ? (
-              <>
-                <div className="col-span-8 grid grid-cols-3 gap-x-8 gap-y-2 text-sm">
-                  {brands.map((b) => (
-                    <Link key={b.id} href={`/shop?brand=${b.slug}`}
-                      className="font-display font-black text-2xl uppercase tracking-tight text-ink hover:text-accent py-1">
-                      {b.name}
-                    </Link>
-                  ))}
-                </div>
-                <div className="col-span-4">
-                  <FeaturedPanel featured={featured} />
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="col-span-3">
-                  <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 mb-4">Shop</div>
-                  <ul className="space-y-2 text-sm">
-                    <li><Link href={`/shop?category=${open}`} className="hover:text-accent text-ink font-bold">Shop All {labelFor(open)}</Link></li>
-                    <li><Link href={`/shop?category=${open}&sort=newest`} className="hover:text-accent">New In</Link></li>
-                    <li><Link href={`/shop?category=${open}&sort=price-desc`} className="hover:text-accent">Hero Pieces</Link></li>
-                    <li><Link href={`/shop?category=${open}&sort=price-asc`} className="hover:text-accent">Under £100</Link></li>
-                  </ul>
-                </div>
-                <div className="col-span-3">
-                  <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 mb-4">Brands</div>
-                  <ul className="space-y-2 text-sm">
-                    {brands.slice(0, 6).map((b) => (
-                      <li key={b.id}><Link href={`/shop?category=${open}&brand=${b.slug}`} className="hover:text-accent">{b.name}</Link></li>
-                    ))}
-                    <li><Link href="#" onMouseEnter={() => enter("brands")} className="text-accent font-bold">All Brands →</Link></li>
-                  </ul>
-                </div>
-                <div className="col-span-6">
-                  <FeaturedPanel featured={featured} />
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      ) : null}
-
-      {/* Mobile drawer */}
-      {mobile ? (
-        <div className="fixed inset-0 z-50 md:hidden">
-          <div className="absolute inset-0 bg-ink/40" onClick={() => setMobile(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-[88vw] max-w-sm bg-paper p-6 overflow-y-auto">
-            <div className="flex justify-between items-center mb-8">
-              <Image src="/radnar-mark.png" alt="" width={1600} height={535} className="h-8 w-auto" />
-              <button onClick={() => setMobile(false)} className="text-[11px] tracking-[0.22em] uppercase font-bold">Close</button>
+      {/* Left-side drawer (vertical menu, all viewport sizes) */}
+      {drawer ? (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-ink/55 backdrop-blur-sm" onClick={close} />
+          <aside className="absolute left-0 top-0 bottom-0 w-[88vw] max-w-md bg-paper flex flex-col">
+            <div className="flex justify-between items-center px-6 py-5 border-b border-ink/15">
+              <Image src="/radnar-mark.png" alt="Radnar Supply" width={1600} height={535} className="h-8 w-auto" />
+              <button onClick={close} className="text-[11px] tracking-[0.22em] uppercase font-bold inline-flex items-center gap-2 hover:text-accent">
+                Close <CloseIcon />
+              </button>
             </div>
-            <form onSubmit={submitSearch} className="mb-8">
-              <input name="q" placeholder="Search…" className="w-full bg-cream border-2 border-ink px-3 py-3 text-sm focus:outline-none focus:border-accent" />
-            </form>
-            {TOP_NAV.map((n) => (
-              <div key={n.key} className="border-b border-ink/15 py-3">
-                <Link href={n.key === "brands" ? "/shop" : `/shop?category=${n.key}`} onClick={() => setMobile(false)}
-                  className="font-display font-black text-3xl uppercase tracking-tight hover:text-accent">{n.label}</Link>
+
+            <div className="overflow-y-auto flex-1 px-6 py-6">
+              {/* Search */}
+              <form onSubmit={submitSearch} className="mb-6 relative">
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40" />
+                <input name="q" placeholder="Search…" className="w-full bg-cream border-2 border-ink/20 pl-10 pr-3 py-3 text-sm focus:outline-none focus:border-ink" />
+              </form>
+
+              {/* Categories */}
+              <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 mb-3">Shop</div>
+              <nav className="space-y-1">
+                <Link href="/shop" onClick={close}
+                  className="flex items-center justify-between font-display font-black text-3xl uppercase tracking-tight py-2.5 hover:text-accent">
+                  Shop All <Arrow />
+                </Link>
+                {TOP_NAV.map((c) => (
+                  <Link key={c.slug} href={`/shop?category=${c.slug}`} onClick={close}
+                    className="flex items-center justify-between font-display font-black text-3xl uppercase tracking-tight py-2.5 hover:text-accent">
+                    {c.label} <Arrow />
+                  </Link>
+                ))}
+              </nav>
+
+              {/* Brands */}
+              <div className="mt-8 text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 mb-3">Brands</div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                {brands.map((b) => (
+                  <Link key={b.id} href={`/shop?brand=${b.slug}`} onClick={close}
+                    className="text-sm py-1 hover:text-accent">{b.name}</Link>
+                ))}
               </div>
-            ))}
-            <Link href="/shop" onClick={() => setMobile(false)} className="block py-3 font-display font-black text-3xl uppercase tracking-tight hover:text-accent border-b border-ink/15">Shop All</Link>
-            <div className="mt-8 space-y-3 text-[12px] tracking-[0.18em] uppercase font-semibold">
-              <Link href={signedIn ? "/account" : "/login"} onClick={() => setMobile(false)} className="block hover:text-accent">{signedIn ? "Account" : "Sign In"}</Link>
-              <Link href="/about" onClick={() => setMobile(false)} className="block hover:text-accent">About</Link>
-              <Link href="/policies/shipping" onClick={() => setMobile(false)} className="block hover:text-accent">Help & Policies</Link>
+
+              {/* Featured */}
+              {featured.length > 0 ? (
+                <>
+                  <div className="mt-8 text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 mb-3">Featured</div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {featured.slice(0, 4).map((p) => (
+                      <Link key={p.id} href={`/product/${p.slug}`} onClick={close} className="group block">
+                        <div className="aspect-[4/5] bg-cream overflow-hidden">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={p.imageUrl} alt="" className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500" />
+                        </div>
+                        <div className="mt-2 text-[10px] tracking-[0.18em] uppercase font-bold text-ink/60">{p.brandName}</div>
+                        <div className="text-[12px] mt-0.5 line-clamp-1 group-hover:text-accent">{p.name}</div>
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              ) : null}
+
+              {/* Account + about */}
+              <div className="mt-10 pt-6 border-t border-ink/15 space-y-3 text-[12px] tracking-[0.18em] uppercase font-semibold">
+                <Link href={signedIn ? "/account" : "/login"} onClick={close} className="block hover:text-accent">
+                  {signedIn ? "Account" : "Sign In / Register"}
+                </Link>
+                <Link href="/about" onClick={close} className="block hover:text-accent">About</Link>
+                <Link href="/policies/shipping" onClick={close} className="block hover:text-accent">Help &amp; Policies</Link>
+                <a href="mailto:hello@radnar.supply" className="block hover:text-accent">Contact Us</a>
+              </div>
             </div>
           </aside>
         </div>
@@ -184,34 +177,16 @@ export function HeaderNav({
   );
 }
 
-function labelFor(slug: string) {
-  return ({ clothing: "Clothing", shoes: "Shoes", accessories: "Accessories", fragrance: "Fragrance" } as Record<string, string>)[slug] ?? "";
-}
-
-function FeaturedPanel({ featured }: { featured: Feat[] }) {
+function SearchIcon({ className = "" }: { className?: string }) {
   return (
-    <div>
-      <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 mb-4">Featured</div>
-      <div className="grid grid-cols-2 gap-3">
-        {featured.slice(0, 4).map((p) => (
-          <Link key={p.id} href={`/product/${p.slug}`} className="group block">
-            <div className="aspect-[4/5] bg-cream overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.imageUrl} alt="" className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500" />
-            </div>
-            <div className="mt-2 text-[10px] tracking-[0.18em] uppercase font-bold text-ink/60">{p.brandName}</div>
-            <div className="text-[12px] mt-0.5 line-clamp-1 group-hover:text-accent">{p.name}</div>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className={className}>
       <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
     </svg>
   );
+}
+function CloseIcon() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M6 6l12 12M6 18 18 6" /></svg>;
+}
+function Arrow() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="opacity-50"><path d="M5 12h14M13 6l6 6-6 6" /></svg>;
 }
