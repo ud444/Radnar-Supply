@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { mollie } from "@/lib/mollie";
 import { sendOrderConfirmation } from "@/lib/email";
+import { dispatchWebhook } from "@/lib/webhook";
 
 export async function POST(req: Request) {
   const form = await req.formData();
@@ -47,9 +48,21 @@ export async function POST(req: Request) {
     }
   });
 
-  // Email outside the transaction
+  // Side effects outside the transaction
   if (order.paymentStatus !== "PAID" && pStatus === "PAID") {
     try { await sendOrderConfirmation(order.id); } catch (e) { console.error("email", e); }
+    dispatchWebhook("order.paid", {
+      id: order.id, number: order.number, email: order.email,
+      totalCents: order.totalCents, currency: order.currency,
+      items: order.items.map((i) => ({
+        sku: undefined, size: i.size, quantity: i.quantity,
+        productName: i.productName, brandName: i.brandName,
+        unitPriceCents: i.unitPriceCents,
+      })),
+    });
+  }
+  if (pStatus === "FAILED" && order.paymentStatus === "PENDING") {
+    dispatchWebhook("order.cancelled", { id: order.id, number: order.number, reason: "payment_failed" });
   }
 
   return NextResponse.json({ ok: true });

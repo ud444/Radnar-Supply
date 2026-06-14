@@ -15,9 +15,22 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
     "use server";
     await requireAdmin();
     const newStatus = String(fd.get("status")) as any;
-    await db.order.update({ where: { id }, data: { status: newStatus } });
+    const updated = await db.order.update({ where: { id }, data: { status: newStatus } });
     if (newStatus === "SHIPPED") {
       try { await sendShippingUpdate(id); } catch (e) { console.error(e); }
+    }
+    const { dispatchWebhook } = await import("@/lib/webhook");
+    const eventMap: Record<string, any> = {
+      SHIPPED:   "order.shipped",
+      DELIVERED: "order.delivered",
+      CANCELLED: "order.cancelled",
+      PAID:      "order.paid",
+    };
+    if (eventMap[newStatus]) {
+      dispatchWebhook(eventMap[newStatus], {
+        id: updated.id, number: updated.number, status: updated.status,
+        email: updated.email, totalCents: updated.totalCents,
+      });
     }
     revalidatePath(`/admin/orders/${id}`);
   }

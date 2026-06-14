@@ -3,7 +3,7 @@ import { db } from "@/lib/prisma";
 import { requireScope } from "@/lib/apiKey";
 
 export async function GET(req: Request) {
-  const { error } = await requireScope(req, "orders.read");
+  const { error } = await requireScope(req, "read");
   if (error) return error;
 
   const url    = new URL(req.url);
@@ -18,7 +18,9 @@ export async function GET(req: Request) {
   const [orders, total] = await Promise.all([
     db.order.findMany({
       where, orderBy: { createdAt: "desc" }, skip, take: limit,
-      include: { items: true },
+      include: {
+        items: { include: { variant: { select: { sku: true } } } },
+      },
     }),
     db.order.count({ where }),
   ]);
@@ -42,7 +44,7 @@ export async function GET(req: Request) {
       paymentMethod: o.paymentMethod,
       molliePaymentId: o.molliePaymentId,
       items: o.items.map((i) => ({
-        sku: undefined, // sku lives on the Variant; OrderItem snapshots
+        sku: i.variant?.sku,
         variantId: i.variantId,
         productName: i.productName,
         brandName: i.brandName,
