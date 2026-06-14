@@ -1,7 +1,7 @@
 import { Html, Head } from "@react-email/components";
 import { EmailShell, E } from "./EmailShell";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://radnar.supply";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://radnarsupply.com";
 
 export default function Welcome({ name }: { name?: string | null }) {
   return (

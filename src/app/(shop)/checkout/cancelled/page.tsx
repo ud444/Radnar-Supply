@@ -74,7 +74,7 @@ export default async function Cancelled() {
         <div className="eyebrow-lead">Still Stuck?</div>
         <div className="font-display font-black uppercase text-2xl tracking-tight mt-2">We'll help in minutes.</div>
         <p className="text-sm text-ink/65 mt-2 max-w-md mx-auto">
-          Email us at <a href="mailto:hello@radnar.supply" className="underline hover:text-accent">hello@radnar.supply</a> with your bag screenshot — we'll get you sorted.
+          Email us at <a href="mailto:hello@radnarsupply.com" className="underline hover:text-accent">hello@radnarsupply.com</a> with your bag screenshot — we'll get you sorted.
         </p>
       </section>
     </div>

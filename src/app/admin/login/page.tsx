@@ -65,7 +65,7 @@ export default function AdminLogin() {
 
           <div className="mt-10 pt-6 border-t border-ink/15 text-[11px] tracking-[0.16em] uppercase font-bold text-ink/55 flex flex-wrap gap-4 justify-between">
             <Link href="/" className="hover:text-accent">← Storefront</Link>
-            <a href="mailto:hello@radnar.supply" className="hover:text-accent">Need help?</a>
+            <a href="mailto:hello@radnarsupply.com" className="hover:text-accent">Need help?</a>
           </div>
         </div>
       </main>

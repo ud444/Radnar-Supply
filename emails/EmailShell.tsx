@@ -1,6 +1,6 @@
 import { Body, Container, Hr, Img, Link, Section, Text } from "@react-email/components";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://radnar.supply";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://radnarsupply.com";
 const LOGO = `${SITE}/radnar-mark.png`;
 
 const COLORS = { paper: "#F4F1EA", ink: "#0A0A0A", muted: "#5C5853", accent: "#FF4D00", line: "#D9D1C2" };
@@ -31,7 +31,7 @@ export function EmailShell({ children, preview }: { children: React.ReactNode; p
           <Text style={{ margin: "8px 0 0", color: "rgba(244,241,234,0.7)", fontSize: 12, lineHeight: 1.5 }}>
             <Link href={`${SITE}/shop`} style={{ color: COLORS.paper, marginRight: 12 }}>Shop</Link>
             <Link href={`${SITE}/account/orders`} style={{ color: COLORS.paper, marginRight: 12 }}>Orders</Link>
-            <Link href="mailto:hello@radnar.supply" style={{ color: COLORS.paper }}>hello@radnar.supply</Link>
+            <Link href="mailto:hello@radnarsupply.com" style={{ color: COLORS.paper }}>hello@radnarsupply.com</Link>
           </Text>
           <Hr style={{ borderColor: "rgba(244,241,234,0.18)", margin: "16px 0" }} />
           <Text style={{ margin: 0, fontSize: 10.5, lineHeight: 1.6, color: "rgba(244,241,234,0.55)" }}>

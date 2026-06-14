@@ -36,7 +36,7 @@ export function LoginForm() {
       <div className="mt-10 pt-6 border-t border-ink/15 text-[11px] tracking-[0.16em] uppercase font-bold text-ink/55 flex flex-wrap gap-4 justify-between">
         <Link href="/policies/privacy" className="hover:text-accent">Privacy</Link>
         <Link href="/policies/terms" className="hover:text-accent">Terms</Link>
-        <a href="mailto:hello@radnar.supply" className="hover:text-accent">Help</a>
+        <a href="mailto:hello@radnarsupply.com" className="hover:text-accent">Help</a>
       </div>
     </div>
   );

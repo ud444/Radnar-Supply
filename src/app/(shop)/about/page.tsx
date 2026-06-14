@@ -119,8 +119,8 @@ export default async function About() {
             <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ink/75">
               Order issues, authentication questions, wholesale enquiries — we reply within one working day.
             </p>
-            <a href="mailto:hello@radnar.supply" className="inline-block mt-6 bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
-              hello@radnar.supply →
+            <a href="mailto:hello@radnarsupply.com" className="inline-block mt-6 bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
+              hello@radnarsupply.com →
             </a>
           </div>
           <div className="md:col-span-5 text-sm">

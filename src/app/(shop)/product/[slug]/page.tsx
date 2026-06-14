@@ -134,7 +134,7 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
             { h: "Description",          body: product.description, open: true },
             { h: "Materials & Care",     body: "Materials and care instructions will appear here once added in the admin product detail. For now, please refer to the manufacturer's tag." },
             { h: "Delivery & Returns",   body: "Free UK delivery over £75. Standard tracked 2–4 working days · £4.95. Express options at checkout. 30-day free returns for unworn items with tags." },
-            { h: "Authentication",       body: "Every Radnar Supply piece is sourced from verified European partners and authenticated in-house. If you believe an item is not authentic, contact hello@radnar.supply for a full refund." },
+            { h: "Authentication",       body: "Every Radnar Supply piece is sourced from verified European partners and authenticated in-house. If you believe an item is not authentic, contact hello@radnarsupply.com for a full refund." },
           ].map((s) => (
             <details key={s.h} open={!!s.open} className="py-5 group">
               <summary className="cursor-pointer list-none flex justify-between items-center gap-4">

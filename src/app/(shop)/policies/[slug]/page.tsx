@@ -5,7 +5,7 @@ const COMPANY = {
   name: "Radnar Supply Ltd",
   number: "17263761",
   city: "Birmingham, United Kingdom",
-  email: "hello@radnar.supply",
+  email: "hello@radnarsupply.com",
 };
 
 type Section = { h: string; body: string };
@@ -41,7 +41,7 @@ const PAGES: Record<string, Policy> = {
   privacy: {
     eyebrow: "Policy",
     title: "Privacy",
-    intro: COMPANY.name + " (\"we\", \"us\", \"our\") is the data controller for the personal information you provide via radnar.supply. We process your data under UK GDPR and the Data Protection Act 2018.",
+    intro: COMPANY.name + " (\"we\", \"us\", \"our\") is the data controller for the personal information you provide via radnarsupply.com. We process your data under UK GDPR and the Data Protection Act 2018.",
     updated: "12 June 2026",
     sections: [
       { h: "What we collect", body: "Account: name, email, password (hashed). Orders: shipping address, phone (optional), order history. Payments: handled by Mollie — we never see card details. Marketing: email for newsletter only if you opt in. Technical: IP address, browser, pages viewed (for security and analytics)." },
@@ -56,7 +56,7 @@ const PAGES: Record<string, Policy> = {
   terms: {
     eyebrow: "Policy",
     title: "Terms of Sale",
-    intro: "By placing an order on radnar.supply you agree to these terms, which form the contract between you and " + COMPANY.name + ". They do not affect your statutory rights as a consumer.",
+    intro: "By placing an order on radnarsupply.com you agree to these terms, which form the contract between you and " + COMPANY.name + ". They do not affect your statutory rights as a consumer.",
     updated: "12 June 2026",
     sections: [
       { h: "Who we are", body: COMPANY.name + " (Company No. " + COMPANY.number + ") is a company registered in England and Wales, trading as Radnar Supply, registered office in Birmingham, United Kingdom." },

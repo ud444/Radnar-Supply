@@ -24,7 +24,7 @@ export function Footer() {
       <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-12 grid grid-cols-2 md:grid-cols-4 gap-10 text-sm">
         {[
           { h: "Shop",   items: [["Clothing","/shop?category=clothing"],["Shoes","/shop?category=shoes"],["Accessories","/shop?category=accessories"],["Fragrance","/shop?category=fragrance"],["Brand Roster","/brands"]] },
-          { h: "Help",   items: [["About","/about"],["Contact","mailto:hello@radnar.supply"],["FAQ","/policies/shipping"],["Track Order","/account/orders"]] },
+          { h: "Help",   items: [["About","/about"],["Contact","mailto:hello@radnarsupply.com"],["FAQ","/policies/shipping"],["Track Order","/account/orders"]] },
           { h: "Legal",  items: [["Shipping","/policies/shipping"],["Returns","/policies/returns"],["Privacy","/policies/privacy"],["Terms","/policies/terms"]] },
           { h: "Social", items: [["Instagram","https://instagram.com"],["TikTok","https://tiktok.com"],["X / Twitter","https://x.com"]] },
         ].map((col) => (

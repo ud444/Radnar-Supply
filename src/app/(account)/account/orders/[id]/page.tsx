@@ -36,7 +36,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
         {cancelled ? (
           <div className="card-frame">
             <div className="font-display font-black uppercase text-xl tracking-tight text-red-700">Order cancelled.</div>
-            <p className="text-sm text-ink/65 mt-1.5">If you didn't request this, contact <a href="mailto:hello@radnar.supply" className="underline">hello@radnar.supply</a>.</p>
+            <p className="text-sm text-ink/65 mt-1.5">If you didn't request this, contact <a href="mailto:hello@radnarsupply.com" className="underline">hello@radnarsupply.com</a>.</p>
           </div>
         ) : (
           <ol className="grid grid-cols-4 gap-0 border border-ink">
@@ -110,7 +110,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
               <div className="text-[11px] text-ink/55 mt-1 font-mono break-all">{order.molliePaymentId ?? "—"}</div>
             </div>
 
-            <a href={`mailto:hello@radnar.supply?subject=Order%20${encodeURIComponent(order.number)}`}
+            <a href={`mailto:hello@radnarsupply.com?subject=Order%20${encodeURIComponent(order.number)}`}
                className="btn btn-ghost btn-block mt-5">Need help? →</a>
           </div>
         </aside>

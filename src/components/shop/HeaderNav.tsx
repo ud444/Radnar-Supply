@@ -170,7 +170,7 @@ export function HeaderNav({
                 </Link>
                 <Link href="/about" onClick={close} className="block hover:text-accent">About</Link>
                 <Link href="/policies/shipping" onClick={close} className="block hover:text-accent">Help &amp; Policies</Link>
-                <a href="mailto:hello@radnar.supply" className="block hover:text-accent">Contact Us</a>
+                <a href="mailto:hello@radnarsupply.com" className="block hover:text-accent">Contact Us</a>
               </div>
             </div>
           </aside>

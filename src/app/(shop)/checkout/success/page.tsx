@@ -90,7 +90,7 @@ export default async function Success({ searchParams }: { searchParams: Promise<
           <div className="eyebrow-lead">Questions?</div>
           <div className="font-display font-black uppercase text-2xl tracking-tight mt-2">We're on it.</div>
           <p className="text-sm text-ink/70 mt-2 leading-relaxed">
-            Reply directly to your order email or write to us at <a href="mailto:hello@radnar.supply" className="underline hover:text-accent">hello@radnar.supply</a>. We respond within one working day.
+            Reply directly to your order email or write to us at <a href="mailto:hello@radnarsupply.com" className="underline hover:text-accent">hello@radnarsupply.com</a>. We respond within one working day.
           </p>
         </div>
         <div className="card-frame bg-ink text-paper border-ink">
