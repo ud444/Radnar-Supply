@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { ProductCard } from "@/components/shop/ProductCard";
+import { IMG } from "@/lib/images";
 
 export default async function Home() {
   const [featured, newest, categories, brands] = await Promise.all([
@@ -46,7 +47,7 @@ export default async function Home() {
           <div className="md:col-span-5 relative">
             <div className="aspect-[4/5] bg-cream overflow-hidden relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://picsum.photos/seed/radnar-hero-aw26/900/1125" alt="" className="w-full h-full object-cover" />
+              <img src={IMG.hero} alt="" className="w-full h-full object-cover" />
               <div className="absolute top-4 left-4 bg-paper text-ink px-3 py-1.5 text-[10px] tracking-[0.22em] uppercase font-bold">
                 AW26 — Look 01
               </div>
@@ -78,7 +79,7 @@ export default async function Home() {
           {categories.map((c, i) => (
             <Link key={c.id} href={`/shop?category=${c.slug}`} className="relative aspect-[4/5] overflow-hidden group bg-cream">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`https://picsum.photos/seed/${c.slug}-${i}-radnar/700/875`} alt={c.name} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
+              <img src={(IMG.category as Record<string, string>)[c.slug] ?? IMG.heroAlt} alt={c.name} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/15 to-transparent" />
               <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between text-paper">
                 <div className="font-display font-black text-3xl md:text-4xl uppercase display-tight">{c.name}</div>
@@ -110,7 +111,7 @@ export default async function Home() {
         <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-10 items-center">
           <div className="md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://picsum.photos/seed/radnar-editorial/800/1000" alt="" className="w-full h-full object-cover" />
+            <img src={IMG.editorial} alt="" className="w-full h-full object-cover" />
           </div>
           <div className="md:col-span-7">
             <div className="rule-eyebrow text-paper">Why Radnar</div>

@@ -1,7 +1,51 @@
 import { PrismaClient } from "@prisma/client";
 const db = new PrismaClient();
 
-const img = (s: string) => `https://picsum.photos/seed/${encodeURIComponent(s)}/900/1125`;
+const u = (id: string, w = 900, h = 1125) =>
+  `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&crop=entropy&q=80&auto=format`;
+
+// Per-category image pools — same as src/lib/images.ts
+const POOL: Record<string, string[]> = {
+  clothing: [
+    u("1521572163474-6864f9cf17ab"),
+    u("1556906781-9a412961c28c"),
+    u("1583743814966-8936f5b7be1a"),
+    u("1551488831-00ddcb6c6bd3"),
+    u("1556821840-3a63f95609a7"),
+    u("1620799140408-edc6dcb6d633"),
+    u("1542596594-649edbc13630"),
+    u("1503342217505-b0a15ec3261c"),
+  ],
+  shoes: [
+    u("1542291026-7eec264c27ff"),
+    u("1543163521-1bf539c55dd2"),
+    u("1539109136881-3be0616acf4b"),
+    u("1606107557195-0e29a4b5b4aa"),
+    u("1551107696-a4b0c5a0d9a2"),
+    u("1525966222134-fcfa99b8ae77"),
+  ],
+  accessories: [
+    u("1611652022419-a9419f74343d"),
+    u("1591348122449-02525d70379b"),
+    u("1601924921557-45e6dea0a157"),
+    u("1610216705422-caa3fcb6d158"),
+    u("1559563458-527698bf5295"),
+  ],
+  fragrance: [
+    u("1541643600914-78b084683601"),
+    u("1592945403244-b3fbafd7f539"),
+    u("1594035910387-fea47794261f"),
+    u("1615634376658-c80abf877e7d"),
+  ],
+};
+
+function pick(category: string, seed: string, n = 3): string[] {
+  const pool = POOL[category] ?? POOL.clothing;
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
+  const start = Math.abs(h) % pool.length;
+  return Array.from({ length: n }, (_, i) => pool[(start + i) % pool.length]);
+}
 
 const BRANDS = [
   { slug: "atelier-9",    name: "Atelier 9" },
@@ -62,16 +106,16 @@ async function main() {
       },
     });
 
-    // Images (3 each, placeholder)
+    // Streetwear images keyed off category
+    const images = pick(p.cat, p.slug, 3);
     await db.productImage.deleteMany({ where: { productId: product.id, key: { startsWith: "seed:" } } });
     await db.productImage.createMany({
-      data: [0, 1, 2].map((i) => ({
+      data: images.map((url, i) => ({
         productId: product.id, position: i, alt: p.name,
-        key: `seed:${p.slug}-${i}`, url: img(`${p.slug}-${i}`),
+        key: `seed:${p.slug}-${i}`, url,
       })),
     });
 
-    // Variants
     for (const size of p.sizes) {
       const sku = `${p.slug}-${size}`.toUpperCase().replace(/[^A-Z0-9-]/g, "");
       await db.variant.upsert({
