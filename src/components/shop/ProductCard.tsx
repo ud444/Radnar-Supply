@@ -22,16 +22,23 @@ export function ProductCard({ slug, name, brand, priceCents, images }: Props) {
             <img src={hover} alt="" className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </>
         )}
-        <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-ink text-paper py-3 text-center text-[11px] tracking-[0.2em] uppercase font-bold">
-          View Product
+        {/* Hover overlay with action */}
+        <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-ink text-paper py-3 text-center text-[11px] tracking-[0.2em] uppercase font-bold">
+          View Product →
         </div>
-      </div>
-      <div className="mt-4">
-        <div className="font-display font-black text-[15px] uppercase tracking-tight leading-none text-ink group-hover:text-accent transition-colors">
+        {/* Corner accent ribbon */}
+        <div className="absolute top-3 left-3 bg-paper text-ink px-2 py-1 text-[9px] tracking-[0.22em] uppercase font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           {brand.name}
         </div>
-        <div className="text-[13px] mt-1.5 text-ink/85 line-clamp-1">{name}</div>
-        <div className="mt-1.5 text-[13px] font-semibold">{money(priceCents)}</div>
+      </div>
+      <div className="mt-4 flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <div className="font-display font-black text-[15px] uppercase tracking-tight leading-none text-ink group-hover:text-accent transition-colors">
+            {brand.name}
+          </div>
+          <div className="text-[13px] mt-1.5 text-ink/85 line-clamp-1">{name}</div>
+        </div>
+        <div className="text-[13px] font-display font-black whitespace-nowrap mt-0.5">{money(priceCents)}</div>
       </div>
     </Link>
   );

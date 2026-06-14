@@ -3,35 +3,41 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
 import { signInAction, type FormState } from "../actions";
+import { Field } from "@/components/ui/Field";
 
 export function LoginForm() {
   const sp = useSearchParams();
   const [state, action, pending] = useActionState<FormState, FormData>(signInAction, null);
   return (
-    <form action={action} className="w-full max-w-sm bg-white border border-line rounded p-8">
-      <h1 className="text-2xl font-display font-semibold tracking-tightest">Sign in</h1>
-      <p className="text-sm text-muted mt-1">Welcome back.</p>
-      {sp.get("reset") ? <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2 mt-3">Password updated. Sign in to continue.</p> : null}
-      <input type="hidden" name="next" value={sp.get("next") ?? "/account"} />
-      <Field label="Email" name="email" type="email" required />
-      <Field label="Password" name="password" type="password" required />
-      <button disabled={pending} className="mt-6 w-full bg-ink text-white py-3 rounded-full text-sm font-medium disabled:opacity-50">
-        {pending ? "Signing in…" : "Sign in"}
-      </button>
-      {state?.error ? <div className="mt-3 text-sm text-red-600">{state.error}</div> : null}
-      <div className="mt-6 flex items-center justify-between text-sm">
-        <Link href="/forgot" className="underline text-muted">Forgot password?</Link>
-        <Link href="/register" className="underline">Create account</Link>
+    <div>
+      <div className="eyebrow-lead">Sign In</div>
+      <h1 className="mt-3 font-display font-black text-4xl md:text-5xl uppercase display-tight">Welcome back.</h1>
+      <p className="mt-3 text-sm text-ink/65">New here? <Link href="/register" className="underline font-medium hover:text-accent">Create an account</Link> for faster checkout and order history.</p>
+
+      {sp.get("reset") ? (
+        <div className="mt-6 p-3 bg-accent/10 border-2 border-accent text-[11px] tracking-[0.18em] uppercase font-bold text-ink">
+          Password updated. Sign in to continue.
+        </div>
+      ) : null}
+
+      <form action={action} className="mt-8 space-y-4">
+        <input type="hidden" name="next" value={sp.get("next") ?? "/account"} />
+        <Field label="Email" name="email" type="email" required autoComplete="email" autoFocus />
+        <Field label="Password" name="password" type="password" required autoComplete="current-password" />
+        <div className="flex justify-end">
+          <Link href="/forgot" className="text-[11px] tracking-[0.16em] uppercase font-bold text-ink/55 hover:text-accent">Forgot password?</Link>
+        </div>
+        <button disabled={pending} className="btn btn-lg btn-block">
+          {pending ? "Signing in…" : "Sign in →"}
+        </button>
+        {state?.error ? <div className="field-error tracking-[0.06em] uppercase font-bold">{state.error}</div> : null}
+      </form>
+
+      <div className="mt-10 pt-6 border-t border-ink/15 text-[11px] tracking-[0.16em] uppercase font-bold text-ink/55 flex flex-wrap gap-4 justify-between">
+        <Link href="/policies/privacy" className="hover:text-accent">Privacy</Link>
+        <Link href="/policies/terms" className="hover:text-accent">Terms</Link>
+        <a href="mailto:hello@radnar.supply" className="hover:text-accent">Help</a>
       </div>
-    </form>
-  );
-}
-function Field(props: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
-  const { label, ...rest } = props;
-  return (
-    <label className="block mt-4">
-      <span className="text-[11px] tracking-[0.16em] uppercase text-muted">{label}</span>
-      <input {...rest} className="mt-1 w-full border border-line rounded px-3 py-3 text-sm focus:outline-none focus:border-ink" />
-    </label>
+    </div>
   );
 }
