@@ -118,7 +118,7 @@ export function HeaderNav({
               {/* Search */}
               <form onSubmit={submitSearch} className="mb-6 relative">
                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40" />
-                <input name="q" placeholder="Search…" className="w-full bg-cream border-2 border-ink/20 pl-10 pr-3 py-3 text-sm focus:outline-none focus:border-ink" />
+                <input name="q" placeholder="Search…" className="w-full bg-cream border-2 border-ink/20 pl-10 pr-3 py-3 text-base focus:outline-none focus:border-ink" />
               </form>
 
               {/* Radnar Select — sourcing / personal shopping */}

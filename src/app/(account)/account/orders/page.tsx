@@ -51,12 +51,12 @@ export default async function Orders() {
                   </div>
 
                   {/* Image preview */}
-                  <div className="mt-4 flex items-center gap-2">
-                    {o.items.slice(0, 3).map((i) => (
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    {o.items.slice(0, 3).map((i, idx) => (
                       /* eslint-disable-next-line @next/next/no-img-element */
-                      <img key={i.id} src={i.imageUrl} alt="" className="w-14 h-16 object-cover bg-cream" />
+                      <img key={i.id} src={i.imageUrl} alt="" className={`w-14 h-16 object-cover bg-cream ${idx === 2 ? "hidden sm:block" : ""}`} />
                     ))}
-                    <div className="text-[11px] tracking-[0.18em] uppercase font-bold text-ink/60 ml-2">
+                    <div className="text-[11px] tracking-[0.18em] uppercase font-bold text-ink/60 ml-1">
                       {itemCount} item{itemCount !== 1 ? "s" : ""}
                     </div>
                     <div className="ml-auto text-[11px] tracking-[0.18em] uppercase font-bold text-ink/65 hover:text-accent">View order →</div>

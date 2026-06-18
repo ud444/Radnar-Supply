@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 html, body { background: #F4F1EA; color: #0A0A0A; }
-body { -webkit-font-smoothing: antialiased; }
+html { -webkit-text-size-adjust: 100%; }
+body { -webkit-font-smoothing: antialiased; overflow-x: hidden; max-width: 100%; }
 
 /* Subtle paper grain overlay */
 body::before {
@@ -92,7 +93,8 @@ header, main, footer { position: relative; z-index: 2; }
   background: #FFFEFB;
   border: 2px solid rgba(10,10,10,0.18);
   padding: 18px 14px 10px;
-  font-size: 14px;
+  /* 16px so iOS Safari doesn't zoom the viewport on focus */
+  font-size: 16px;
   outline: none;
   transition: border-color 120ms ease;
 }

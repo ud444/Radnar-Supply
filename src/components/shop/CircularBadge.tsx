@@ -6,19 +6,22 @@ export function CircularBadge({
   text = "SOURCE · SUPPLY · PERSONAL SHOP · ",
   className = "",
   size = 120,
+  fill = false,
   spin = true,
   center = "✦",
 }: {
   text?: string;
   className?: string;
   size?: number;
+  /** When true, fill the parent (use the parent's width/height) instead of a fixed px size. */
+  fill?: boolean;
   spin?: boolean;
   center?: string;
 }) {
   return (
     <div
-      className={`relative inline-grid place-items-center ${className}`}
-      style={{ width: size, height: size }}
+      className={`relative grid place-items-center ${fill ? "w-full h-full" : "inline-grid"} ${className}`}
+      style={fill ? undefined : { width: size, height: size }}
       aria-hidden
     >
       <svg

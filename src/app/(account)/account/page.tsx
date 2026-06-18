@@ -77,14 +77,14 @@ export default async function AccountHome() {
           <ul className="divide-y-2 divide-ink/10 border-y-2 border-ink/10">
             {recent.map((o) => (
               <li key={o.id}>
-                <Link href={`/account/orders/${o.id}`} className="py-5 grid grid-cols-12 gap-3 items-center hover:bg-cream/40 transition-colors px-3 -mx-3">
-                  <div className="col-span-4">
+                <Link href={`/account/orders/${o.id}`} className="py-5 grid grid-cols-2 gap-2 md:grid-cols-12 md:gap-3 items-center hover:bg-cream/40 transition-colors px-3 -mx-3">
+                  <div className="md:col-span-4">
                     <div className="num-mark">·</div>
                     <div className="font-mono text-sm">{o.number}</div>
                   </div>
-                  <div className="col-span-3 text-[11px] tracking-[0.18em] uppercase font-bold text-ink/60">{o.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</div>
-                  <div className="col-span-3"><StatusPill value={o.status} /></div>
-                  <div className="col-span-2 text-right font-display font-black text-lg">{money(o.totalCents)}</div>
+                  <div className="text-right md:text-left md:order-last md:col-span-2 font-display font-black text-lg">{money(o.totalCents)}</div>
+                  <div className="md:col-span-3 text-[11px] tracking-[0.18em] uppercase font-bold text-ink/60">{o.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</div>
+                  <div className="md:col-span-3 text-right md:text-left"><StatusPill value={o.status} /></div>
                 </Link>
               </li>
             ))}

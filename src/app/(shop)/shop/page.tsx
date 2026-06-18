@@ -77,7 +77,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
               ) : (
                 <div className="eyebrow-lead">Drop</div>
               )}
-              <h1 className="mt-3 font-display font-black text-6xl md:text-[8rem] uppercase display-tight">
+              <h1 className="mt-3 font-display font-black text-[2.75rem] sm:text-6xl md:text-[8rem] uppercase display-tight break-words">
                 {heading}.
               </h1>
               {!isSearch && !activeBrand && !activeCategory ? (
@@ -123,14 +123,23 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
         {/* Filter sidebar */}
         <aside className="col-span-12 md:col-span-3 text-sm">
           <div className="md:sticky md:top-28">
-            <form action="/shop" className="mb-8 relative">
+            <form action="/shop" className="mb-4 md:mb-8 relative">
               {sp.category && <input type="hidden" name="category" value={sp.category} />}
               {sp.brand    && <input type="hidden" name="brand"    value={sp.brand} />}
               {sp.size     && <input type="hidden" name="size"     value={sp.size} />}
               {sp.sort     && <input type="hidden" name="sort"     value={sp.sort} />}
               <input name="q" defaultValue={sp.q ?? ""} placeholder="Search products…"
-                className="w-full bg-bone border-2 border-ink/20 px-3 py-3 text-sm focus:outline-none focus:border-ink" />
+                className="w-full bg-bone border-2 border-ink/20 px-3 py-3 text-base focus:outline-none focus:border-ink" />
             </form>
+
+            {/* Collapsible on mobile via native <details>; forced-open on desktop (md:!block beats
+                the UA "details:not([open])>* { display:none }" rule, so the summary toggle is moot there). */}
+            <details className="group border-2 border-ink md:border-0 mb-6 md:mb-0">
+              <summary className="md:hidden flex items-center justify-between gap-3 px-4 py-3 cursor-pointer list-none text-[11px] tracking-[0.22em] uppercase font-bold">
+                Filters &amp; Sort
+                <span className="text-xl leading-none group-open:rotate-45 transition-transform">+</span>
+              </summary>
+              <div className="md:!block px-4 pb-4 md:p-0">
 
             <Section title="Sort">
               {[
@@ -158,13 +167,15 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
             </Section>
 
             <Section title="Size">
-              <div className="grid grid-cols-3 gap-1.5">
-                <Link href={urlFor({ size: undefined })} className={`text-[11px] px-2 py-1.5 border-2 text-center font-bold uppercase tracking-wider ${!sp.size ? "border-ink bg-ink text-paper" : "border-ink/30 text-ink/70 hover:border-ink"}`}>All</Link>
+              <div className="grid grid-cols-4 sm:grid-cols-3 gap-1.5">
+                <Link href={urlFor({ size: undefined })} className={`text-[12px] px-2 py-2.5 border-2 text-center font-bold uppercase tracking-wider ${!sp.size ? "border-ink bg-ink text-paper" : "border-ink/30 text-ink/70 hover:border-ink"}`}>All</Link>
                 {ALL_SIZES.map((s) => (
-                  <Link key={s} href={urlFor({ size: s })} className={`text-[11px] px-2 py-1.5 border-2 text-center font-bold uppercase tracking-wider ${sp.size === s ? "border-ink bg-ink text-paper" : "border-ink/30 text-ink/70 hover:border-ink"}`}>{s}</Link>
+                  <Link key={s} href={urlFor({ size: s })} className={`text-[12px] px-2 py-2.5 border-2 text-center font-bold uppercase tracking-wider ${sp.size === s ? "border-ink bg-ink text-paper" : "border-ink/30 text-ink/70 hover:border-ink"}`}>{s}</Link>
                 ))}
               </div>
             </Section>
+              </div>
+            </details>
           </div>
         </aside>
 

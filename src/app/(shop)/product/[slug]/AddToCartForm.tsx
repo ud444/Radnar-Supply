@@ -34,8 +34,8 @@ export function AddToCartForm({ variants, allOOS, productName }: { variants: Var
         <div className="eyebrow-lead">Sold Out</div>
         <h3 className="mt-2 font-display font-black uppercase text-2xl tracking-tight">All sizes gone.</h3>
         <p className="text-sm text-ink/65 mt-2">Drop your email and we'll let you know if {productName} comes back.</p>
-        <form className="mt-4 flex gap-2">
-          <input type="email" required placeholder="Your email" className="flex-1 bg-bone border-2 border-ink px-3 py-2.5 text-sm focus:outline-none" />
+        <form className="mt-4 flex flex-col sm:flex-row gap-2">
+          <input type="email" required placeholder="Your email" className="flex-1 bg-bone border-2 border-ink px-3 py-2.5 text-base focus:outline-none" />
           <button className="btn">Notify me</button>
         </form>
       </div>
@@ -48,7 +48,7 @@ export function AddToCartForm({ variants, allOOS, productName }: { variants: Var
         <div className="text-[11px] tracking-[0.22em] uppercase font-bold">Size</div>
         <button type="button" className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 hover:text-accent underline">Size guide</button>
       </div>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {variants.map((v) => {
           const oos = v.stock <= 0;
           const active = selected === v.id;

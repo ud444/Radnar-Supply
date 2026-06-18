@@ -18,9 +18,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="my-16">
           <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-paper/55">Members Only</div>
           <h1 className="mt-3 font-display font-black text-5xl md:text-7xl uppercase display-tight">
-            Verified.<br/>
-            <span className="text-accent">Below retail.</span><br/>
-            Always.
+            Hello<br/>
+            <span className="text-accent">Again.</span>
           </h1>
           <p className="mt-6 max-w-sm text-paper/70 text-sm leading-relaxed">
             Sign in to see your orders, save addresses, and unlock 10% off your next drop.

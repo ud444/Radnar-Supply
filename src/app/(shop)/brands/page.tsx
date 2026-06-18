@@ -37,7 +37,7 @@ export default async function Brands() {
       </section>
 
       {/* A–Z jump */}
-      <nav className="border-b border-ink/15 sticky top-20 z-30 bg-paper/90 backdrop-blur">
+      <nav className="border-b border-ink/15 md:sticky md:top-28 z-30 bg-paper/90 backdrop-blur">
         <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-3 flex items-center gap-2 overflow-x-auto no-scrollbar">
           <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 shrink-0">A–Z</span>
           {letters.map((l) => (
@@ -64,11 +64,14 @@ export default async function Brands() {
                     <div className="py-6 grid grid-cols-12 gap-4 items-center">
                       <div className="col-span-12 md:col-span-5">
                         <div className="num-mark">·</div>
-                        <div className="font-display font-black text-3xl md:text-5xl uppercase tracking-tight leading-none group-hover:text-accent transition-colors">{b.name}</div>
+                        <div className="flex items-baseline justify-between gap-3">
+                          <div className="font-display font-black text-3xl md:text-5xl uppercase tracking-tight leading-none group-hover:text-accent transition-colors">{b.name}</div>
+                          <span className="md:hidden text-[10px] tracking-[0.22em] uppercase font-bold text-ink/60 group-hover:text-accent shrink-0">Shop →</span>
+                        </div>
                         <div className="text-[12px] text-ink/65 mt-2">{b.products.length} product{b.products.length !== 1 ? "s" : ""} live</div>
                       </div>
                       {/* Preview thumbnails */}
-                      <div className="col-span-9 md:col-span-6 grid grid-cols-4 gap-2">
+                      <div className="col-span-12 md:col-span-6 grid grid-cols-4 gap-2">
                         {b.products.slice(0, 4).map((p) => (
                           <div key={p.id} className="aspect-[4/5] bg-cream overflow-hidden">
                             {p.images[0] ? (
@@ -81,7 +84,7 @@ export default async function Brands() {
                           <div key={`x${i}`} className="aspect-[4/5] bg-cream border border-ink/10" />
                         ))}
                       </div>
-                      <div className="col-span-3 md:col-span-1 text-right">
+                      <div className="hidden md:block md:col-span-1 text-right">
                         <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/60 group-hover:text-accent">Shop →</span>
                       </div>
                     </div>

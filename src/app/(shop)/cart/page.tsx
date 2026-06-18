@@ -70,7 +70,7 @@ export default async function CartPage() {
           <CartLines lines={cart.lines} />
 
           {/* Trust strip */}
-          <div className="mt-10 grid grid-cols-3 gap-4 border-t border-ink/15 pt-8">
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-4 border-t border-ink/15 pt-8">
             {[
               { h: "Verified Designer", p: "Authenticated in-house before dispatch." },
               { h: "Free UK Returns",   p: "30 days. Free pre-paid label by email." },
@@ -122,7 +122,7 @@ export default async function CartPage() {
                   Got a discount code? <span className="text-ink/40 group-open:rotate-45 transition-transform">+</span>
                 </summary>
                 <div className="mt-3 flex gap-2">
-                  <input placeholder="CODE" className="flex-1 bg-bone border-2 border-ink/20 px-3 py-2.5 text-sm uppercase tracking-wider focus:outline-none focus:border-ink" />
+                  <input placeholder="CODE" className="flex-1 min-w-0 bg-bone border-2 border-ink/20 px-3 py-2.5 text-base uppercase tracking-wider focus:outline-none focus:border-ink" />
                   <button className="btn">Apply</button>
                 </div>
               </details>

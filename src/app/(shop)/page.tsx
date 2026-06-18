@@ -49,11 +49,11 @@ export default async function Home() {
                 {content.heroBody}
               </p>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <Link href={content.heroPrimaryHref} className="bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
+              <Link href={content.heroPrimaryHref} className="bg-ink text-paper px-7 py-4 text-center text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
                 {content.heroPrimaryLabel} →
               </Link>
-              <Link href={content.heroSecondaryHref} className="border-2 border-ink text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-colors">
+              <Link href={content.heroSecondaryHref} className="border-2 border-ink text-ink px-7 py-4 text-center text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-colors">
                 {content.heroSecondaryLabel}
               </Link>
             </div>
@@ -63,8 +63,8 @@ export default async function Home() {
             <div className="aspect-[4/5] bg-cream overflow-hidden relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={media.hero} alt="" className="w-full h-full object-cover" />
-              <div className="absolute -bottom-6 -left-6 md:bottom-auto md:top-4 md:-left-10 bg-paper text-ink w-[120px] h-[120px] grid place-items-center border border-ink/15">
-                <CircularBadge size={108} />
+              <div className="absolute bottom-3 right-3 md:bottom-auto md:top-4 md:-left-10 md:right-auto bg-paper text-ink w-[84px] h-[84px] md:w-[120px] md:h-[120px] grid place-items-center border border-ink/15">
+                <CircularBadge fill className="p-2" />
               </div>
             </div>
           </div>
