@@ -80,7 +80,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
           <div className="text-muted">{order.shipName}<br/>{order.shipLine1}{order.shipLine2 ? `, ${order.shipLine2}` : ""}<br/>{order.shipCity}, {order.shipPostcode}<br/>{order.shipCountry}</div>
           <div className="font-medium mt-6 mb-2">Payment</div>
           <div className="text-muted">Method · {order.paymentMethod ?? "—"}</div>
-          <div className="text-muted">Mollie · {order.molliePaymentId ?? "—"}</div>
+          <div className="text-muted">Stripe · {order.stripePaymentIntentId ?? order.stripeSessionId ?? "—"}</div>
         </div>
       </div>
     </div>

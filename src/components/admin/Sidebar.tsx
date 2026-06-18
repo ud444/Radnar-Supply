@@ -8,8 +8,9 @@ const SECTIONS: { label: string; items: { href: string; label: string; icon: key
   {
     label: "Operate",
     items: [
-      { href: "/admin",        label: "Dashboard", icon: "dashboard" },
-      { href: "/admin/orders", label: "Orders",    icon: "bag" },
+      { href: "/admin",          label: "Dashboard", icon: "dashboard" },
+      { href: "/admin/orders",   label: "Orders",    icon: "bag" },
+      { href: "/admin/requests", label: "Requests",  icon: "inbox" },
     ],
   },
   {
@@ -18,6 +19,13 @@ const SECTIONS: { label: string; items: { href: string; label: string; icon: key
       { href: "/admin/products",   label: "Products",   icon: "tag" },
       { href: "/admin/brands",     label: "Brands",     icon: "layers" },
       { href: "/admin/categories", label: "Categories", icon: "list" },
+    ],
+  },
+  {
+    label: "Content",
+    items: [
+      { href: "/admin/content", label: "Content & Media", icon: "image" },
+      { href: "/admin/blog",    label: "Blog",            icon: "file" },
     ],
   },
   {

@@ -56,7 +56,7 @@ export default async function CheckoutPage() {
           <div className="mt-10 p-5 border-2 border-dashed border-ink/30 bg-cream/40">
             <div className="text-[11px] tracking-[0.22em] uppercase font-bold text-ink/70">Faster way</div>
             <div className="mt-2 font-display font-bold uppercase text-lg tracking-tight">Express payment options at next step</div>
-            <p className="text-sm text-ink/65 mt-2">Pay in seconds with Apple Pay, Google Pay, or PayPal once you reach the Mollie checkout. Pay later with Klarna interest-free.</p>
+            <p className="text-sm text-ink/65 mt-2">Pay in seconds with Apple Pay, Google Pay, or card on the secure Stripe checkout. Pay later with Klarna interest-free.</p>
           </div>
         </section>
 
@@ -103,7 +103,7 @@ export default async function CheckoutPage() {
             {/* Reassurance */}
             <ul className="mt-5 space-y-2.5 text-[12px] tracking-[0.04em]">
               {[
-                "Secure payment via Mollie · PCI-DSS",
+                "Secure payment via Stripe · PCI-DSS",
                 "30-day free UK returns",
                 "Authenticated in-house",
               ].map((s) => (

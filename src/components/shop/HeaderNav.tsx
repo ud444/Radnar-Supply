@@ -14,6 +14,12 @@ const TOP_NAV = [
   { slug: "fragrance",   label: "Fragrance" },
 ];
 
+const SELECT_NAV = [
+  { href: "/sourcing",              label: "Personal Shopping" },
+  { href: "/sourcing",              label: "Sourcing Requests" },
+  { href: "/sourcing?type=private", label: "RADNAR Private" },
+];
+
 export function HeaderNav({
   categories, brands, featured, cartCount, signedIn,
 }: {
@@ -117,8 +123,19 @@ export function HeaderNav({
                 <input name="q" placeholder="Search…" className="w-full bg-cream border-2 border-ink/20 pl-10 pr-3 py-3 text-sm focus:outline-none focus:border-ink" />
               </form>
 
-              {/* Categories */}
-              <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 mb-3">Shop</div>
+              {/* Radnar Select — sourcing / personal shopping */}
+              <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-accent mb-3">Radnar Select</div>
+              <nav className="space-y-1">
+                {SELECT_NAV.map((s) => (
+                  <Link key={s.label} href={s.href} onClick={close}
+                    className="flex items-center justify-between font-display font-black text-3xl uppercase tracking-tight py-2.5 hover:text-accent">
+                    {s.label} <Arrow />
+                  </Link>
+                ))}
+              </nav>
+
+              {/* Shop */}
+              <div className="mt-8 text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 mb-3">Shop</div>
               <nav className="space-y-1">
                 <Link href="/shop" onClick={close}
                   className="flex items-center justify-between font-display font-black text-3xl uppercase tracking-tight py-2.5 hover:text-accent">

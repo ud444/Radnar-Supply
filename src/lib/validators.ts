@@ -11,6 +11,18 @@ export const shippingAddressSchema = z.object({
   phone: z.string().optional(),
 });
 
+export const sourcingRequestSchema = z.object({
+  type: z.enum(["STANDARD", "PRIVATE"]).default("STANDARD"),
+  name: z.string().min(2, "Your name is required"),
+  email: z.string().email("A valid email is required"),
+  phone: z.string().optional(),
+  item: z.string().min(3, "Tell us what you're looking for"),
+  size: z.string().optional(),
+  budget: z.string().optional(),
+  detail: z.string().optional(),
+  imageUrls: z.string().default("[]"), // JSON array string from the upload widget
+});
+
 export const productSchema = z.object({
   name: z.string().min(2),
   slug: z.string().min(2).regex(/^[a-z0-9-]+$/, "Slug must be lowercase letters, numbers, hyphens"),

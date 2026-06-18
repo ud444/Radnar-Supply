@@ -107,7 +107,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
             <div className="card-frame mt-4">
               <div className="eyebrow-lead">Payment</div>
               <div className="text-sm mt-3"><span className="text-ink/65">Method</span> · {order.paymentMethod ?? "—"}</div>
-              <div className="text-[11px] text-ink/55 mt-1 font-mono break-all">{order.molliePaymentId ?? "—"}</div>
+              <div className="text-[11px] text-ink/55 mt-1 font-mono break-all">{order.stripePaymentIntentId ?? order.stripeSessionId ?? "—"}</div>
             </div>
 
             <a href={`mailto:hello@radnarsupply.com?subject=Order%20${encodeURIComponent(order.number)}`}

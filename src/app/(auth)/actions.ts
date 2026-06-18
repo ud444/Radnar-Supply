@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { signIn, signUp, createPasswordResetToken, consumePasswordResetToken } from "@/lib/auth";
 import { destroySession } from "@/lib/session";
 import { sendPasswordReset, sendWelcome } from "@/lib/email";
-import { siteUrl } from "@/lib/mollie";
+import { siteUrl } from "@/lib/url";
 
 export type FormState = { error?: string } | null;
 

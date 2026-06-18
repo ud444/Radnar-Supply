@@ -74,7 +74,7 @@ export default async function CartPage() {
             {[
               { h: "Verified Designer", p: "Authenticated in-house before dispatch." },
               { h: "Free UK Returns",   p: "30 days. Free pre-paid label by email." },
-              { h: "Secure Checkout",   p: "Cards, Klarna, Apple Pay, PayPal via Mollie." },
+              { h: "Secure Checkout",   p: "Cards, Klarna, Apple Pay & Google Pay via Stripe." },
             ].map((t) => (
               <div key={t.h}>
                 <div className="num-mark mb-2">·</div>

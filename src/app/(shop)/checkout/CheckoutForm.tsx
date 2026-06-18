@@ -60,7 +60,7 @@ export function CheckoutForm({ defaultEmail, defaultName }: { defaultEmail: stri
       {state && !state.ok ? <div className="field-error tracking-[0.06em] uppercase font-bold">{state.error}</div> : null}
 
       <p className="text-[11px] text-ink/55 leading-relaxed">
-        By placing your order you agree to our Terms of Sale and Privacy Policy. Payment is handled securely by Mollie — Radnar Supply never sees your card details.
+        By placing your order you agree to our Terms of Sale and Privacy Policy. Payment is handled securely by Stripe — Radnar Supply never sees your card details.
       </p>
     </form>
   );

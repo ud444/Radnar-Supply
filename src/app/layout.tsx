@@ -20,8 +20,8 @@ const sans = Inter_Tight({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://radnarsupply.com"),
-  title: { default: "RADNAR SUPPLY — Verified Designer. Always Below Retail.", template: "%s · Radnar Supply" },
-  description: "Hand-picked designer apparel, footwear, accessories, and fragrance. Verified. Always below retail. Birmingham, UK.",
+  title: { default: "RADNAR SUPPLY — Source. Supply. Personal Shop.", template: "%s · Radnar Supply" },
+  description: "Premium fashion, footwear, fragrance and luxury goods — buy in-stock or have it sourced for you. UK sourcing & supply with a personal shopping service.",
   openGraph: { type: "website", siteName: "Radnar Supply" },
 };
 

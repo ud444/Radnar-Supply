@@ -42,7 +42,8 @@ export async function GET(req: Request) {
         phone: o.shipPhone,
       },
       paymentMethod: o.paymentMethod,
-      molliePaymentId: o.molliePaymentId,
+      stripeSessionId: o.stripeSessionId,
+      stripePaymentIntentId: o.stripePaymentIntentId,
       items: o.items.map((i) => ({
         sku: i.variant?.sku,
         variantId: i.variantId,

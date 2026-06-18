@@ -12,7 +12,7 @@ export default async function AdminHome() {
   const since30 = new Date(now.getTime() - 1000 * 60 * 60 * 24 * 30);
   const since60 = new Date(now.getTime() - 1000 * 60 * 60 * 24 * 60);
 
-  const [paid30, paidPrev, orders30, ordersPrev, productCount, customerCount, recent, top, paidOrders30] = await Promise.all([
+  const [paid30, paidPrev, orders30, ordersPrev, productCount, customerCount, recent, top, paidOrders30, newRequests] = await Promise.all([
     db.order.aggregate({ where: { paymentStatus: "PAID", createdAt: { gte: since30 } }, _sum: { totalCents: true } }),
     db.order.aggregate({ where: { paymentStatus: "PAID", createdAt: { gte: since60, lt: since30 } }, _sum: { totalCents: true } }),
     db.order.count({ where: { createdAt: { gte: since30 } } }),
@@ -31,6 +31,7 @@ export default async function AdminHome() {
       where: { paymentStatus: "PAID", createdAt: { gte: since30 } },
       select: { totalCents: true, createdAt: true },
     }),
+    db.sourcingRequest.count({ where: { status: "NEW" } }),
   ]);
 
   // Build 30-day sparkline buckets
@@ -63,6 +64,16 @@ export default async function AdminHome() {
           <Icon.plus /> New Product
         </Link>
       </div>
+
+      {newRequests > 0 ? (
+        <Link href="/admin/requests?status=NEW" className="mt-6 flex items-center justify-between gap-4 bg-ink text-paper px-5 py-4 hover:bg-accent transition-colors">
+          <span className="text-sm font-medium">
+            <span className="font-display font-black text-xl mr-2">{newRequests}</span>
+            new sourcing {newRequests === 1 ? "request" : "requests"} awaiting review
+          </span>
+          <span className="text-[11px] tracking-[0.22em] uppercase font-bold">Review →</span>
+        </Link>
+      ) : null}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
         {stats.map((s, i) => (

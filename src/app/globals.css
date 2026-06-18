@@ -40,6 +40,15 @@ header, main, footer { position: relative; z-index: 2; }
   100% { transform: translate3d(-50%, 0, 0); }
 }
 
+.badge-spin { animation: badge-spin 22s linear infinite; transform-origin: 50% 50%; }
+@keyframes badge-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .badge-spin { animation: none; }
+}
+
 .rule-eyebrow {
   display: inline-flex; align-items: center; gap: 10px;
   font-family: var(--font-sans);

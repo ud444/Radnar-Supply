@@ -1,12 +1,27 @@
 import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { IMG } from "@/lib/images";
+import { CircularBadge } from "@/components/shop/CircularBadge";
+import { getHomeContent, getHomeMedia, categoryImage } from "@/lib/content";
+
+// Render a title string that may contain newlines, accenting the final line.
+function MultilineTitle({ value }: { value: string }) {
+  const lines = value.split("\n");
+  return (
+    <>
+      {lines.map((line, i) => (
+        <span key={i} className={i === lines.length - 1 && lines.length > 1 ? "block text-accent" : "block"}>
+          {line}
+        </span>
+      ))}
+    </>
+  );
+}
 
 export default async function Home() {
-  const [featured, newest, categories, brands] = await Promise.all([
+  const [featured, newest, categories, brands, content, media] = await Promise.all([
     db.product.findMany({
-      where: { active: true, featured: true }, take: 8,
+      where: { active: true, featured: true }, take: 4,
       include: { brand: true, images: { orderBy: { position: "asc" }, take: 2 } },
     }),
     db.product.findMany({
@@ -15,6 +30,8 @@ export default async function Home() {
     }),
     db.category.findMany({ orderBy: { name: "asc" } }),
     db.brand.findMany({ orderBy: { name: "asc" } }),
+    getHomeContent(),
+    getHomeMedia(),
   ]);
 
   return (
@@ -24,22 +41,20 @@ export default async function Home() {
         <div className="max-w-[1400px] mx-auto px-5 md:px-8 pt-10 md:pt-16 pb-20 md:pb-24 grid md:grid-cols-12 gap-10 items-stretch">
           <div className="md:col-span-7 flex flex-col justify-between gap-10">
             <div>
-              <div className="rule-eyebrow">AW26 · New Drop</div>
-              <h1 className="display-tight font-display font-black text-[18vw] md:text-[10.5vw] uppercase mt-6">
-                Below<br/>
-                <span className="text-accent">Retail.</span><br/>
-                <span className="block">Always.</span>
+              <div className="rule-eyebrow">{content.heroEyebrow}</div>
+              <h1 className="display-tight font-display font-black text-[15vw] md:text-[8.5vw] uppercase mt-6">
+                <MultilineTitle value={content.heroTitle} />
               </h1>
               <p className="mt-8 max-w-md text-[15px] leading-relaxed text-ink/75">
-                Hand-picked apparel, footwear, fragrance and accessories from the houses you actually wear — without the markup. Verified, authenticated, shipped from Birmingham.
+                {content.heroBody}
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Link href="/shop" className="bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
-                Shop The Drop →
+              <Link href={content.heroPrimaryHref} className="bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
+                {content.heroPrimaryLabel} →
               </Link>
-              <Link href="/about" className="border-2 border-ink text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-colors">
-                Our Story
+              <Link href={content.heroSecondaryHref} className="border-2 border-ink text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-colors">
+                {content.heroSecondaryLabel}
               </Link>
             </div>
           </div>
@@ -47,9 +62,9 @@ export default async function Home() {
           <div className="md:col-span-5 relative">
             <div className="aspect-[4/5] bg-cream overflow-hidden relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={IMG.hero} alt="" className="w-full h-full object-cover" />
-              <div className="absolute top-4 left-4 bg-paper text-ink px-3 py-1.5 text-[10px] tracking-[0.22em] uppercase font-bold">
-                AW26 — Look 01
+              <img src={media.hero} alt="" className="w-full h-full object-cover" />
+              <div className="absolute -bottom-6 -left-6 md:bottom-auto md:top-4 md:-left-10 bg-paper text-ink w-[120px] h-[120px] grid place-items-center border border-ink/15">
+                <CircularBadge size={108} />
               </div>
             </div>
           </div>
@@ -69,17 +84,39 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* PERSONAL SHOPPING */}
+      <section className="bg-ink text-paper">
+        <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-10 items-center">
+          <div className="md:col-span-7">
+            <div className="rule-eyebrow text-paper">{content.personalEyebrow}</div>
+            <h2 className="mt-4 font-display font-black text-5xl md:text-7xl uppercase display-tight">
+              <MultilineTitle value={content.personalTitle} />
+            </h2>
+            <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-paper/75">
+              {content.personalBody}
+            </p>
+            <Link href="/sourcing" className="inline-block mt-8 bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-colors">
+              {content.personalCtaLabel} →
+            </Link>
+          </div>
+          <div className="md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={media.personal} alt="" className="w-full h-full object-cover" />
+          </div>
+        </div>
+      </section>
+
       {/* CATEGORY GRID */}
       <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-24">
-        <div className="rule-eyebrow mb-3">Shop By Category</div>
+        <div className="rule-eyebrow mb-3">Shop The Stock</div>
         <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight">
-          Find your<br/>fit.
+          Shop by<br/>category.
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-10">
-          {categories.map((c, i) => (
+          {categories.map((c) => (
             <Link key={c.id} href={`/shop?category=${c.slug}`} className="relative aspect-[4/5] overflow-hidden group bg-cream">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={(IMG.category as Record<string, string>)[c.slug] ?? IMG.heroAlt} alt={c.name} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
+              <img src={categoryImage(media, c.slug)} alt={c.name} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/15 to-transparent" />
               <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between text-paper">
                 <div className="font-display font-black text-3xl md:text-4xl uppercase display-tight">{c.name}</div>
@@ -90,11 +127,11 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* FEATURED */}
+      {/* FEATURED — single product rail */}
       <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28">
         <div className="flex items-end justify-between mb-8 gap-6 flex-wrap">
           <div>
-            <div className="rule-eyebrow mb-3">Most Wanted</div>
+            <div className="rule-eyebrow mb-3">In Stock Now</div>
             <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight">
               Best sellers.
             </h2>
@@ -106,31 +143,32 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* EDITORIAL */}
-      <section className="mt-32 bg-ink text-paper">
+      {/* RADNAR PRIVATE — luxury division */}
+      <section className="mt-28 border-y border-ink/15 bg-cream">
         <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10">
+          <div className="md:col-span-5 relative aspect-[5/6] overflow-hidden bg-ink/5 order-2 md:order-1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={IMG.editorial} alt="" className="w-full h-full object-cover" />
+            <img src={media.private} alt="" className="w-full h-full object-cover" />
+            <div className="absolute top-4 right-4 bg-ink text-paper px-3 py-1.5 text-[10px] tracking-[0.22em] uppercase font-bold">
+              Enquiry Only
+            </div>
           </div>
-          <div className="md:col-span-7">
-            <div className="rule-eyebrow text-paper">Why Radnar</div>
+          <div className="md:col-span-7 order-1 md:order-2">
+            <div className="rule-eyebrow">{content.privateEyebrow}</div>
             <h2 className="mt-4 font-display font-black text-5xl md:text-7xl uppercase display-tight">
-              No drop hype.<br/>
-              <span className="text-accent">No middlemen.</span><br/>
-              Just product.
+              <MultilineTitle value={content.privateTitle} />
             </h2>
-            <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-paper/75">
-              We negotiate stock directly with verified sources, authenticate every item in-house, and pass the saving on. Birmingham-built. Daily shipping. Designer prices, dismantled.
+            <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-ink/75">
+              {content.privateBody}
             </p>
-            <Link href="/about" className="inline-block mt-8 bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-colors">
-              Read The Manifesto →
+            <Link href="/sourcing?type=private" className="inline-block mt-8 bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
+              {content.privateCtaLabel} →
             </Link>
           </div>
         </div>
       </section>
 
-      {/* NEW IN */}
+      {/* NEW IN — secondary product rail */}
       <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28">
         <div className="flex items-end justify-between mb-8 gap-6 flex-wrap">
           <div>
@@ -144,19 +182,21 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* TRUST STRIP */}
-      <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28 grid grid-cols-1 md:grid-cols-3 gap-0 border border-ink">
-        {[
-          { n: "01", h: "Verified Designer", p: "Every piece authenticated in-house before it ships. No exceptions." },
-          { n: "02", h: "Always Below Retail", p: "Negotiated stock, no middlemen — the saving goes to you, not the markup." },
-          { n: "03", h: "Pay Your Way",       p: "Cards, Klarna, Apple Pay, PayPal. All at checkout." },
-        ].map((t, i) => (
-          <div key={t.h} className={`p-8 md:p-10 ${i < 2 ? "md:border-r" : ""} border-ink`}>
-            <div className="font-display font-black text-5xl text-accent">{t.n}</div>
-            <div className="font-display font-black text-2xl uppercase mt-4 tracking-tight">{t.h}</div>
-            <div className="text-sm text-ink/75 mt-2 leading-relaxed">{t.p}</div>
-          </div>
-        ))}
+      {/* WHY RADNAR — trust */}
+      <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28 mb-4">
+        <div className="rule-eyebrow mb-3">Why Radnar</div>
+        <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight mb-10">
+          {content.whyTitle}
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-0 border border-ink">
+          {content.whyItems.map((t, i) => (
+            <div key={t.h} className={`p-6 md:p-7 border-ink ${i < content.whyItems.length - 1 ? "border-b sm:border-b lg:border-b-0 lg:border-r" : ""}`}>
+              <div className="font-display font-black text-3xl text-accent">{String(i + 1).padStart(2, "0")}</div>
+              <div className="font-display font-black text-lg uppercase mt-3 tracking-tight leading-tight">{t.h}</div>
+              <div className="text-[13px] text-ink/75 mt-2 leading-relaxed">{t.p}</div>
+            </div>
+          ))}
+        </div>
       </section>
     </>
   );
