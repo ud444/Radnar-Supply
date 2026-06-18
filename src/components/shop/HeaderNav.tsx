@@ -15,9 +15,7 @@ const TOP_NAV = [
 ];
 
 const SELECT_NAV = [
-  { href: "/sourcing",              label: "Personal Shopping" },
-  { href: "/sourcing",              label: "Sourcing Requests" },
-  { href: "/sourcing?type=private", label: "RADNAR Private" },
+  { href: "/sourcing", label: "Personal Shopping" },
 ];
 
 export function HeaderNav({
