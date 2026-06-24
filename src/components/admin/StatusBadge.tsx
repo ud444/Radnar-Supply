@@ -10,6 +10,7 @@ export function StatusBadge({ value }: { value: string }) {
     // Sourcing request statuses
     NEW:         "bg-accent/15 text-accent border-accent/40",
     IN_PROGRESS: "bg-blue-100 text-blue-800 border-blue-300",
+    QUOTED:      "bg-amber-100 text-amber-800 border-amber-300",
     SOURCED:     "bg-green-100 text-green-800 border-green-300",
     CLOSED:      "bg-cream text-ink/65 border-ink/20",
   };

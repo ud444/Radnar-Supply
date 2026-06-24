@@ -32,6 +32,43 @@ export async function sendShippingUpdate(orderId: string, trackingUrl?: string) 
   return send(o.email, `Your order is on its way · ${o.number}`, html);
 }
 
+export async function sendRefundConfirmation(orderId: string, amountCents: number) {
+  const o = await db.order.findUniqueOrThrow({ where: { id: orderId } });
+  const amount = `£${(amountCents / 100).toFixed(2)}`;
+  const html = `
+  <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto">
+    <div style="background:#0A0A0A;color:#fff;padding:18px 22px;font-weight:800;letter-spacing:1px;text-transform:uppercase">Refund Processed</div>
+    <div style="border:1px solid #eee;border-top:none;padding:22px;color:#0A0A0A;font-size:15px;line-height:1.6">
+      <p>We've processed a refund of <strong>${amount}</strong> for order <strong>${o.number}</strong>.</p>
+      <p>It can take 5–10 working days to appear on your statement, depending on your bank.</p>
+      <p style="margin-top:22px">— Radnar Supply</p>
+    </div>
+  </div>`;
+  return send(o.email, `Refund processed · ${o.number}`, html);
+}
+
+/** Send the customer a price + a pay-now link for a sourced item. */
+export async function sendSourcingQuote(args: {
+  to: string; name: string; item: string; amountCents: number; detail?: string | null; payUrl: string;
+}) {
+  const amount = `£${(args.amountCents / 100).toFixed(2)}`;
+  const html = `
+  <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto">
+    <div style="background:#0A0A0A;color:#fff;padding:18px 22px;font-weight:800;letter-spacing:1px;text-transform:uppercase">We Found It</div>
+    <div style="border:1px solid #eee;border-top:none;padding:22px;color:#0A0A0A;font-size:15px;line-height:1.6">
+      <p>Hi ${args.name},</p>
+      <p>Good news — we've sourced your request:</p>
+      <p style="padding:12px 14px;background:#F4F1EA;font-weight:600">${args.detail || args.item}</p>
+      <p style="font-size:22px;font-weight:800;margin:18px 0 6px">${amount}</p>
+      <p style="color:#888;font-size:13px;margin-top:0">Includes sourcing. Secure checkout via Stripe.</p>
+      <a href="${args.payUrl}" style="display:inline-block;margin-top:14px;background:#FF4D00;color:#fff;padding:14px 26px;font-weight:800;letter-spacing:1px;text-transform:uppercase;text-decoration:none">Pay Now →</a>
+      <p style="margin-top:22px;color:#888;font-size:13px">No obligation — this link simply reserves the item once paid. Reply to this email with any questions.</p>
+      <p style="margin-top:18px">— Radnar Supply</p>
+    </div>
+  </div>`;
+  return send(args.to, "We found it — your Radnar Supply quote", html);
+}
+
 export async function sendPasswordReset(to: string, link: string) {
   const html = await render(PasswordReset({ link }));
   return send(to, "Reset your Radnar Supply password", html);

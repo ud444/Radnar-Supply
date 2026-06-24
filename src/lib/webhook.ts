@@ -7,6 +7,7 @@ export type WebhookEvent =
   | "order.shipped"
   | "order.delivered"
   | "order.cancelled"
+  | "order.refunded"
   | "product.created"
   | "product.updated"
   | "product.deleted"

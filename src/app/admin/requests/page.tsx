@@ -27,6 +27,7 @@ export default async function RequestsPage({
     { label: "All", href: "/admin/requests" },
     { label: "New", href: "/admin/requests?status=NEW" },
     { label: "In progress", href: "/admin/requests?status=IN_PROGRESS" },
+    { label: "Quoted", href: "/admin/requests?status=QUOTED" },
     { label: "Sourced", href: "/admin/requests?status=SOURCED" },
     { label: "Private", href: "/admin/requests?type=PRIVATE" },
   ];
