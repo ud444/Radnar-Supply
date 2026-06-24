@@ -119,9 +119,12 @@ export default async function Home() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={categoryImage(media, c.slug)} alt={c.name} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/15 to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4 md:bottom-5 md:left-5 md:right-5 flex items-end justify-between gap-2 text-paper">
-                <div className="font-display font-black text-2xl md:text-4xl uppercase display-tight min-w-0 break-words">{c.name}</div>
-                <div className="text-[10px] tracking-[0.22em] uppercase font-bold opacity-90 group-hover:text-accent transition-colors shrink-0 whitespace-nowrap pb-0.5">Shop →</div>
+              <div className="absolute inset-x-4 bottom-4 md:inset-x-5 md:bottom-5 text-paper">
+                {/* Fluid size keeps even the longest names (ACCESSORIES) on one line in the 2-up mobile grid */}
+                <div className="font-display font-black uppercase display-tight whitespace-nowrap leading-[0.9] text-[clamp(0.95rem,4.4vw,1.55rem)] md:text-[clamp(1.5rem,2.4vw,2.25rem)]">
+                  {c.name}
+                </div>
+                <div className="mt-1.5 text-[10px] tracking-[0.22em] uppercase font-bold opacity-90 group-hover:text-accent transition-colors">Shop →</div>
               </div>
             </Link>
           ))}

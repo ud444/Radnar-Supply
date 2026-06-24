@@ -18,11 +18,11 @@ export default async function SourcingPage({
 
   return (
     <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-10 md:py-14">
-      <div className="grid md:grid-cols-12 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
         {/* Left — pitch */}
-        <div className="md:col-span-5">
+        <div className="md:col-span-5 min-w-0">
           <div className="rule-eyebrow">{isPrivate ? "Radnar Private" : "Personal Shopping"}</div>
-          <h1 className="mt-6 font-display font-black text-5xl md:text-7xl uppercase display-tight">
+          <h1 className="mt-6 font-display font-black text-[13vw] sm:text-5xl md:text-7xl uppercase display-tight break-words">
             {isPrivate ? (
               <>Sourced<br />discreetly.</>
             ) : (
@@ -53,8 +53,8 @@ export default async function SourcingPage({
         </div>
 
         {/* Right — form */}
-        <div className="md:col-span-7">
-          <div className="card-frame">
+        <div className="md:col-span-7 min-w-0">
+          <div className="card-frame max-w-full overflow-hidden">
             <SourcingForm type={type} />
           </div>
         </div>
