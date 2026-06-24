@@ -16,6 +16,18 @@ const TOP_NAV = [
 
 const SELECT_NAV = [
   { href: "/sourcing", label: "Personal Shopping" },
+  { href: "/sourcing?type=private", label: "Radnar Private" },
+];
+
+// Clothing sub-categories — revealed in an accordion under the Clothing row.
+// Each links into the shop filtered to clothing + a keyword.
+const CLOTHING_SUBS = [
+  { label: "T-Shirts", q: "t-shirt" },
+  { label: "Hoodies",  q: "hoodie"  },
+  { label: "Jackets",  q: "jacket"  },
+  { label: "Knitwear", q: "knit"    },
+  { label: "Shirts",   q: "shirt"   },
+  { label: "Trousers", q: "trouser" },
 ];
 
 export function HeaderNav({
@@ -26,6 +38,7 @@ export function HeaderNav({
 }) {
   const [drawer, setDrawer] = useState(false);
   const [search, setSearch] = useState(false);
+  const [clothingOpen, setClothingOpen] = useState(false);
   const router = useRouter();
 
   // Body scroll lock when drawer is open
@@ -139,12 +152,39 @@ export function HeaderNav({
                   className="flex items-center justify-between font-display font-black text-3xl uppercase tracking-tight py-2.5 hover:text-accent">
                   Shop All <Arrow />
                 </Link>
-                {TOP_NAV.map((c) => (
-                  <Link key={c.slug} href={`/shop?category=${c.slug}`} onClick={close}
-                    className="flex items-center justify-between font-display font-black text-3xl uppercase tracking-tight py-2.5 hover:text-accent">
-                    {c.label} <Arrow />
-                  </Link>
-                ))}
+                {TOP_NAV.map((c) =>
+                  c.slug === "clothing" ? (
+                    <div key={c.slug}>
+                      <button
+                        type="button"
+                        onClick={() => setClothingOpen((o) => !o)}
+                        aria-expanded={clothingOpen}
+                        className="w-full flex items-center justify-between font-display font-black text-3xl uppercase tracking-tight py-2.5 hover:text-accent"
+                      >
+                        {c.label} <Chevron open={clothingOpen} />
+                      </button>
+                      <div className={`overflow-hidden transition-all duration-300 ${clothingOpen ? "max-h-[420px] opacity-100" : "max-h-0 opacity-0"}`}>
+                        <div className="pl-1 pb-2 pt-1 space-y-0.5 border-l-2 border-ink/10 ml-1">
+                          <Link href="/shop?category=clothing" onClick={close}
+                            className="flex items-center justify-between pl-4 py-2 text-[11px] tracking-[0.22em] uppercase font-bold text-ink/55 hover:text-accent">
+                            All Clothing <Arrow />
+                          </Link>
+                          {CLOTHING_SUBS.map((s) => (
+                            <Link key={s.label} href={`/shop?category=clothing&q=${s.q}`} onClick={close}
+                              className="flex items-center justify-between pl-4 py-2 text-base font-semibold tracking-tight hover:text-accent">
+                              {s.label} <Arrow />
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <Link key={c.slug} href={`/shop?category=${c.slug}`} onClick={close}
+                      className="flex items-center justify-between font-display font-black text-3xl uppercase tracking-tight py-2.5 hover:text-accent">
+                      {c.label} <Arrow />
+                    </Link>
+                  )
+                )}
               </nav>
 
               {/* Brands */}
@@ -207,4 +247,12 @@ function CloseIcon() {
 }
 function Arrow() {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="opacity-50"><path d="M5 12h14M13 6l6 6-6 6" /></svg>;
+}
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"
+      className={`opacity-60 transition-transform duration-300 ${open ? "rotate-180" : ""}`}>
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
 }

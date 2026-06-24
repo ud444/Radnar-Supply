@@ -63,9 +63,10 @@ export default async function Home() {
             <div className="aspect-[4/5] bg-cream overflow-hidden relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={media.hero} alt="" className="w-full h-full object-cover" />
-              <div className="absolute bottom-3 right-3 md:bottom-auto md:top-4 md:-left-10 md:right-auto bg-paper text-ink w-[84px] h-[84px] md:w-[120px] md:h-[120px] grid place-items-center border border-ink/15">
-                <CircularBadge fill className="p-2" />
-              </div>
+            </div>
+            {/* Badge sits outside the overflow-hidden frame so the desktop -left offset isn't clipped */}
+            <div className="absolute z-10 bottom-3 right-3 md:bottom-auto md:top-4 md:-left-10 md:right-auto bg-paper text-ink w-[84px] h-[84px] md:w-[120px] md:h-[120px] grid place-items-center border border-ink/15 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+              <CircularBadge fill className="p-2" />
             </div>
           </div>
         </div>
@@ -118,9 +119,9 @@ export default async function Home() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={categoryImage(media, c.slug)} alt={c.name} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/15 to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between text-paper">
-                <div className="font-display font-black text-3xl md:text-4xl uppercase display-tight">{c.name}</div>
-                <div className="text-[10px] tracking-[0.22em] uppercase font-bold opacity-90 group-hover:text-accent transition-colors">Shop →</div>
+              <div className="absolute bottom-4 left-4 right-4 md:bottom-5 md:left-5 md:right-5 flex items-end justify-between gap-2 text-paper">
+                <div className="font-display font-black text-2xl md:text-4xl uppercase display-tight min-w-0 break-words">{c.name}</div>
+                <div className="text-[10px] tracking-[0.22em] uppercase font-bold opacity-90 group-hover:text-accent transition-colors shrink-0 whitespace-nowrap pb-0.5">Shop →</div>
               </div>
             </Link>
           ))}
