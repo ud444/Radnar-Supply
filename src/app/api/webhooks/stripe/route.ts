@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { db } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { sendOrderConfirmation } from "@/lib/email";
+import { sendOrderConfirmation, sendNewOrderAdmin } from "@/lib/email";
 import { dispatchWebhook } from "@/lib/webhook";
 
 // Stripe needs the raw, unparsed body to verify the signature.
@@ -66,6 +66,7 @@ export async function POST(req: Request) {
       });
 
       try { await sendOrderConfirmation(order.id); } catch (e) { console.error("email", e); }
+      try { await sendNewOrderAdmin(order.id); } catch (e) { console.error("admin order email", e); }
       dispatchWebhook("order.paid", {
         id: order.id, number: order.number, email: order.email,
         totalCents: order.totalCents, currency: order.currency,

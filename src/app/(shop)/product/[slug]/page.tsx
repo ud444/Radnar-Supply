@@ -93,6 +93,7 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
             allOOS={allSizesOOS}
             productName={product.name}
             price={money(product.priceCents)}
+            productId={product.id}
           />
 
           {/* Reassurance bullets */}

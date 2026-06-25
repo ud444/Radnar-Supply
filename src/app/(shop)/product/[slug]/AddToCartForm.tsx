@@ -3,15 +3,27 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { addToCartAction } from "@/app/(shop)/cart/actions";
+import { subscribeBackInStock } from "./actions";
 
 type Variant = { id: string; size: string; stock: number };
 
-export function AddToCartForm({ variants, allOOS, productName, price }: { variants: Variant[]; allOOS: boolean; productName: string; price: string }) {
+export function AddToCartForm({ variants, allOOS, productName, price, productId }: { variants: Variant[]; allOOS: boolean; productName: string; price: string; productId: string }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const [added, setAdded] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  const [notify, setNotify] = useState<{ pending: boolean; done: boolean; err: string | null }>({ pending: false, done: false, err: null });
   const router = useRouter();
+
+  const submitNotify = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const email = String(new FormData(e.currentTarget).get("email") || "");
+    setNotify({ pending: true, done: false, err: null });
+    start(async () => {
+      const res = await subscribeBackInStock(productId, email);
+      setNotify({ pending: false, done: res.ok, err: res.ok ? null : (res.error ?? "Something went wrong") });
+    });
+  };
 
   const add = () => {
     if (!selected) { setMsg({ kind: "err", text: "Pick a size first" }); return; }
@@ -33,14 +45,21 @@ export function AddToCartForm({ variants, allOOS, productName, price }: { varian
 
   if (allOOS) {
     return (
-      <div className="mt-8 border-2 border-ink p-6">
+      <div className="mt-8 card-frame">
         <div className="eyebrow-lead">Sold Out</div>
         <h3 className="mt-2 font-display font-black uppercase text-2xl tracking-tight">All sizes gone.</h3>
-        <p className="text-sm text-ink/65 mt-2">Drop your email and we'll let you know if {productName} comes back.</p>
-        <form className="mt-4 flex flex-col sm:flex-row gap-2">
-          <input type="email" required placeholder="Your email" className="flex-1 bg-bone border-2 border-ink px-3 py-2.5 text-base focus:outline-none" />
-          <button className="btn">Notify me</button>
-        </form>
+        {notify.done ? (
+          <p className="text-sm text-accent font-bold mt-3 tracking-[0.04em]">✓ You're on the list — we'll email you the moment {productName} is back.</p>
+        ) : (
+          <>
+            <p className="text-sm text-ink/65 mt-2">Drop your email and we&apos;ll let you know if {productName} comes back.</p>
+            <form onSubmit={submitNotify} className="mt-4 flex flex-col sm:flex-row gap-2">
+              <input name="email" type="email" required placeholder="Your email" className="flex-1 bg-bone border border-ink/20 px-3 py-2.5 text-base focus:outline-none focus:border-ink rounded-[10px]" />
+              <button disabled={notify.pending} className="btn">{notify.pending ? "Adding…" : "Notify me"}</button>
+            </form>
+            {notify.err ? <div className="field-error mt-2">{notify.err}</div> : null}
+          </>
+        )}
       </div>
     );
   }

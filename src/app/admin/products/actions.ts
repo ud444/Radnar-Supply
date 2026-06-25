@@ -64,7 +64,12 @@ export async function deleteProduct(id: string) {
 
 export async function setVariantStock(variantId: string, stock: number) {
   await requireAdmin();
-  await db.variant.update({ where: { id: variantId }, data: { stock } });
+  const v = await db.variant.update({ where: { id: variantId }, data: { stock }, select: { productId: true } });
+  // Restocking a product fires back-in-stock emails to anyone waiting.
+  if (stock > 0) {
+    const { notifyBackInStock } = await import("@/lib/restock");
+    notifyBackInStock(v.productId).catch((e) => console.error("back-in-stock", e));
+  }
   revalidatePath("/admin/products");
 }
 

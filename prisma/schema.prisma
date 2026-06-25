@@ -124,11 +124,24 @@ model Product {
   category    Category       @relation(fields: [categoryId], references: [id])
   images      ProductImage[]
   variants    Variant[]
+  stockNotices StockNotice[]
   active      Boolean        @default(true)
   featured    Boolean        @default(false)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   @@index([brandId, categoryId, active])
+}
+
+// Back-in-stock: a shopper asks to be emailed when a sold-out product returns.
+model StockNotice {
+  id         String    @id @default(cuid())
+  email      String
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  String
+  createdAt  DateTime  @default(now())
+  notifiedAt DateTime?
+  @@unique([productId, email])
+  @@index([productId, notifiedAt])
 }
 
 model ProductImage {
