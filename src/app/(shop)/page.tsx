@@ -51,19 +51,19 @@ export default async function Home() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
-              <Link href={content.heroPrimaryHref} className="bg-ink text-paper px-7 py-4 text-center text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
+              <Link href={content.heroPrimaryHref} className="bg-ink text-paper px-7 py-4 text-center text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-all hover:-translate-y-0.5 active:translate-y-0">
                 {content.heroPrimaryLabel} →
               </Link>
-              <Link href={content.heroSecondaryHref} className="border-2 border-ink text-ink px-7 py-4 text-center text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-colors">
+              <Link href={content.heroSecondaryHref} className="border-2 border-ink text-ink px-7 py-4 text-center text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0">
                 {content.heroSecondaryLabel}
               </Link>
             </div>
           </div>
 
           <div className="md:col-span-5 relative">
-            <div className="aspect-[4/5] bg-cream overflow-hidden relative">
+            <div className="group aspect-[4/5] bg-cream overflow-hidden relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={media.hero} alt="" className="w-full h-full object-cover" />
+              <img src={media.hero} alt="" className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]" />
             </div>
             {/* Badge sits outside the overflow-hidden frame so the desktop -left offset isn't clipped */}
             <div className="absolute z-10 bottom-3 right-3 md:bottom-auto md:top-4 md:-left-10 md:right-auto bg-paper text-ink w-[84px] h-[84px] md:w-[120px] md:h-[120px] grid place-items-center border border-ink/15 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
@@ -89,7 +89,7 @@ export default async function Home() {
       {/* PERSONAL SHOPPING */}
       <section className="bg-ink text-paper">
         <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-7">
+          <Reveal className="md:col-span-7">
             <div className="rule-eyebrow text-paper">{content.personalEyebrow}</div>
             <h2 className="mt-4 font-display font-black text-5xl md:text-7xl uppercase display-tight">
               <MultilineTitle value={content.personalTitle} />
@@ -97,13 +97,13 @@ export default async function Home() {
             <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-paper/75">
               {content.personalBody}
             </p>
-            <Link href="/sourcing" className="inline-block mt-8 bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-colors">
+            <Link href="/sourcing" className="inline-block mt-8 bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0">
               {content.personalCtaLabel} →
             </Link>
-          </div>
-          <div className="md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10">
+          </Reveal>
+          <div className="group md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={media.personal} alt="" className="w-full h-full object-cover" />
+            <img src={media.personal} alt="" className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]" />
           </div>
         </div>
       </section>
@@ -133,7 +133,7 @@ export default async function Home() {
       </Reveal>
 
       {/* FEATURED — single product rail */}
-      <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28">
+      <Reveal as="section" className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28">
         <div className="flex items-end justify-between mb-8 gap-6 flex-wrap">
           <div>
             <div className="rule-eyebrow mb-3">In Stock Now</div>
@@ -146,19 +146,19 @@ export default async function Home() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-12">
           {featured.map((p) => <ProductCard key={p.id} {...p} />)}
         </div>
-      </section>
+      </Reveal>
 
       {/* RADNAR PRIVATE — luxury division */}
       <section className="mt-28 border-y border-ink/15 bg-cream">
         <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-5 relative aspect-[5/6] overflow-hidden bg-ink/5 order-2 md:order-1">
+          <div className="group md:col-span-5 relative aspect-[5/6] overflow-hidden bg-ink/5 order-2 md:order-1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={media.private} alt="" className="w-full h-full object-cover" />
+            <img src={media.private} alt="" className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]" />
             <div className="absolute top-4 right-4 bg-ink text-paper px-3 py-1.5 text-[10px] tracking-[0.22em] uppercase font-bold">
               Enquiry Only
             </div>
           </div>
-          <div className="md:col-span-7 order-1 md:order-2">
+          <Reveal className="md:col-span-7 order-1 md:order-2">
             <div className="rule-eyebrow">{content.privateEyebrow}</div>
             <h2 className="mt-4 font-display font-black text-5xl md:text-7xl uppercase display-tight">
               <MultilineTitle value={content.privateTitle} />
@@ -166,15 +166,15 @@ export default async function Home() {
             <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-ink/75">
               {content.privateBody}
             </p>
-            <Link href="/sourcing?type=private" className="inline-block mt-8 bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
+            <Link href="/sourcing?type=private" className="inline-block mt-8 bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-all hover:-translate-y-0.5 active:translate-y-0">
               {content.privateCtaLabel} →
             </Link>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* NEW IN — secondary product rail */}
-      <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28">
+      <Reveal as="section" className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28">
         <div className="flex items-end justify-between mb-8 gap-6 flex-wrap">
           <div>
             <div className="rule-eyebrow mb-3">Fresh Stock</div>
@@ -185,24 +185,24 @@ export default async function Home() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-12">
           {newest.map((p) => <ProductCard key={p.id} {...p} />)}
         </div>
-      </section>
+      </Reveal>
 
       {/* WHY RADNAR — trust */}
-      <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28 mb-4">
+      <Reveal as="section" className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28 mb-4">
         <div className="rule-eyebrow mb-3">Why Radnar</div>
         <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight mb-10">
           {content.whyTitle}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-0 border border-ink">
           {content.whyItems.map((t, i) => (
-            <div key={t.h} className={`p-6 md:p-7 border-ink ${i < content.whyItems.length - 1 ? "border-b sm:border-b lg:border-b-0 lg:border-r" : ""}`}>
+            <div key={t.h} className={`group p-6 md:p-7 border-ink transition-colors duration-300 hover:bg-ink ${i < content.whyItems.length - 1 ? "border-b sm:border-b lg:border-b-0 lg:border-r" : ""}`}>
               <div className="font-display font-black text-3xl text-accent">{String(i + 1).padStart(2, "0")}</div>
-              <div className="font-display font-black text-lg uppercase mt-3 tracking-tight leading-tight">{t.h}</div>
-              <div className="text-[13px] text-ink/75 mt-2 leading-relaxed">{t.p}</div>
+              <div className="font-display font-black text-lg uppercase mt-3 tracking-tight leading-tight group-hover:text-paper transition-colors">{t.h}</div>
+              <div className="text-[13px] text-ink/75 mt-2 leading-relaxed group-hover:text-paper/70 transition-colors">{t.p}</div>
             </div>
           ))}
         </div>
-      </section>
+      </Reveal>
     </>
   );
 }
