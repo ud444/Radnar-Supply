@@ -27,6 +27,7 @@ const SECTIONS: { label: string; items: { href: string; label: string; icon: key
     items: [
       { href: "/admin/content", label: "Content & Media", icon: "image" },
       { href: "/admin/blog",    label: "Blog",            icon: "file" },
+      { href: "/admin/broadcast", label: "Broadcast",     icon: "inbox" },
     ],
   },
   {

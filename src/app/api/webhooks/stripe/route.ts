@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { db } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { sendOrderConfirmation, sendNewOrderAdmin } from "@/lib/email";
+import { sendOrderConfirmation, sendNewOrderAdmin, sendOrderCancelled } from "@/lib/email";
 import { dispatchWebhook } from "@/lib/webhook";
 
 // Stripe needs the raw, unparsed body to verify the signature.
@@ -104,6 +104,7 @@ export async function POST(req: Request) {
         }
       });
       dispatchWebhook("order.cancelled", { id: order.id, number: order.number, reason: "payment_failed" });
+      try { await sendOrderCancelled(order.id); } catch (e) { console.error("cancel email", e); }
     }
     return NextResponse.json({ ok: true });
   }

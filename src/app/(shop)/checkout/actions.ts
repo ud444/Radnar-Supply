@@ -102,6 +102,7 @@ export async function placeOrder(_: unknown, formData: FormData): Promise<Checko
       mode: "payment",
       line_items: lineItems,
       customer_email: data.email,
+      allow_promotion_codes: true, // lets shoppers apply codes like RADNAR10 (create them in Stripe)
       client_reference_id: result.orderId,
       metadata: { orderId: result.orderId, number: result.number },
       payment_intent_data: { metadata: { orderId: result.orderId, number: result.number } },

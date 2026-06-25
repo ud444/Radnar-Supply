@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { render } from "@react-email/render";
 import { db } from "./prisma";
+import { siteUrl } from "./url";
 import OrderConfirmation from "../../emails/OrderConfirmation";
 import ShippingUpdate from "../../emails/ShippingUpdate";
 import PasswordReset from "../../emails/PasswordReset";
@@ -109,6 +110,82 @@ export async function sendSourcingQuote(args: {
     </div>
   </div>`;
   return send(args.to, "We found it — your Radnar Supply quote", html);
+}
+
+function shell(badge: string, inner: string) {
+  return `
+  <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto">
+    <div style="background:#0A0A0A;color:#fff;padding:18px 22px;font-weight:800;letter-spacing:1px;text-transform:uppercase">${badge}</div>
+    <div style="border:1px solid #eee;border-top:none;padding:22px;color:#0A0A0A;font-size:15px;line-height:1.6">${inner}</div>
+  </div>`;
+}
+function cta(href: string, label: string) {
+  return `<a href="${href}" style="display:inline-block;margin-top:14px;background:#FF4D00;color:#fff;padding:14px 26px;font-weight:800;letter-spacing:1px;text-transform:uppercase;text-decoration:none">${label}</a>`;
+}
+
+/** Order didn't complete (Stripe session expired / payment failed). */
+export async function sendOrderCancelled(orderId: string) {
+  const o = await db.order.findUniqueOrThrow({ where: { id: orderId } });
+  const url = `${siteUrl()}/shop`;
+  const html = shell("Order Not Completed", `
+    <p>Hi,</p>
+    <p>Your order <strong>${o.number}</strong> didn't go through — the payment wasn't completed, so nothing was charged and the items have been released back to stock.</p>
+    <p>Still want them? They may not last long.</p>
+    ${cta(url, "Shop Again →")}
+    <p style="margin-top:18px;color:#888;font-size:13px">If you think this is a mistake, just reply to this email.</p>`);
+  return send(o.email, `Your Radnar order didn't complete · ${o.number}`, html);
+}
+
+/** Delivered — thank-you + soft review/repeat nudge. */
+export async function sendDelivered(orderId: string) {
+  const o = await db.order.findUniqueOrThrow({ where: { id: orderId } });
+  const html = shell("Delivered", `
+    <p>Hi ${o.shipName?.split(" ")[0] || "there"},</p>
+    <p>Your order <strong>${o.number}</strong> should have landed. We hope it's everything you wanted.</p>
+    <p>Loved it? A quick review helps the next person — and tells us what to source more of. Got an issue? Reply here and we'll sort it.</p>
+    ${cta(`${siteUrl()}/shop?sort=newest`, "See What's New →")}
+    <p style="margin-top:18px">— Radnar Supply</p>`);
+  return send(o.email, `Enjoy it — ${o.number} delivered`, html);
+}
+
+/** Newsletter welcome + first-order code (enable promo codes in Stripe to honour it). */
+export async function sendNewsletterWelcome(to: string) {
+  const html = shell("You're On The List", `
+    <p>Welcome to Radnar Supply.</p>
+    <p>You'll get first access to new stock, sourcing drops and members-only releases before they go public.</p>
+    <p>Here's <strong>10% off</strong> your first order:</p>
+    <p style="font-family:monospace;font-size:22px;font-weight:800;letter-spacing:3px;background:#F4F1EA;padding:14px;text-align:center">RADNAR10</p>
+    ${cta(`${siteUrl()}/shop`, "Start Shopping →")}
+    <p style="margin-top:18px;color:#888;font-size:13px">Apply it at checkout. — Radnar Supply</p>`);
+  return send(to, "Welcome to Radnar Supply — 10% inside", html);
+}
+
+/** Abandoned checkout nudge (PENDING order left unpaid). */
+export async function sendAbandonedCart(orderId: string) {
+  const o = await db.order.findUniqueOrThrow({ where: { id: orderId }, include: { items: true } });
+  const lines = o.items
+    .map((i: { quantity: number; brandName: string; productName: string; size: string }) =>
+      `<li style="margin-bottom:4px">${i.quantity}× ${i.brandName} — ${i.productName} <span style="color:#888">(${i.size})</span></li>`).join("");
+  const html = shell("Still Thinking It Over?", `
+    <p>You left these in your bag:</p>
+    <ul style="padding-left:18px;margin:12px 0">${lines}</ul>
+    <p>Stock is limited and verified pieces move fast — finish up before they're gone.</p>
+    ${cta(`${siteUrl()}/checkout`, "Complete Checkout →")}
+    <p style="margin-top:18px;color:#888;font-size:13px">Questions before you buy? Just reply.</p>`);
+  return send(o.email, `Your bag's waiting · ${o.number}`, html);
+}
+
+/** Quote follow-up — sourced item quoted but not yet paid. */
+export async function sendQuoteFollowup(requestId: string) {
+  const rq = await db.sourcingRequest.findUniqueOrThrow({ where: { id: requestId } });
+  const amount = rq.quoteCents ? `£${(rq.quoteCents / 100).toFixed(2)}` : "your quote";
+  const html = shell("Still Want It?", `
+    <p>Hi ${rq.name},</p>
+    <p>Just following up on the piece we sourced for you${rq.quoteDetail ? ` — <strong>${rq.quoteDetail}</strong>` : ""}, quoted at <strong>${amount}</strong>.</p>
+    <p>It's still available, but we can't hold it indefinitely. Secure it here:</p>
+    ${rq.quoteUrl ? cta(rq.quoteUrl, "Pay Now →") : ""}
+    <p style="margin-top:18px;color:#888;font-size:13px">Changed your mind or need a tweak? Reply and let us know. — Radnar Supply</p>`);
+  return send(rq.email, "Still want it? — your Radnar quote", html);
 }
 
 export async function sendPasswordReset(to: string, link: string) {

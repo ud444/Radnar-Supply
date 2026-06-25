@@ -195,6 +195,7 @@ model Order {
   trackingNumber    String?
   trackingUrl       String?
   refundedCents     Int            @default(0)
+  abandonedNotifiedAt DateTime?    // abandoned-checkout reminder sent
   items             OrderItem[]
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
@@ -270,6 +271,7 @@ model SourcingRequest {
   quoteCents  Int?                    // admin-set price quoted to the customer
   quoteDetail String?                 // what's being quoted (item summary shown to customer)
   quoteUrl    String?                 // Stripe Payment Link the customer can pay
+  quoteRemindedAt DateTime?           // quote-follow-up reminder sent
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   @@index([status, createdAt])

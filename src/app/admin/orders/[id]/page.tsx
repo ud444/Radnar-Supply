@@ -36,6 +36,10 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
     if (notify && newStatus === "SHIPPED") {
       try { await sendShippingUpdate(id, url ?? undefined); } catch (e) { console.error(e); }
     }
+    if (notify && newStatus === "DELIVERED") {
+      const { sendDelivered } = await import("@/lib/email");
+      try { await sendDelivered(id); } catch (e) { console.error(e); }
+    }
 
     const { dispatchWebhook } = await import("@/lib/webhook");
     const eventMap: Record<string, any> = {

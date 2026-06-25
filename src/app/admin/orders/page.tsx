@@ -33,6 +33,10 @@ async function bulkUpdate(fd: FormData) {
       const { sendShippingUpdate } = await import("@/lib/email");
       try { await sendShippingUpdate(id, o.trackingUrl ?? undefined); } catch (e) { console.error(e); }
     }
+    if (status === "DELIVERED" && notify) {
+      const { sendDelivered } = await import("@/lib/email");
+      try { await sendDelivered(id); } catch (e) { console.error(e); }
+    }
     if (eventMap[status]) {
       dispatchWebhook(eventMap[status], { id: o.id, number: o.number, status: o.status, email: o.email, totalCents: o.totalCents });
     }

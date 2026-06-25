@@ -11,9 +11,12 @@ export async function POST(req: Request) {
 
     const key = process.env.RESEND_API_KEY;
     const audienceId = process.env.RESEND_AUDIENCE_ID;
+    const { sendNewsletterWelcome } = await import("@/lib/email");
+
     if (!key || !audienceId) {
       // Dev / not configured — log and accept so the UI flow works
       console.log(`[newsletter:dev] would subscribe ${email}`);
+      sendNewsletterWelcome(email).catch((e) => console.error("welcome mail", e));
       return NextResponse.json({ ok: true });
     }
 
@@ -23,6 +26,7 @@ export async function POST(req: Request) {
       audienceId,
       unsubscribed: false,
     });
+    sendNewsletterWelcome(email).catch((e) => console.error("welcome mail", e));
     return NextResponse.json({ ok: true });
   } catch (e: any) {
     console.error("newsletter", e);
