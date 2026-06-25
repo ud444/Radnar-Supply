@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { db } from "@/lib/prisma";
 import { getHomeMedia } from "@/lib/content";
 import { Reveal } from "@/components/shop/Reveal";
@@ -69,8 +70,7 @@ export default async function About() {
       <section className="bg-ink text-paper">
         <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-10 items-center">
           <div className="group md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10 rounded-[20px] shadow-card">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={media.personal} alt="" className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]" />
+            <Image src={media.personal} alt="" fill sizes="(max-width: 768px) 100vw, 40vw" className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]" />
           </div>
           <Reveal className="md:col-span-7">
             <div className="rule-eyebrow text-paper">Personal Shopping Service</div>

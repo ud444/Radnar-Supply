@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useState, useCallback, useEffect } from "react";
 
 type Img = { id: string; url: string; alt: string | null };
@@ -40,8 +41,7 @@ export function ProductGallery({ images, name }: { images: Img[]; name: string }
                 i === active ? "border-ink" : "border-transparent hover:border-ink/30"
               }`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img.url} alt="" className="w-full h-full object-contain p-1.5" />
+              <Image src={img.url} alt="" fill sizes="84px" className="object-contain p-1.5" />
             </button>
           ))}
         </div>
@@ -49,11 +49,11 @@ export function ProductGallery({ images, name }: { images: Img[]; name: string }
 
       {/* Main image */}
       <div className="relative flex-1 aspect-[4/5] bg-cream overflow-hidden group select-none rounded-2xl shadow-card">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={current.url}
           alt={current.alt ?? name}
-          className="w-full h-full object-contain p-6 md:p-10 transition-opacity duration-300"
+          fill priority sizes="(max-width: 768px) 100vw, 55vw"
+          className="object-contain p-6 md:p-10"
         />
 
         {/* Counter */}

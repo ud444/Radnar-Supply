@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { money } from "@/lib/format";
 
 type Props = {
@@ -16,10 +17,8 @@ export function ProductCard({ slug, name, brand, priceCents, images }: Props) {
       <div className="relative aspect-[4/5] bg-cream overflow-hidden hover-lift rounded-2xl">
         {cover && (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={cover} alt={name} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-contain p-4 transition-all duration-500 group-hover:opacity-0 group-hover:scale-[1.03]" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={hover} alt="" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-contain p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Image src={cover} alt={name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-contain p-4 transition-all duration-500 group-hover:opacity-0 group-hover:scale-[1.03]" />
+            <Image src={hover} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-contain p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </>
         )}
         {/* Hover overlay with action */}

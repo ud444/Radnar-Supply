@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { db } from "@/lib/prisma";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { Reveal } from "@/components/shop/Reveal";
@@ -89,9 +90,8 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
             </div>
 
             {categoryImage ? (
-              <div className="md:col-span-4 aspect-[4/5] md:aspect-[4/5] overflow-hidden bg-cream rounded-2xl shadow-card">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={categoryImage} alt="" className="w-full h-full object-cover" />
+              <div className="relative md:col-span-4 aspect-[4/5] md:aspect-[4/5] overflow-hidden bg-cream rounded-2xl shadow-card">
+                <Image src={categoryImage} alt="" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
               </div>
             ) : null}
           </div>
