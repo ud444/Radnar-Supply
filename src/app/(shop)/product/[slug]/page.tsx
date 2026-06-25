@@ -3,6 +3,7 @@ import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
 import { AddToCartForm } from "./AddToCartForm";
+import { ProductGallery } from "./ProductGallery";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { Reveal } from "@/components/shop/Reveal";
 
@@ -58,17 +59,10 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
       <div className="grid grid-cols-12 gap-8 md:gap-12 mt-4">
         {/* Gallery */}
         <div className="col-span-12 md:col-span-7">
-          <div className="grid grid-cols-2 gap-3">
-            {product.images.map((img, i) => (
-              <figure key={img.id} className={`group relative aspect-[4/5] bg-cream overflow-hidden ${i === 0 ? "col-span-2" : ""}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img.url} alt={img.alt ?? product.name} className="w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]" />
-                <figcaption className="absolute top-3 left-3 bg-paper text-ink px-2 py-1 text-[9px] tracking-[0.22em] uppercase font-bold">
-                  {String(i + 1).padStart(2, "0")} / {String(product.images.length).padStart(2, "0")}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
+          <ProductGallery
+            images={product.images.map((i) => ({ id: i.id, url: i.url, alt: i.alt }))}
+            name={product.name}
+          />
         </div>
 
         {/* Buy box */}

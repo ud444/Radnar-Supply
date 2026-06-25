@@ -17,9 +17,9 @@ export function ProductCard({ slug, name, brand, priceCents, images }: Props) {
         {cover && (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={cover} alt={name} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0" />
+            <img src={cover} alt={name} className="absolute inset-0 w-full h-full object-contain p-4 transition-all duration-500 group-hover:opacity-0 group-hover:scale-[1.03]" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={hover} alt="" className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <img src={hover} alt="" className="absolute inset-0 w-full h-full object-contain p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </>
         )}
         {/* Hover overlay with action */}
