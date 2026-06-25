@@ -13,7 +13,7 @@ export function ProductCard({ slug, name, brand, priceCents, images }: Props) {
   const hover = images[1]?.url ?? cover;
   return (
     <Link href={`/product/${slug}`} className="group block">
-      <div className="relative aspect-[4/5] bg-cream overflow-hidden hover-lift">
+      <div className="relative aspect-[4/5] bg-cream overflow-hidden hover-lift rounded-2xl">
         {cover && (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}

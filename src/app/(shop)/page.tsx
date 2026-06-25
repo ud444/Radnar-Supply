@@ -61,7 +61,7 @@ export default async function Home() {
           </div>
 
           <div className="md:col-span-5 relative">
-            <div className="group aspect-[4/5] bg-cream overflow-hidden relative">
+            <div className="group aspect-[4/5] bg-cream overflow-hidden relative rounded-[20px] shadow-card">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={media.hero} alt="" className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]" />
             </div>
@@ -101,7 +101,7 @@ export default async function Home() {
               {content.personalCtaLabel} →
             </Link>
           </Reveal>
-          <div className="group md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10">
+          <div className="group md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10 rounded-[20px] shadow-soft">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={media.personal} alt="" className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]" />
           </div>
@@ -116,7 +116,7 @@ export default async function Home() {
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-10">
           {categories.map((c) => (
-            <Link key={c.id} href={`/shop?category=${c.slug}`} className="relative aspect-[4/5] overflow-hidden group bg-cream hover-lift">
+            <Link key={c.id} href={`/shop?category=${c.slug}`} className="relative aspect-[4/5] overflow-hidden group bg-cream hover-lift rounded-2xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={categoryImage(media, c.slug)} alt={c.name} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/15 to-transparent" />
@@ -151,7 +151,7 @@ export default async function Home() {
       {/* RADNAR PRIVATE — luxury division */}
       <section className="mt-28 border-y border-ink/15 bg-cream">
         <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-10 items-center">
-          <div className="group md:col-span-5 relative aspect-[5/6] overflow-hidden bg-ink/5 order-2 md:order-1">
+          <div className="group md:col-span-5 relative aspect-[5/6] overflow-hidden bg-ink/5 order-2 md:order-1 rounded-[20px] shadow-card">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={media.private} alt="" className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]" />
             <div className="absolute top-4 right-4 bg-ink text-paper px-3 py-1.5 text-[10px] tracking-[0.22em] uppercase font-bold">

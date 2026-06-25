@@ -34,7 +34,7 @@ export default async function BlogIndex() {
         <Reveal className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12 mt-14">
           {posts.map((p) => (
             <Link key={p.id} href={`/blog/${p.slug}`} className="group block">
-              <div className="aspect-[16/10] bg-cream overflow-hidden hover-lift">
+              <div className="aspect-[16/10] bg-cream overflow-hidden hover-lift rounded-2xl">
                 {p.coverImage ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.coverImage} alt="" className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />

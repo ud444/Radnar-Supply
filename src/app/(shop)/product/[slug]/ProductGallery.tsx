@@ -36,7 +36,7 @@ export function ProductGallery({ images, name }: { images: Img[]; name: string }
               onClick={() => setActive(i)}
               aria-label={`View image ${i + 1}`}
               aria-current={i === active}
-              className={`relative shrink-0 w-[68px] h-[84px] md:w-full md:h-[100px] bg-cream overflow-hidden border-2 transition-colors ${
+              className={`relative shrink-0 w-[68px] h-[84px] md:w-full md:h-[100px] bg-cream overflow-hidden border-2 rounded-xl transition-colors ${
                 i === active ? "border-ink" : "border-transparent hover:border-ink/30"
               }`}
             >
@@ -48,7 +48,7 @@ export function ProductGallery({ images, name }: { images: Img[]; name: string }
       ) : null}
 
       {/* Main image */}
-      <div className="relative flex-1 aspect-[4/5] bg-cream overflow-hidden group select-none">
+      <div className="relative flex-1 aspect-[4/5] bg-cream overflow-hidden group select-none rounded-2xl shadow-card">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={current.url}
