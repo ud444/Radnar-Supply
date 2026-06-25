@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { db } from "@/lib/prisma";
+import { Reveal } from "@/components/shop/Reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -30,10 +31,10 @@ export default async function BlogIndex() {
           No articles published yet — check back soon.
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12 mt-14">
+        <Reveal className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12 mt-14">
           {posts.map((p) => (
             <Link key={p.id} href={`/blog/${p.slug}`} className="group block">
-              <div className="aspect-[16/10] bg-cream overflow-hidden">
+              <div className="aspect-[16/10] bg-cream overflow-hidden hover-lift">
                 {p.coverImage ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.coverImage} alt="" className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
@@ -48,7 +49,7 @@ export default async function BlogIndex() {
               {p.excerpt ? <p className="mt-2 text-sm text-ink/70 leading-relaxed line-clamp-3">{p.excerpt}</p> : null}
             </Link>
           ))}
-        </div>
+        </Reveal>
       )}
     </div>
   );

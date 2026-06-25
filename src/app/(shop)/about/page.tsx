@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { getHomeMedia } from "@/lib/content";
+import { Reveal } from "@/components/shop/Reveal";
 
 export const metadata = {
   title: "Our Story — Source. Supply. Personal Shop.",
@@ -50,7 +51,7 @@ export default async function About() {
       </section>
 
       {/* SOURCE & SUPPLY */}
-      <section className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-12">
+      <Reveal as="section" className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-12">
         <div className="md:col-span-5">
           <div className="rule-eyebrow">Source &amp; Supply</div>
           <h2 className="mt-4 font-display font-black text-5xl md:text-6xl uppercase display-tight">
@@ -62,16 +63,16 @@ export default async function About() {
           <p>That sourcing engine feeds two things: the stock you can buy instantly on this site, and a made-to-order supply service for everything else. We negotiate directly, verify what we handle, and ship from the UK.</p>
           <p>It means Radnar can be your shop and your sourcing partner at once — retail when it&apos;s in stock, supply when it isn&apos;t.</p>
         </div>
-      </section>
+      </Reveal>
 
       {/* PERSONAL SHOPPING SERVICE */}
       <section className="bg-ink text-paper">
         <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10">
+          <div className="group md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={media.personal} alt="" className="w-full h-full object-cover" />
+            <img src={media.personal} alt="" className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]" />
           </div>
-          <div className="md:col-span-7">
+          <Reveal className="md:col-span-7">
             <div className="rule-eyebrow text-paper">Personal Shopping Service</div>
             <h2 className="mt-4 font-display font-black text-5xl md:text-7xl uppercase display-tight">
               We find it <span className="text-accent">for you.</span>
@@ -80,19 +81,19 @@ export default async function About() {
               Tell us what you&apos;re after — a specific size, a sold-out drop, a hard-to-find piece, or a high-value luxury item through RADNAR Private. Our team works the network and comes back with real options and pricing. No obligation, and no payment until you approve.
             </p>
             <div className="flex flex-wrap gap-3 mt-8">
-              <Link href="/sourcing" className="bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-colors">
+              <Link href="/sourcing" className="bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0">
                 Start My Search →
               </Link>
-              <Link href="/sourcing?type=private" className="border-2 border-paper text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-paper hover:text-ink transition-colors">
+              <Link href="/sourcing?type=private" className="border-2 border-paper text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-paper hover:text-ink transition-all hover:-translate-y-0.5 active:translate-y-0">
                 Radnar Private
               </Link>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* HOW WE WORK */}
-      <section className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28">
+      <Reveal as="section" className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28">
         <div className="rule-eyebrow">How We Work</div>
         <h2 className="mt-4 font-display font-black text-5xl md:text-7xl uppercase display-tight">
           Sourced. Verified.<br/>Supplied.
@@ -111,7 +112,7 @@ export default async function About() {
             </div>
           ))}
         </div>
-      </section>
+      </Reveal>
 
       {/* CONTACT / CO INFO */}
       <section className="border-t border-ink/15 bg-cream">

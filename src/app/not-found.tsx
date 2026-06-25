@@ -15,8 +15,8 @@ export default function NotFound() {
           We couldn't find what you were after. The link may be old, or the piece may have sold out.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/" className="bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">Home →</Link>
-          <Link href="/shop" className="border-2 border-ink text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-colors">Shop Everything</Link>
+          <Link href="/" className="bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-all hover:-translate-y-0.5 active:translate-y-0">Home →</Link>
+          <Link href="/shop" className="border-2 border-ink text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0">Shop Everything</Link>
         </div>
       </main>
       <Footer />

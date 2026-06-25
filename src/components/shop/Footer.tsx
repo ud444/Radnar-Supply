@@ -33,7 +33,7 @@ export function Footer() {
             <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-paper/55 mb-4">{col.h}</div>
             <ul className="space-y-2.5">
               {col.items.map(([label, href]) => (
-                <li key={label}><Link href={href} className="text-paper/85 hover:text-accent">{label}</Link></li>
+                <li key={label}><Link href={href} className="text-paper/85 hover:text-accent link-underline">{label}</Link></li>
               ))}
             </ul>
           </div>
