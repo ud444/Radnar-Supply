@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
+import { siteUrl } from "@/lib/url";
 import { AddToCartForm } from "./AddToCartForm";
 import { ProductGallery } from "./ProductGallery";
 import { ProductCard } from "@/components/shop/ProductCard";
@@ -46,8 +47,26 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
 
   const skuPreview = product.variants[0]?.sku ?? product.slug.toUpperCase();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: product.images.map((i) => i.url).slice(0, 4),
+    description: product.description,
+    brand: { "@type": "Brand", name: product.brand.name },
+    sku: skuPreview,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "GBP",
+      price: (product.priceCents / 100).toFixed(2),
+      availability: allSizesOOS ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+      url: `${siteUrl()}/product/${product.slug}`,
+    },
+  };
+
   return (
     <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-8 md:py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Breadcrumb */}
       <div className="rule-eyebrow text-ink/70 mb-2">
         <Link href="/">Home</Link><span>/</span>

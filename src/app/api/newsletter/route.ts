@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
+import { allow, isBot } from "@/lib/security";
 
 const schema = z.object({ email: z.string().email() });
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    // Honeypot + rate limit (this endpoint sends an email to the address given)
+    if (isBot(body)) return NextResponse.json({ ok: true });
+    if (!(await allow("newsletter", 5, 60_000))) return NextResponse.json({ error: "Too many attempts — try again shortly." }, { status: 429 });
     const { email } = schema.parse(body);
 
     const key = process.env.RESEND_API_KEY;

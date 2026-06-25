@@ -2,11 +2,14 @@
 import { db } from "@/lib/prisma";
 import { sourcingRequestSchema } from "@/lib/validators";
 import { sendSourcingRequestAdmin, sendSourcingRequestConfirmation } from "@/lib/email";
+import { allow, isBot } from "@/lib/security";
 
 export type SourcingResult = { ok: true } | { ok: false; error: string };
 
 export async function submitSourcingRequest(_: unknown, formData: FormData): Promise<SourcingResult> {
   try {
+    if (isBot(formData)) return { ok: true }; // silently drop bots
+    if (!(await allow("sourcing", 5, 60_000))) return { ok: false, error: "Too many requests — please try again shortly." };
     const data = sourcingRequestSchema.parse(Object.fromEntries(formData));
 
     let imageUrls: string[] = [];

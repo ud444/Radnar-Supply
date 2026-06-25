@@ -51,7 +51,25 @@ export async function POST(req: Request) {
       session.metadata?.orderId ?? session.client_reference_id ?? undefined,
       typeof session.payment_intent === "string" ? session.payment_intent : undefined,
     );
-    if (!order) return NextResponse.json({ ok: true });
+
+    // Not a store order? It may be a paid sourcing-quote payment link → mark the request Sourced.
+    if (!order) {
+      const linkId = typeof session.payment_link === "string" ? session.payment_link : null;
+      if (linkId) {
+        try {
+          const link = await stripe().paymentLinks.retrieve(linkId);
+          const reqId = link.metadata?.sourcingRequestId;
+          if (reqId) {
+            await db.sourcingRequest.update({
+              where: { id: reqId },
+              data: { status: "SOURCED", quoteRemindedAt: new Date() },
+            });
+            dispatchWebhook("order.paid", { id: reqId, kind: "sourcing_quote", email: session.customer_details?.email ?? undefined });
+          }
+        } catch (e) { console.error("quote reconcile", e); }
+      }
+      return NextResponse.json({ ok: true });
+    }
 
     if (order.paymentStatus !== "PAID") {
       await db.order.update({

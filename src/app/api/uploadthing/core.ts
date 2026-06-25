@@ -10,7 +10,8 @@ export const ourFileRouter = {
       return { userId: user.id };
     })
     .onUploadComplete(async ({ file, metadata }) => {
-      return { url: file.ufsUrl, key: file.key, userId: metadata.userId };
+      const f = file as any;
+      return { url: f.ufsUrl ?? f.url, key: f.key, userId: metadata.userId };
     }),
 
   // Admin-only: homepage / content media (hero, editorial, category tiles, blog covers)
@@ -20,14 +21,16 @@ export const ourFileRouter = {
       return { userId: user.id };
     })
     .onUploadComplete(async ({ file }) => {
-      return { url: file.ufsUrl, key: file.key };
+      const f = file as any;
+      return { url: f.ufsUrl ?? f.url, key: f.key };
     }),
 
   // Public: reference images attached to a sourcing / personal-shopping request
   sourcingImage: f({ image: { maxFileSize: "8MB", maxFileCount: 4 } })
     .middleware(async () => ({}))
     .onUploadComplete(async ({ file }) => {
-      return { url: file.ufsUrl, key: file.key };
+      const f = file as any;
+      return { url: f.ufsUrl ?? f.url, key: f.key };
     }),
 } satisfies FileRouter;
 

@@ -39,12 +39,12 @@ export function ProductImages({
             start(async () => {
               await saveUploadedImages(
                 productId,
-                files.map((f) => ({ url: (f as any).ufsUrl ?? f.url, key: f.key })),
+                files.map((f) => ({ url: (f as any).ufsUrl ?? (f as any).url, key: (f as any).key })),
               );
               router.refresh();
             });
           }}
-          onUploadError={(e) => setErr(e.message)}
+          onUploadError={(e) => setErr((e as any).message)}
           appearance={{ button: "bg-ink text-white px-4 py-2 rounded text-sm" }}
         />
         {err ? <div className="mt-2 text-xs text-red-600">{err}</div> : null}

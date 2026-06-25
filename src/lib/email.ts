@@ -142,7 +142,7 @@ export async function sendDelivered(orderId: string) {
   const html = shell("Delivered", `
     <p>Hi ${o.shipName?.split(" ")[0] || "there"},</p>
     <p>Your order <strong>${o.number}</strong> should have landed. We hope it's everything you wanted.</p>
-    <p>Loved it? A quick review helps the next person — and tells us what to source more of. Got an issue? Reply here and we'll sort it.</p>
+    <p>Loved it? Reply and tell us — it helps us source more of what you want. Anything not right? Reply here and we'll sort it fast.</p>
     ${cta(`${siteUrl()}/shop?sort=newest`, "See What's New →")}
     <p style="margin-top:18px">— Radnar Supply</p>`);
   return send(o.email, `Enjoy it — ${o.number} delivered`, html);

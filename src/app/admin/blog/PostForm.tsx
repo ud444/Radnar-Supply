@@ -46,7 +46,7 @@ export function PostForm({
               setCover(f?.ufsUrl ?? f?.url ?? "");
               setCoverKey(f?.key ?? "");
             }}
-            onUploadError={(e) => setErr(e.message)}
+            onUploadError={(e) => setErr((e as any).message)}
             appearance={{ button: "bg-ink text-white px-3 py-1.5 text-[11px] tracking-[0.16em] uppercase font-bold", allowedContent: "hidden" }}
             content={{ button: cover ? "Replace" : "Upload" }}
           />

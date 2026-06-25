@@ -26,11 +26,11 @@ export function MediaManager({ slots }: { slots: Slot[] }) {
               endpoint="contentImage"
               onUploadBegin={() => { setBusy(slot.key); setErr(null); }}
               onClientUploadComplete={(files) => {
-                const url = (files[0] as any)?.ufsUrl ?? files[0]?.url;
+                const url = (files[0] as any)?.ufsUrl ?? (files[0] as any)?.url;
                 if (!url) { setBusy(null); return; }
                 start(async () => { await saveMediaImage(slot.key, url); setBusy(null); router.refresh(); });
               }}
-              onUploadError={(e) => { setErr(e.message); setBusy(null); }}
+              onUploadError={(e) => { setErr((e as any).message); setBusy(null); }}
               appearance={{
                 button: "bg-ink text-white px-3 py-1.5 text-[11px] tracking-[0.16em] uppercase font-bold",
                 allowedContent: "hidden",

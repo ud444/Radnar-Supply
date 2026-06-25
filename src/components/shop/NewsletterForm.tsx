@@ -10,9 +10,10 @@ export function NewsletterForm() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const email = String(fd.get("email") || "").trim();
+    const company = String(fd.get("company") || "");
     if (!email) return;
     start(async () => {
-      const res = await fetch("/api/newsletter", { method: "POST", body: JSON.stringify({ email }) });
+      const res = await fetch("/api/newsletter", { method: "POST", body: JSON.stringify({ email, company }) });
       const data = await res.json().catch(() => ({}));
       if (res.ok) { setState("ok"); setMsg("You're in. Check your inbox for your discount."); (e.target as HTMLFormElement).reset(); }
       else { setState("err"); setMsg(data.error || "Couldn't sign you up — try again."); }
@@ -21,6 +22,8 @@ export function NewsletterForm() {
 
   return (
     <form onSubmit={onSubmit} className="mt-4">
+      {/* Honeypot — hidden from humans, bots fill it */}
+      <input type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
       <div className="flex">
         <input
           name="email" type="email" required placeholder="Your email"

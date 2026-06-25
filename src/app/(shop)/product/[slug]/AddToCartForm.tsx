@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { addToCartAction } from "@/app/(shop)/cart/actions";
 import { subscribeBackInStock } from "./actions";
+import { SizeGuide } from "./SizeGuide";
 
 type Variant = { id: string; size: string; stock: number };
 
@@ -68,7 +69,7 @@ export function AddToCartForm({ variants, allOOS, productName, price, productId 
     <div className="mt-8">
       <div className="flex items-center justify-between mb-3">
         <div className="text-[11px] tracking-[0.22em] uppercase font-bold">Size</div>
-        <button type="button" className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 hover:text-accent underline">Size guide</button>
+        <SizeGuide />
       </div>
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {variants.map((v) => {

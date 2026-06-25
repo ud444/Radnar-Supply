@@ -4,10 +4,12 @@ import { signIn, signUp, createPasswordResetToken, consumePasswordResetToken } f
 import { destroySession } from "@/lib/session";
 import { sendPasswordReset, sendWelcome } from "@/lib/email";
 import { siteUrl } from "@/lib/url";
+import { allow } from "@/lib/security";
 
 export type FormState = { error?: string } | null;
 
 export async function signInAction(_: FormState, fd: FormData): Promise<FormState> {
+  if (!(await allow("login", 8, 5 * 60_000))) return { error: "Too many attempts — please wait a few minutes." };
   try {
     await signIn({ email: String(fd.get("email")), password: String(fd.get("password")) });
   } catch (e: any) { return { error: e.message ?? "Invalid credentials" }; }
@@ -15,6 +17,7 @@ export async function signInAction(_: FormState, fd: FormData): Promise<FormStat
 }
 
 export async function signUpAction(_: FormState, fd: FormData): Promise<FormState> {
+  if (!(await allow("register", 5, 10 * 60_000))) return { error: "Too many attempts — please wait a few minutes." };
   try {
     const user = await signUp({
       email: String(fd.get("email")),
@@ -27,6 +30,7 @@ export async function signUpAction(_: FormState, fd: FormData): Promise<FormStat
 }
 
 export async function forgotAction(_: FormState, fd: FormData): Promise<FormState> {
+  if (!(await allow("forgot", 5, 10 * 60_000))) return { error: undefined }; // silently throttle
   const email = String(fd.get("email"));
   const result = await createPasswordResetToken(email);
   if (result) {

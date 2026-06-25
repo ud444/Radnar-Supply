@@ -117,16 +117,9 @@ export default async function CartPage() {
                 Secure Checkout →
               </Link>
 
-              {/* Promo code */}
-              <details className="mt-4 group">
-                <summary className="text-[11px] tracking-[0.18em] uppercase font-bold cursor-pointer hover:text-accent list-none flex justify-between items-center">
-                  Got a discount code? <span className="text-ink/40 group-open:rotate-45 transition-transform">+</span>
-                </summary>
-                <div className="mt-3 flex gap-2">
-                  <input placeholder="CODE" className="flex-1 min-w-0 bg-bone border-2 border-ink/20 px-3 py-2.5 text-base uppercase tracking-wider focus:outline-none focus:border-ink" />
-                  <button className="btn">Apply</button>
-                </div>
-              </details>
+              <p className="mt-4 text-[11px] tracking-[0.12em] uppercase text-ink/50 text-center">
+                Got a discount code? Apply it at checkout.
+              </p>
             </div>
 
             <div className="mt-4 grid grid-cols-6 gap-2 items-center justify-items-center text-[10px] tracking-[0.18em] uppercase font-bold text-ink/55">

@@ -1,10 +1,12 @@
 "use server";
 import { db } from "@/lib/prisma";
+import { allow } from "@/lib/security";
 
 export type SubscribeResult = { ok: boolean; error?: string };
 
 /** Register a shopper to be emailed when a sold-out product is restocked. */
 export async function subscribeBackInStock(productId: string, email: string): Promise<SubscribeResult> {
+  if (!(await allow("backinstock", 10, 60_000))) return { ok: false, error: "Too many attempts — try again shortly." };
   const e = email.trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) return { ok: false, error: "Enter a valid email" };
   try {

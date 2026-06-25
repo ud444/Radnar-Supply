@@ -29,6 +29,8 @@ export function SourcingForm({ type }: { type: "STANDARD" | "PRIVATE" }) {
     <form action={action} className="mt-8 space-y-8">
       <input type="hidden" name="type" value={type} />
       <input type="hidden" name="imageUrls" value={JSON.stringify(images)} />
+      {/* Honeypot */}
+      <input type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
 
       <div>
         <div className="text-[11px] tracking-[0.22em] uppercase font-bold text-ink/55 mb-3">Your details</div>
@@ -69,9 +71,9 @@ export function SourcingForm({ type }: { type: "STANDARD" | "PRIVATE" }) {
         <UploadButton
           endpoint="sourcingImage"
           onClientUploadComplete={(files) =>
-            setImages((prev) => [...prev, ...files.map((f) => (f as any).ufsUrl ?? f.url)].slice(0, 4))
+            setImages((prev) => [...prev, ...files.map((f) => (f as any).ufsUrl ?? (f as any).url)].slice(0, 4))
           }
-          onUploadError={(e) => setUploadErr(e.message)}
+          onUploadError={(e) => setUploadErr((e as any).message)}
           appearance={{ button: "btn btn-ghost", allowedContent: "text-[11px] text-ink/50 mt-1" }}
         />
         {uploadErr ? <div className="field-error mt-2">{uploadErr}</div> : null}
