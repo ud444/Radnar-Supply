@@ -54,13 +54,13 @@ export default async function CartPage() {
       </div>
 
       {/* Free shipping progress */}
-      <div className="mt-8 border-t-2 border-b-2 border-ink py-4">
+      <div className="mt-8 border-y border-ink/15 py-5">
         <div className="flex justify-between items-center text-[11px] tracking-[0.18em] uppercase font-bold mb-2.5">
           <span>{remaining > 0 ? <>You're <span className="text-accent">{money(remaining)}</span> away from free UK delivery</> : <span className="text-accent">✦ You qualify for free UK delivery</span>}</span>
           <span className="text-ink/55">{progress.toFixed(0)}%</span>
         </div>
-        <div className="h-1.5 bg-cream relative overflow-hidden">
-          <div className="h-full bg-ink transition-all duration-700" style={{ width: `${progress}%` }} />
+        <div className="h-2 bg-cream relative overflow-hidden rounded-full">
+          <div className="h-full bg-accent transition-all duration-700 rounded-full" style={{ width: `${progress}%` }} />
         </div>
       </div>
 

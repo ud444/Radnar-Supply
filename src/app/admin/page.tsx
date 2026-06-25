@@ -66,7 +66,7 @@ export default async function AdminHome() {
       </div>
 
       {newRequests > 0 ? (
-        <Link href="/admin/requests?status=NEW" className="mt-6 flex items-center justify-between gap-4 bg-ink text-paper px-5 py-4 hover:bg-accent transition-colors">
+        <Link href="/admin/requests?status=NEW" className="mt-6 flex items-center justify-between gap-4 bg-ink text-paper px-5 py-4 hover:bg-accent transition-colors rounded-xl shadow-soft">
           <span className="text-sm font-medium">
             <span className="font-display font-black text-xl mr-2">{newRequests}</span>
             new sourcing {newRequests === 1 ? "request" : "requests"} awaiting review
@@ -77,7 +77,7 @@ export default async function AdminHome() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
         {stats.map((s, i) => (
-          <div key={i} className="bg-bone border border-ink/15 p-5">
+          <div key={i} className="bg-bone border border-ink/15 p-5 rounded-xl">
             <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">{s.label}</div>
             <div className="mt-2 flex items-baseline gap-2">
               <span className="font-display font-black text-3xl">{s.value}</span>
@@ -98,7 +98,7 @@ export default async function AdminHome() {
             <h2 className="text-sm font-semibold">Recent orders</h2>
             <Link href="/admin/orders" className="text-[11px] tracking-[0.22em] uppercase font-bold underline">All orders</Link>
           </div>
-          <div className="bg-bone border border-ink/15 overflow-hidden">
+          <div className="bg-bone border border-ink/15 overflow-hidden rounded-xl">
             <table className="w-full text-sm">
               <thead className="bg-cream text-ink/65">
                 <tr>
@@ -126,7 +126,7 @@ export default async function AdminHome() {
 
         <div>
           <h2 className="text-sm font-semibold mb-3">Top products · last 30d</h2>
-          <div className="bg-bone border border-ink/15 overflow-hidden">
+          <div className="bg-bone border border-ink/15 overflow-hidden rounded-xl">
             <table className="w-full text-sm">
               <thead className="bg-cream text-ink/65">
                 <tr>

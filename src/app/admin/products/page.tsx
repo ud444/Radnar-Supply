@@ -60,7 +60,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
         </div>
       </div>
 
-      <div className="mt-6 bg-bone border border-ink/15 overflow-hidden">
+      <div className="mt-6 bg-bone border border-ink/15 overflow-hidden rounded-xl">
         <table className="w-full text-sm">
           <thead className="bg-cream text-ink/65">
             <tr>

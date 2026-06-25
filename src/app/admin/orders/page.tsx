@@ -99,7 +99,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
           </button>
         </div>
 
-        <div className="bg-bone border border-ink/15 overflow-hidden">
+        <div className="bg-bone border border-ink/15 overflow-hidden rounded-xl">
           <table className="w-full text-sm">
             <thead className="bg-cream text-ink/65">
               <tr>

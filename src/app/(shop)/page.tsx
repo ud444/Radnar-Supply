@@ -51,10 +51,10 @@ export default async function Home() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
-              <Link href={content.heroPrimaryHref} className="bg-ink text-paper px-7 py-4 text-center text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-all hover:-translate-y-0.5 active:translate-y-0">
+              <Link href={content.heroPrimaryHref} className="bg-ink text-paper px-7 py-4 text-center text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-[10px]">
                 {content.heroPrimaryLabel} →
               </Link>
-              <Link href={content.heroSecondaryHref} className="border-2 border-ink text-ink px-7 py-4 text-center text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0">
+              <Link href={content.heroSecondaryHref} className="border-2 border-ink text-ink px-7 py-4 text-center text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-[10px]">
                 {content.heroSecondaryLabel}
               </Link>
             </div>
@@ -97,7 +97,7 @@ export default async function Home() {
             <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-paper/75">
               {content.personalBody}
             </p>
-            <Link href="/sourcing" className="inline-block mt-8 bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0">
+            <Link href="/sourcing" className="inline-block mt-8 bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-[10px]">
               {content.personalCtaLabel} →
             </Link>
           </Reveal>
@@ -166,7 +166,7 @@ export default async function Home() {
             <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-ink/75">
               {content.privateBody}
             </p>
-            <Link href="/sourcing?type=private" className="inline-block mt-8 bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-all hover:-translate-y-0.5 active:translate-y-0">
+            <Link href="/sourcing?type=private" className="inline-block mt-8 bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-[10px]">
               {content.privateCtaLabel} →
             </Link>
           </Reveal>

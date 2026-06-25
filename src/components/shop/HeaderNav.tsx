@@ -93,9 +93,9 @@ export function HeaderNav({
           <Link href={signedIn ? "/account" : "/login"} className="hidden sm:inline hover:text-accent">
             {signedIn ? "Account" : "Sign In"}
           </Link>
-          <Link href="/cart" className="bg-ink text-paper px-3 py-2 inline-flex items-center gap-2 hover:bg-accent transition-colors">
+          <Link href="/cart" className="bg-ink text-paper px-3.5 py-2 inline-flex items-center gap-2 hover:bg-accent transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-full">
             <span>Bag</span>
-            <span className="bg-paper text-ink min-w-[20px] h-[20px] inline-flex items-center justify-center text-[10px] font-bold">
+            <span className="bg-paper text-ink min-w-[20px] h-[20px] inline-flex items-center justify-center text-[10px] font-bold rounded-full">
               {cartCount}
             </span>
           </Link>

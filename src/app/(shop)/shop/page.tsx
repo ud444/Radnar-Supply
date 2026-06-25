@@ -89,7 +89,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
             </div>
 
             {categoryImage ? (
-              <div className="md:col-span-4 aspect-[4/5] md:aspect-[4/5] overflow-hidden bg-cream">
+              <div className="md:col-span-4 aspect-[4/5] md:aspect-[4/5] overflow-hidden bg-cream rounded-2xl shadow-card">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={categoryImage} alt="" className="w-full h-full object-cover" />
               </div>
@@ -169,9 +169,9 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
 
             <Section title="Size">
               <div className="grid grid-cols-4 sm:grid-cols-3 gap-1.5">
-                <Link href={urlFor({ size: undefined })} className={`text-[12px] px-2 py-2.5 border-2 text-center font-bold uppercase tracking-wider ${!sp.size ? "border-ink bg-ink text-paper" : "border-ink/30 text-ink/70 hover:border-ink"}`}>All</Link>
+                <Link href={urlFor({ size: undefined })} className={`text-[12px] px-2 py-2.5 border text-center font-bold uppercase tracking-wider rounded-lg transition-colors ${!sp.size ? "border-ink bg-ink text-paper" : "border-ink/25 text-ink/70 hover:border-ink"}`}>All</Link>
                 {ALL_SIZES.map((s) => (
-                  <Link key={s} href={urlFor({ size: s })} className={`text-[12px] px-2 py-2.5 border-2 text-center font-bold uppercase tracking-wider ${sp.size === s ? "border-ink bg-ink text-paper" : "border-ink/30 text-ink/70 hover:border-ink"}`}>{s}</Link>
+                  <Link key={s} href={urlFor({ size: s })} className={`text-[12px] px-2 py-2.5 border text-center font-bold uppercase tracking-wider rounded-lg transition-colors ${sp.size === s ? "border-ink bg-ink text-paper" : "border-ink/25 text-ink/70 hover:border-ink"}`}>{s}</Link>
                 ))}
               </div>
             </Section>

@@ -68,7 +68,7 @@ export default async function About() {
       {/* PERSONAL SHOPPING SERVICE */}
       <section className="bg-ink text-paper">
         <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-10 items-center">
-          <div className="group md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10">
+          <div className="group md:col-span-5 relative aspect-[4/5] overflow-hidden bg-cream/10 rounded-[20px] shadow-card">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={media.personal} alt="" className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]" />
           </div>
@@ -81,10 +81,10 @@ export default async function About() {
               Tell us what you&apos;re after — a specific size, a sold-out drop, a hard-to-find piece, or a high-value luxury item through RADNAR Private. Our team works the network and comes back with real options and pricing. No obligation, and no payment until you approve.
             </p>
             <div className="flex flex-wrap gap-3 mt-8">
-              <Link href="/sourcing" className="bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0">
+              <Link href="/sourcing" className="bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-[10px]">
                 Start My Search →
               </Link>
-              <Link href="/sourcing?type=private" className="border-2 border-paper text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-paper hover:text-ink transition-all hover:-translate-y-0.5 active:translate-y-0">
+              <Link href="/sourcing?type=private" className="border-2 border-paper text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-paper hover:text-ink transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-[10px]">
                 Radnar Private
               </Link>
             </div>
@@ -125,7 +125,7 @@ export default async function About() {
             <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ink/75">
               Order issues, sourcing enquiries, personal shopping, wholesale — we reply within one working day.
             </p>
-            <a href="mailto:hello@radnarsupply.com" className="inline-block mt-6 bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
+            <a href="mailto:hello@radnarsupply.com" className="inline-block mt-6 bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-[10px]">
               hello@radnarsupply.com →
             </a>
           </div>
@@ -134,7 +134,7 @@ export default async function About() {
             <div className="font-medium">Radnar Supply Ltd</div>
             <div className="text-ink/75 mt-1">United Kingdom</div>
             <div className="text-ink/75 mt-3">Company No. <span className="font-mono">17263761</span></div>
-            <Link href="/sourcing" className="inline-block mt-8 border-2 border-ink px-6 py-3 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-colors">
+            <Link href="/sourcing" className="inline-block mt-8 border border-ink px-6 py-3.5 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-[10px]">
               Request Sourcing →
             </Link>
           </div>

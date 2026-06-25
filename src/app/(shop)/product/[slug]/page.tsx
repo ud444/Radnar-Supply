@@ -76,7 +76,7 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
             {product.name}
           </h1>
 
-          <div className="mt-5 flex items-baseline justify-between border-y-2 border-ink py-4">
+          <div className="mt-5 flex items-baseline justify-between border-y border-ink/15 py-4">
             <div>
               <div className="font-display font-black text-4xl tracking-tightest leading-none">{money(product.priceCents)}</div>
               <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55 mt-1.5">Inc. VAT · Below RRP</div>

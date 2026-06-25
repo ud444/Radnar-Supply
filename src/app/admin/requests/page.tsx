@@ -53,7 +53,7 @@ export default async function RequestsPage({
         ))}
       </div>
 
-      <div className="bg-bone border border-ink/15 overflow-hidden mt-5">
+      <div className="bg-bone border border-ink/15 overflow-hidden mt-5 rounded-xl">
         <table className="w-full text-sm">
           <thead className="bg-cream text-ink/65">
             <tr>
