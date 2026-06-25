@@ -79,7 +79,7 @@ export const DEFAULT_MEDIA: HomeMedia = {
   hero: IMG.hero,
   editorial: IMG.editorial,
   personal: IMG.heroAlt,
-  private: IMG.editorial,
+  private: IMG.private,
   categoryClothing: IMG.category.clothing,
   categoryShoes: IMG.category.shoes,
   categoryAccessories: IMG.category.accessories,

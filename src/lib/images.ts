@@ -9,7 +9,8 @@ const u = (id: string, w = 900, h = 1125) =>
 export const IMG = {
   hero:       u("1483985988355-763728e1935b", 1000, 1250), // street style portrait
   heroAlt:    u("1490481651871-ab68de25d43d", 1000, 1250),
-  editorial:  u("1485518882345-15568b007705", 1000, 1250), // moody urban
+  editorial:  u("1556821840-3a63f95609a7", 1000, 1250), // outerwear editorial (replaced dead 404)
+  private:    u("1583743814966-8936f5b7be1a", 1000, 1250), // jacket — luxury division
   about:      u("1485125639709-a60c3a500bf1",  900, 1125),
 
   // Category landing tiles
