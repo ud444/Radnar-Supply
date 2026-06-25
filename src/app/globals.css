@@ -101,7 +101,7 @@ header, main, footer { position: relative; z-index: 2; }
   outline: none;
   transition: border-color 120ms ease;
 }
-.field-input:focus { border-color: #0A0A0A; }
+.field-input:focus { border-color: #0A0A0A; box-shadow: inset 0 -2px 0 0 #FF4D00; }
 .field-input:disabled { opacity: 0.5; }
 .field-label {
   position: absolute;
@@ -127,12 +127,15 @@ header, main, footer { position: relative; z-index: 2; }
   transition: background 120ms ease, color 120ms ease, transform 120ms ease;
   border: 2px solid #0A0A0A;
 }
-.btn:hover:not(:disabled) { background: #FF4D00; border-color: #FF4D00; }
+.btn:hover:not(:disabled) { background: #FF4D00; border-color: #FF4D00; transform: translateY(-1px); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-ghost {
   background: transparent; color: #0A0A0A; border: 2px solid #0A0A0A;
 }
 .btn-ghost:hover:not(:disabled) { background: #0A0A0A; color: #F4F1EA; }
+.btn-accent { background: #FF4D00; color: #fff; border-color: #FF4D00; }
+.btn-accent:hover:not(:disabled) { background: #0A0A0A; border-color: #0A0A0A; }
 .btn-block { width: 100%; }
 .btn-lg { padding: 20px 26px; font-size: 12px; }
 
@@ -147,4 +150,47 @@ header, main, footer { position: relative; z-index: 2; }
   background: transparent;
   border: 2px solid #0A0A0A;
   padding: 22px;
+}
+
+/* ============================================================
+   Interaction & motion foundations (Phase 1 polish)
+   ============================================================ */
+
+/* Visible keyboard focus everywhere (a11y) — many components set
+   focus:outline-none, this restores an accent ring for keyboard users. */
+:where(a, button, [role="button"], input, select, textarea, summary):focus-visible {
+  outline: 2px solid #FF4D00;
+  outline-offset: 2px;
+}
+
+html { scroll-behavior: smooth; }
+:where([id]) { scroll-margin-top: 96px; } /* anchors clear the sticky header */
+::selection { background: #FF4D00; color: #fff; }
+
+/* Hover lift for cards / tiles */
+.hover-lift { transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease; }
+.hover-lift:hover { transform: translateY(-5px); box-shadow: 0 22px 48px -22px rgba(10,10,10,.4); }
+
+/* Animated left-to-right link underline */
+.link-underline {
+  background-image: linear-gradient(#FF4D00, #FF4D00);
+  background-size: 0% 2px; background-position: 0 100%; background-repeat: no-repeat;
+  transition: background-size .3s ease;
+}
+.link-underline:hover { background-size: 100% 2px; }
+
+/* Scroll-reveal (driven by the <Reveal> component) */
+@keyframes radnar-fade-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+[data-reveal] { opacity: 0; }
+[data-reveal].is-in { animation: radnar-fade-up .65s cubic-bezier(.2,.7,.2,1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .marquee-track { animation: none !important; }
+  [data-reveal] { opacity: 1 !important; }
 }

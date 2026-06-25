@@ -2,6 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { CircularBadge } from "@/components/shop/CircularBadge";
+import { Reveal } from "@/components/shop/Reveal";
 import { getHomeContent, getHomeMedia, categoryImage } from "@/lib/content";
 
 // Render a title string that may contain newlines, accenting the final line.
@@ -108,14 +109,14 @@ export default async function Home() {
       </section>
 
       {/* CATEGORY GRID */}
-      <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-24">
+      <Reveal as="section" className="max-w-[1400px] mx-auto px-5 md:px-8 mt-24">
         <div className="rule-eyebrow mb-3">Shop The Stock</div>
         <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight">
           Shop by<br/>category.
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-10">
           {categories.map((c) => (
-            <Link key={c.id} href={`/shop?category=${c.slug}`} className="relative aspect-[4/5] overflow-hidden group bg-cream">
+            <Link key={c.id} href={`/shop?category=${c.slug}`} className="relative aspect-[4/5] overflow-hidden group bg-cream hover-lift">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={categoryImage(media, c.slug)} alt={c.name} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/15 to-transparent" />
@@ -129,7 +130,7 @@ export default async function Home() {
             </Link>
           ))}
         </div>
-      </section>
+      </Reveal>
 
       {/* FEATURED — single product rail */}
       <section className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28">
