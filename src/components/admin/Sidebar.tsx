@@ -100,8 +100,8 @@ export function AdminSidebar() {
       {/* Mobile slide-in drawer */}
       {open ? (
         <div className="md:hidden fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-[80vw] max-w-xs bg-ink text-paper flex flex-col">
+          <div className="absolute inset-0 bg-black/50 anim-fade-in" onClick={() => setOpen(false)} />
+          <aside className="absolute left-0 top-0 bottom-0 w-[80vw] max-w-xs bg-ink text-paper flex flex-col anim-slide-in-left">
             <div className="px-5 pt-5 pb-4 border-b border-paper/15 flex items-center justify-between">
               <Image src="/radnar-mark-light.png" alt="Radnar" width={1600} height={593} className="h-6 w-auto" />
               <button onClick={() => setOpen(false)} aria-label="Close menu" className="text-paper/70 hover:text-paper p-2 -mr-2">

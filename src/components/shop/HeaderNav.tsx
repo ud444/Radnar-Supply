@@ -119,8 +119,8 @@ export function HeaderNav({
       {/* Left-side drawer (vertical menu, all viewport sizes) */}
       {drawer ? (
         <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-ink/55 backdrop-blur-sm" onClick={close} />
-          <aside className="absolute left-0 top-0 bottom-0 w-[88vw] max-w-md bg-paper flex flex-col">
+          <div className="absolute inset-0 bg-ink/55 backdrop-blur-sm anim-fade-in" onClick={close} />
+          <aside className="absolute left-0 top-0 bottom-0 w-[88vw] max-w-md bg-paper flex flex-col anim-slide-in-left">
             <div className="flex justify-between items-center px-6 py-5 border-b border-ink/15">
               <Image src="/radnar-mark.png" alt="Radnar Supply" width={1600} height={535} className="h-8 w-auto" />
               <button onClick={close} className="text-[11px] tracking-[0.22em] uppercase font-bold inline-flex items-center gap-2 hover:text-accent">

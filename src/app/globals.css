@@ -179,6 +179,12 @@ html { scroll-behavior: smooth; }
 }
 .link-underline:hover { background-size: 100% 2px; }
 
+/* Drawer / overlay entrances */
+@keyframes radnar-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes radnar-slide-in-left { from { transform: translateX(-100%); } to { transform: none; } }
+.anim-fade-in { animation: radnar-fade-in .25s ease both; }
+.anim-slide-in-left { animation: radnar-slide-in-left .28s cubic-bezier(.2,.7,.2,1) both; }
+
 /* Scroll-reveal (driven by the <Reveal> component) */
 @keyframes radnar-fade-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 [data-reveal] { opacity: 0; }
