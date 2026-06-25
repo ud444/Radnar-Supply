@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
 import { AddToCartForm } from "./AddToCartForm";
 import { ProductCard } from "@/components/shop/ProductCard";
+import { Reveal } from "@/components/shop/Reveal";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -59,9 +60,9 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
         <div className="col-span-12 md:col-span-7">
           <div className="grid grid-cols-2 gap-3">
             {product.images.map((img, i) => (
-              <figure key={img.id} className={`relative aspect-[4/5] bg-cream overflow-hidden ${i === 0 ? "col-span-2" : ""}`}>
+              <figure key={img.id} className={`group relative aspect-[4/5] bg-cream overflow-hidden ${i === 0 ? "col-span-2" : ""}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img.url} alt={img.alt ?? product.name} className="w-full h-full object-cover" />
+                <img src={img.url} alt={img.alt ?? product.name} className="w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]" />
                 <figcaption className="absolute top-3 left-3 bg-paper text-ink px-2 py-1 text-[9px] tracking-[0.22em] uppercase font-bold">
                   {String(i + 1).padStart(2, "0")} / {String(product.images.length).padStart(2, "0")}
                 </figcaption>
@@ -97,6 +98,7 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
             variants={product.variants.map((v) => ({ id: v.id, size: v.size, stock: v.stock }))}
             allOOS={allSizesOOS}
             productName={product.name}
+            price={money(product.priceCents)}
           />
 
           {/* Reassurance bullets */}
@@ -124,7 +126,7 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
       </div>
 
       {/* Editorial details — accordions */}
-      <section className="mt-24 grid md:grid-cols-12 gap-12">
+      <Reveal as="section" className="mt-24 grid md:grid-cols-12 gap-12">
         <div className="md:col-span-4">
           <div className="eyebrow-lead">The Detail</div>
           <h2 className="mt-3 font-display font-black text-4xl md:text-5xl uppercase display-tight">Know what<br/>you're wearing.</h2>
@@ -145,11 +147,11 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
             </details>
           ))}
         </div>
-      </section>
+      </Reveal>
 
       {/* More from brand */}
       {moreFromBrand.length > 0 && (
-        <section className="mt-24 border-t-2 border-ink/10 pt-16">
+        <Reveal as="section" className="mt-24 border-t-2 border-ink/10 pt-16">
           <div className="flex items-end justify-between mb-8 gap-6 flex-wrap">
             <div>
               <div className="eyebrow-lead">House Picks</div>
@@ -162,12 +164,12 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-12">
             {moreFromBrand.map((p) => <ProductCard key={p.id} {...p} />)}
           </div>
-        </section>
+        </Reveal>
       )}
 
       {/* Related (same category, different brand) */}
       {related.length > 0 && (
-        <section className="mt-24 pt-16 border-t-2 border-ink/10">
+        <Reveal as="section" className="mt-24 pt-16 border-t-2 border-ink/10">
           <div className="flex items-end justify-between mb-8 gap-6 flex-wrap">
             <div>
               <div className="eyebrow-lead">Cross-Pollinate</div>
@@ -180,8 +182,11 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-12">
             {related.map((p) => <ProductCard key={p.id} {...p} />)}
           </div>
-        </section>
+        </Reveal>
       )}
+
+      {/* Clearance for the sticky mobile buy-bar */}
+      <div className="h-24 md:hidden" aria-hidden />
     </div>
   );
 }

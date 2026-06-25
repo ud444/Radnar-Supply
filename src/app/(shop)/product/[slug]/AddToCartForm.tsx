@@ -1,13 +1,15 @@
 "use client";
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { addToCartAction } from "@/app/(shop)/cart/actions";
 
 type Variant = { id: string; size: string; stock: number };
 
-export function AddToCartForm({ variants, allOOS, productName }: { variants: Variant[]; allOOS: boolean; productName: string }) {
+export function AddToCartForm({ variants, allOOS, productName, price }: { variants: Variant[]; allOOS: boolean; productName: string; price: string }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  const [added, setAdded] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const router = useRouter();
 
@@ -16,7 +18,8 @@ export function AddToCartForm({ variants, allOOS, productName }: { variants: Var
     start(async () => {
       try {
         await addToCartAction(selected, 1);
-        setMsg({ kind: "ok", text: "Added to bag — keep shopping or checkout" });
+        setAdded(true);
+        setMsg(null);
         router.refresh();
       } catch (e: any) {
         setMsg({ kind: "err", text: e.message ?? "Couldn't add to bag" });
@@ -55,7 +58,7 @@ export function AddToCartForm({ variants, allOOS, productName }: { variants: Var
           return (
             <button
               key={v.id} type="button" disabled={oos}
-              onClick={() => { setSelected(v.id); setMsg(null); }}
+              onClick={() => { setSelected(v.id); setMsg(null); setAdded(false); }}
               className={`relative py-3.5 text-sm font-bold uppercase tracking-wider border-2 transition-colors ${
                 oos ? "border-ink/15 text-ink/30 cursor-not-allowed bg-cream/40" :
                 active ? "border-ink bg-ink text-paper" :
@@ -77,16 +80,45 @@ export function AddToCartForm({ variants, allOOS, productName }: { variants: Var
         </div>
       ) : null}
 
-      <button onClick={add} disabled={pending}
-        className="btn btn-lg btn-block mt-5">
-        {pending ? "Adding…" : "Add To Bag →"}
-      </button>
+      {added ? (
+        <div className="mt-5 border-2 border-ink p-4 flex items-center justify-between gap-3 flex-wrap" data-reveal style={{ opacity: 1 }}>
+          <div className="text-[11px] tracking-[0.18em] uppercase font-bold text-accent">✓ Added to bag</div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setAdded(false)} className="text-[11px] tracking-[0.18em] uppercase font-bold text-ink/55 hover:text-ink">Keep shopping</button>
+            <Link href="/cart" className="btn">View Bag →</Link>
+          </div>
+        </div>
+      ) : (
+        <button onClick={add} disabled={pending} className="btn btn-lg btn-block mt-5">
+          {pending ? "Adding…" : "Add To Bag →"}
+        </button>
+      )}
 
-      {msg ? (
+      {msg && !added ? (
         <div className={`mt-3 text-[11px] tracking-[0.18em] uppercase font-bold ${msg.kind === "ok" ? "text-accent" : "text-red-600"}`}>
           {msg.text}
         </div>
       ) : null}
+
+      {/* Sticky mobile buy-bar — keeps the buy action always reachable */}
+      <div
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-paper/95 backdrop-blur border-t-2 border-ink px-4 py-3 flex items-center gap-3"
+        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+      >
+        <div className="flex-1 min-w-0">
+          <div className="font-display font-black text-lg leading-none">{price}</div>
+          <div className="text-[10px] tracking-[0.18em] uppercase font-bold text-ink/55 truncate">
+            {selectedVariant ? `Size ${selectedVariant.size}` : "Select a size"}
+          </div>
+        </div>
+        {added ? (
+          <Link href="/cart" className="btn whitespace-nowrap">View Bag →</Link>
+        ) : (
+          <button onClick={add} disabled={pending} className="btn whitespace-nowrap">
+            {pending ? "Adding…" : "Add To Bag →"}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

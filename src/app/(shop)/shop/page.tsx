@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { ProductCard } from "@/components/shop/ProductCard";
+import { Reveal } from "@/components/shop/Reveal";
 import { IMG } from "@/lib/images";
 
 type SP = { category?: string; brand?: string; size?: string; sort?: string; q?: string };
@@ -195,9 +196,9 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
               <Link href="/shop" className="btn mt-6 inline-flex">Browse Everything →</Link>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-12">
+            <Reveal className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-12">
               {products.map((p) => <ProductCard key={p.id} {...p} />)}
-            </div>
+            </Reveal>
           )}
         </section>
       </div>
