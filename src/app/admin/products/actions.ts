@@ -48,9 +48,18 @@ export async function updateProduct(id: string, fd: FormData) {
 
 export async function deleteProduct(id: string) {
   await requireAdmin();
+  // A product that's been ordered can't be hard-deleted — its variants are
+  // referenced by OrderItem rows (order history). Archive it instead so the
+  // storefront hides it while the orders stay intact.
+  const ordered = await db.orderItem.count({ where: { variant: { productId: id } } });
+  if (ordered > 0) {
+    await db.product.update({ where: { id }, data: { active: false } });
+    revalidatePath("/admin/products");
+    redirect("/admin/products?archived=1");
+  }
   await db.product.delete({ where: { id } });
   revalidatePath("/admin/products");
-  redirect("/admin/products");
+  redirect("/admin/products?deleted=1");
 }
 
 export async function setVariantStock(variantId: string, stock: number) {

@@ -4,7 +4,7 @@ import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
 import { Icon } from "@/components/admin/icons";
 
-type SP = { q?: string; status?: "live" | "hidden" };
+type SP = { q?: string; status?: "live" | "hidden"; archived?: string; deleted?: string };
 
 export default async function AdminProducts({ searchParams }: { searchParams: Promise<SP> }) {
   await requireAdmin();
@@ -35,6 +35,17 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
           <Icon.plus /> New Product
         </Link>
       </div>
+
+      {sp.archived ? (
+        <div className="mt-5 border border-amber-300 bg-amber-50 text-amber-900 px-4 py-3 text-sm">
+          This product had order history, so it was <strong>archived</strong> (hidden from the storefront) rather than deleted — its orders stay intact. Filter by <strong>Hidden</strong> to find it.
+        </div>
+      ) : null}
+      {sp.deleted ? (
+        <div className="mt-5 border border-green-300 bg-green-50 text-green-900 px-4 py-3 text-sm">
+          Product deleted.
+        </div>
+      ) : null}
 
       <div className="mt-6 flex flex-wrap gap-3 items-center">
         <form action="/admin/products" className="flex-1 min-w-[260px] relative">
