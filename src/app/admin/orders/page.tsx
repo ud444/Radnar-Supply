@@ -7,7 +7,9 @@ import { Icon } from "@/components/admin/icons";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { SelectAll } from "./SelectAll";
 
-type SP = { q?: string; status?: string };
+type SP = { q?: string; status?: string; page?: string };
+
+const PER_PAGE = 25;
 
 const STATUSES = ["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"];
 
@@ -52,7 +54,19 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
   if (sp.q)      where.OR = [{ number: { contains: sp.q, mode: "insensitive" } }, { email: { contains: sp.q, mode: "insensitive" } }];
   if (sp.status) where.status = sp.status;
 
-  const orders = await db.order.findMany({ where, orderBy: { createdAt: "desc" } });
+  const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
+  const [orders, total] = await Promise.all([
+    db.order.findMany({ where, orderBy: { createdAt: "desc" }, take: PER_PAGE, skip: (page - 1) * PER_PAGE }),
+    db.order.count({ where }),
+  ]);
+  const pages = Math.max(1, Math.ceil(total / PER_PAGE));
+  const pageHref = (n: number) => {
+    const u = new URLSearchParams();
+    if (sp.q) u.set("q", sp.q);
+    if (sp.status) u.set("status", sp.status);
+    if (n > 1) u.set("page", String(n));
+    return `/admin/orders${u.toString() ? `?${u}` : ""}`;
+  };
   const exportQs = new URLSearchParams();
   if (sp.q) exportQs.set("q", sp.q);
   if (sp.status) exportQs.set("status", sp.status);
@@ -134,6 +148,16 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
           </table>
         </div>
       </form>
+
+      {pages > 1 ? (
+        <div className="mt-5 flex items-center justify-between text-sm">
+          <div className="text-ink/55">{total} orders · page {page} of {pages}</div>
+          <div className="flex gap-2">
+            {page > 1 ? <Link href={pageHref(page - 1)} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">← Prev</Link> : null}
+            {page < pages ? <Link href={pageHref(page + 1)} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">Next →</Link> : null}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

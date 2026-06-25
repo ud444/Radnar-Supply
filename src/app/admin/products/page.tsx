@@ -4,7 +4,9 @@ import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
 import { Icon } from "@/components/admin/icons";
 
-type SP = { q?: string; status?: "live" | "hidden"; archived?: string; deleted?: string };
+type SP = { q?: string; status?: "live" | "hidden"; archived?: string; deleted?: string; page?: string };
+
+const PER_PAGE = 20;
 
 export default async function AdminProducts({ searchParams }: { searchParams: Promise<SP> }) {
   await requireAdmin();
@@ -19,10 +21,23 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
   if (sp.status === "live")   where.active = true;
   if (sp.status === "hidden") where.active = false;
 
-  const products = await db.product.findMany({
-    where, orderBy: { createdAt: "desc" },
-    include: { brand: true, variants: true, images: { take: 1, orderBy: { position: "asc" } } },
-  });
+  const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
+  const [products, total] = await Promise.all([
+    db.product.findMany({
+      where, orderBy: { createdAt: "desc" },
+      include: { brand: true, variants: true, images: { take: 1, orderBy: { position: "asc" } } },
+      take: PER_PAGE, skip: (page - 1) * PER_PAGE,
+    }),
+    db.product.count({ where }),
+  ]);
+  const pages = Math.max(1, Math.ceil(total / PER_PAGE));
+  const pageHref = (n: number) => {
+    const u = new URLSearchParams();
+    if (sp.q) u.set("q", sp.q);
+    if (sp.status) u.set("status", sp.status);
+    if (n > 1) u.set("page", String(n));
+    return `/admin/products${u.toString() ? `?${u}` : ""}`;
+  };
 
   return (
     <div>
@@ -79,6 +94,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
             ) : products.map((p) => {
               const stock = p.variants.reduce((a, v) => a + v.stock, 0);
               const oos = stock === 0;
+              const low = stock > 0 && stock <= 5;
               return (
                 <tr key={p.id} className="border-t border-ink/10 hover:bg-cream/50">
                   <td className="px-4 py-3">
@@ -94,7 +110,9 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
                   </td>
                   <td className="px-4 py-3">{p.brand.name}</td>
                   <td className="px-4 py-3 text-right font-medium">{money(p.priceCents)}</td>
-                  <td className={`px-4 py-3 text-right font-medium ${oos ? "text-red-600" : ""}`}>{stock}</td>
+                  <td className={`px-4 py-3 text-right font-medium ${oos ? "text-red-600" : low ? "text-amber-600" : ""}`}>
+                    {stock}{oos ? <span className="ml-1.5 text-[9px] tracking-[0.14em] uppercase">out</span> : low ? <span className="ml-1.5 text-[9px] tracking-[0.14em] uppercase">low</span> : null}
+                  </td>
                   <td className="px-4 py-3 text-right">
                     <span className={`text-[10px] px-2 py-1 border tracking-[0.14em] uppercase font-bold ${p.active ? "bg-green-100 text-green-800 border-green-300" : "bg-cream text-ink/55 border-ink/20"}`}>
                       {p.active ? "Live" : "Hidden"}
@@ -106,6 +124,16 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
           </tbody>
         </table>
       </div>
+
+      {pages > 1 ? (
+        <div className="mt-5 flex items-center justify-between text-sm">
+          <div className="text-ink/55">{total} products · page {page} of {pages}</div>
+          <div className="flex gap-2">
+            {page > 1 ? <Link href={pageHref(page - 1)} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">← Prev</Link> : null}
+            {page < pages ? <Link href={pageHref(page + 1)} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">Next →</Link> : null}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
