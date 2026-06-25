@@ -44,6 +44,7 @@ async function main() {
   await db.orderItem.deleteMany();
   await db.order.deleteMany();
   await db.stockNotice.deleteMany();
+  await db.review.deleteMany();
   await db.productImage.deleteMany();
   await db.variant.deleteMany();
   await db.product.deleteMany();

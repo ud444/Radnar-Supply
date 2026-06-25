@@ -5,6 +5,7 @@ import { money } from "@/lib/format";
 import { siteUrl } from "@/lib/url";
 import { AddToCartForm } from "./AddToCartForm";
 import { ProductGallery } from "./ProductGallery";
+import { ReviewForm, Stars } from "./ReviewForm";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { Reveal } from "@/components/shop/Reveal";
 
@@ -27,9 +28,13 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
       brand: true, category: true,
       images: { orderBy: { position: "asc" } },
       variants: { orderBy: { size: "asc" } },
+      reviews: { where: { status: "APPROVED" }, orderBy: { createdAt: "desc" }, take: 30 },
     },
   });
   if (!product) notFound();
+
+  const reviewCount = product.reviews.length;
+  const avgRating = reviewCount ? product.reviews.reduce((a, r) => a + r.rating, 0) / reviewCount : 0;
 
   const totalStock = product.variants.reduce((a, v) => a + v.stock, 0);
   const allSizesOOS = totalStock === 0;
@@ -55,6 +60,7 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
     description: product.description,
     brand: { "@type": "Brand", name: product.brand.name },
     sku: skuPreview,
+    ...(reviewCount > 0 ? { aggregateRating: { "@type": "AggregateRating", ratingValue: avgRating.toFixed(1), reviewCount } } : {}),
     offers: {
       "@type": "Offer",
       priceCurrency: "GBP",
@@ -160,6 +166,43 @@ export default async function PDP({ params }: { params: Promise<{ slug: string }
               <p className="mt-3 text-[15px] leading-relaxed text-ink/80 max-w-prose">{s.body}</p>
             </details>
           ))}
+        </div>
+      </Reveal>
+
+      {/* Reviews */}
+      <Reveal as="section" className="mt-24 grid md:grid-cols-12 gap-12 border-t-2 border-ink/10 pt-16">
+        <div className="md:col-span-5">
+          <div className="eyebrow-lead">Reviews</div>
+          <h2 className="mt-3 font-display font-black text-4xl md:text-5xl uppercase display-tight">What buyers<br/>say.</h2>
+          {reviewCount > 0 ? (
+            <div className="mt-5 flex items-center gap-3">
+              <Stars value={avgRating} className="text-xl" />
+              <span className="text-sm text-ink/65">{avgRating.toFixed(1)} · {reviewCount} review{reviewCount !== 1 ? "s" : ""}</span>
+            </div>
+          ) : (
+            <p className="mt-5 text-sm text-ink/60">No reviews yet — be the first to share how it fits.</p>
+          )}
+          <ReviewForm productId={product.id} slug={product.slug} />
+        </div>
+        <div className="md:col-span-7">
+          {reviewCount === 0 ? (
+            <p className="text-ink/55 text-sm">Your review helps the next buyer — and tells us what to source more of.</p>
+          ) : (
+            <div className="divide-y divide-ink/10">
+              {product.reviews.map((r) => (
+                <div key={r.id} className="py-5 first:pt-0">
+                  <div className="flex items-center justify-between gap-3">
+                    <Stars value={r.rating} />
+                    <span className="text-[11px] tracking-[0.16em] uppercase text-ink/45">
+                      {r.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                    </span>
+                  </div>
+                  <div className="font-display font-bold uppercase tracking-tight text-sm mt-2">{r.author}</div>
+                  <p className="text-[15px] text-ink/80 mt-1 leading-relaxed">{r.body}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </Reveal>
 

@@ -12,6 +12,7 @@ const SECTIONS: { label: string; items: { href: string; label: string; icon: key
       { href: "/admin",          label: "Dashboard", icon: "dashboard" },
       { href: "/admin/orders",   label: "Orders",    icon: "bag" },
       { href: "/admin/requests", label: "Requests",  icon: "inbox" },
+      { href: "/admin/reviews",  label: "Reviews",   icon: "file" },
     ],
   },
   {

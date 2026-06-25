@@ -7,6 +7,7 @@ export function StatusBadge({ value }: { value: string }) {
     CANCELLED: "bg-red-100 text-red-800 border-red-300",
     FAILED:    "bg-red-100 text-red-800 border-red-300",
     REFUNDED:  "bg-orange-100 text-orange-800 border-orange-300",
+    APPROVED:  "bg-green-100 text-green-800 border-green-300",
     // Sourcing request statuses
     NEW:         "bg-accent/15 text-accent border-accent/40",
     IN_PROGRESS: "bg-blue-100 text-blue-800 border-blue-300",

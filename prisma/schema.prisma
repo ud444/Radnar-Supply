@@ -125,11 +125,31 @@ model Product {
   images      ProductImage[]
   variants    Variant[]
   stockNotices StockNotice[]
+  reviews     Review[]
   active      Boolean        @default(true)
   featured    Boolean        @default(false)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   @@index([brandId, categoryId, active])
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+}
+
+// Customer product reviews (moderated — APPROVED reviews show on the storefront).
+model Review {
+  id        String       @id @default(cuid())
+  product   Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  author    String
+  rating    Int                       // 1..5
+  body      String
+  status    ReviewStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+  @@index([productId, status])
+  @@index([status, createdAt])
 }
 
 // Back-in-stock: a shopper asks to be emailed when a sold-out product returns.
