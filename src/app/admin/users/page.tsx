@@ -1,13 +1,24 @@
+import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
 
-export default async function AdminUsers() {
+const PER_PAGE = 25;
+
+export default async function AdminUsers({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const me = await requireAdmin();
-  const users = await db.user.findMany({
-    orderBy: { createdAt: "desc" }, include: { orders: true },
-  });
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
+  const [users, total] = await Promise.all([
+    db.user.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { orders: { select: { totalCents: true, paymentStatus: true } } },
+      take: PER_PAGE, skip: (page - 1) * PER_PAGE,
+    }),
+    db.user.count(),
+  ]);
+  const pages = Math.max(1, Math.ceil(total / PER_PAGE));
 
   async function setRole(id: string, role: "ADMIN" | "CUSTOMER") {
     "use server";
@@ -58,6 +69,16 @@ export default async function AdminUsers() {
           </tbody>
         </table>
       </div>
+
+      {pages > 1 ? (
+        <div className="mt-5 flex items-center justify-between text-sm">
+          <div className="text-ink/55">{total} users · page {page} of {pages}</div>
+          <div className="flex gap-2">
+            {page > 1 ? <Link href={`/admin/users?page=${page - 1}`} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">← Prev</Link> : null}
+            {page < pages ? <Link href={`/admin/users?page=${page + 1}`} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">Next →</Link> : null}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { slugify } from "@/lib/format";
 
 export default async function Brands() {
   await requireAdmin();
-  const brands = await db.brand.findMany({ orderBy: { name: "asc" }, include: { products: true } });
+  const brands = await db.brand.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { products: true } } } });
 
   async function add(fd: FormData) {
     "use server";
@@ -34,11 +34,11 @@ export default async function Brands() {
           <li key={b.id} className="py-3 flex items-center justify-between text-sm">
             <div>
               <div>{b.name}</div>
-              <div className="text-xs text-muted">/{b.slug} · {b.products.length} products</div>
+              <div className="text-xs text-muted">/{b.slug} · {b._count.products} products</div>
             </div>
             <form action={remove.bind(null, b.id)}>
-              <button className="text-xs text-red-600 underline" disabled={b.products.length > 0}>
-                {b.products.length > 0 ? "In use" : "Delete"}
+              <button className="text-xs text-red-600 underline" disabled={b._count.products > 0}>
+                {b._count.products > 0 ? "In use" : "Delete"}
               </button>
             </form>
           </li>
