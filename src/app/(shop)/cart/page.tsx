@@ -5,6 +5,7 @@ import { getSetting } from "@/lib/settings";
 import { db } from "@/lib/prisma";
 import { CartLines } from "./CartLines";
 import { ProductCard } from "@/components/shop/ProductCard";
+import { Reveal } from "@/components/shop/Reveal";
 
 export default async function CartPage() {
   const [cart, freeAbove] = await Promise.all([
@@ -137,7 +138,7 @@ export default async function CartPage() {
 
       {/* Recommended */}
       {recs.length > 0 && (
-        <section className="mt-24 border-t border-ink/15 pt-16">
+        <Reveal as="section" className="mt-24 border-t border-ink/15 pt-16">
           <div className="flex items-end justify-between mb-8 gap-6 flex-wrap">
             <div>
               <div className="eyebrow-lead">Complete The Look</div>
@@ -148,7 +149,7 @@ export default async function CartPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-12">
             {recs.map((p) => <ProductCard key={p.id} {...p} />)}
           </div>
-        </section>
+        </Reveal>
       )}
     </div>
   );
