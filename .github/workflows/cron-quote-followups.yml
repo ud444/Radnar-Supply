@@ -1,0 +1,17 @@
+name: Quote follow-ups
+
+# Hits the quote-follow-up cron endpoint once a day.
+on:
+  schedule:
+    - cron: "0 9 * * *"       # 09:00 UTC daily
+  workflow_dispatch: {}        # allows manual "Run workflow" from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger /api/cron/quote-followups
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsS "https://radnarsupply.co.uk/api/cron/quote-followups?key=${CRON_SECRET}"

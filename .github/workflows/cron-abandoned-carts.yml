@@ -1,0 +1,17 @@
+name: Abandoned cart reminders
+
+# Hits the abandoned-cart cron endpoint hourly.
+on:
+  schedule:
+    - cron: "0 * * * *"      # every hour, on the hour (UTC)
+  workflow_dispatch: {}        # allows manual "Run workflow" from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger /api/cron/abandoned-carts
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsS "https://radnarsupply.co.uk/api/cron/abandoned-carts?key=${CRON_SECRET}"
