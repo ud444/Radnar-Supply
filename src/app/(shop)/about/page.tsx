@@ -7,7 +7,7 @@ import { Reveal } from "@/components/shop/Reveal";
 export const metadata = {
   title: "Our Story — Source. Supply. Personal Shop.",
   description:
-    "Radnar Supply is a UK sourcing and supply business with a retail arm — premium fashion, luxury goods, personal shopping and discreet private sourcing through our supplier network.",
+    "Radnar Supply is a UK sourcing and supply business with a retail arm — premium fashion, luxury goods, personal shopping and discreet sourcing through our supplier network.",
 };
 
 export default async function About() {
@@ -78,14 +78,11 @@ export default async function About() {
               We find it <span className="text-accent">for you.</span>
             </h2>
             <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-paper/75">
-              Tell us what you&apos;re after — a specific size, a sold-out drop, a hard-to-find piece, or a high-value luxury item through RADNAR Private. Our team works the network and comes back with real options and pricing. No obligation, and no payment until you approve.
+              Tell us what you&apos;re after — a specific size, a sold-out drop, a hard-to-find piece, or a high-value luxury item. Our team works the network and comes back with real options and pricing. No obligation, and no payment until you approve.
             </p>
             <div className="flex flex-wrap gap-3 mt-8">
               <Link href="/sourcing" className="bg-paper text-ink px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent hover:text-paper transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-[10px]">
                 Start My Search →
-              </Link>
-              <Link href="/sourcing?type=private" className="border-2 border-paper text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-paper hover:text-ink transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-[10px]">
-                Radnar Private
               </Link>
             </div>
           </Reveal>

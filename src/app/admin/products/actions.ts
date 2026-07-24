@@ -5,6 +5,12 @@ import { db } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { slugify } from "@/lib/format";
 
+/** Trim a FormData value; empty string becomes null so optional columns stay clean. */
+function strOrNull(v: FormDataEntryValue | null): string | null {
+  const s = String(v ?? "").trim();
+  return s ? s : null;
+}
+
 export async function createProduct(fd: FormData) {
   await requireAdmin();
   const name = String(fd.get("name"));
@@ -13,6 +19,8 @@ export async function createProduct(fd: FormData) {
     data: {
       name, slug, description: String(fd.get("description")),
       priceCents: Math.round(Number(fd.get("price")) * 100),
+      colour: strOrNull(fd.get("colour")),
+      gender: strOrNull(fd.get("gender")),
       brandId: String(fd.get("brandId")),
       categoryId: String(fd.get("categoryId")),
       featured: fd.get("featured") === "on",
@@ -36,6 +44,8 @@ export async function updateProduct(id: string, fd: FormData) {
       name: String(fd.get("name")),
       description: String(fd.get("description")),
       priceCents: Math.round(Number(fd.get("price")) * 100),
+      colour: strOrNull(fd.get("colour")),
+      gender: strOrNull(fd.get("gender")),
       brandId: String(fd.get("brandId")),
       categoryId: String(fd.get("categoryId")),
       featured: fd.get("featured") === "on",

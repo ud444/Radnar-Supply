@@ -5,7 +5,7 @@ import { setSetting } from "@/lib/settings";
 import { getHomeContent, getHomeMedia, type HomeMedia } from "@/lib/content";
 
 const MEDIA_KEYS: (keyof HomeMedia)[] = [
-  "hero", "editorial", "personal", "private",
+  "hero", "editorial", "personal",
   "categoryClothing", "categoryShoes", "categoryAccessories", "categoryFragrance",
 ];
 
@@ -21,6 +21,12 @@ export async function saveContent(fd: FormData) {
     if (h || p) whyItems.push({ h, p });
   }
 
+  // Promo banner — one message per line.
+  const marquee = String(fd.get("marquee") ?? "")
+    .split("\n")
+    .map((m) => m.trim())
+    .filter(Boolean);
+
   await setSetting("home.content", {
     heroEyebrow: s("heroEyebrow"),
     heroTitle: s("heroTitle"),
@@ -33,12 +39,18 @@ export async function saveContent(fd: FormData) {
     personalTitle: s("personalTitle"),
     personalBody: s("personalBody"),
     personalCtaLabel: s("personalCtaLabel"),
-    privateEyebrow: s("privateEyebrow"),
-    privateTitle: s("privateTitle"),
-    privateBody: s("privateBody"),
-    privateCtaLabel: s("privateCtaLabel"),
+    categoryEyebrow: s("categoryEyebrow"),
+    categoryTitle: s("categoryTitle"),
+    featuredEyebrow: s("featuredEyebrow"),
+    featuredTitle: s("featuredTitle"),
+    featuredCtaLabel: s("featuredCtaLabel"),
+    newInEyebrow: s("newInEyebrow"),
+    newInTitle: s("newInTitle"),
+    newInCtaLabel: s("newInCtaLabel"),
+    whyEyebrow: s("whyEyebrow"),
     whyTitle: s("whyTitle"),
     whyItems,
+    marquee,
   });
 
   revalidatePath("/");

@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/shop/ProductCard";
 import { Reveal } from "@/components/shop/Reveal";
 import { IMG } from "@/lib/images";
 
-type SP = { category?: string; brand?: string; size?: string; sort?: string; q?: string };
+type SP = { category?: string; brand?: string; size?: string; colour?: string; gender?: string; avail?: string; sort?: string; q?: string };
 
 export default async function Shop({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
@@ -19,21 +19,79 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
   const where: any = { active: true };
   if (sp.category) where.category = { slug: sp.category };
   if (sp.brand)    where.brand    = { slug: sp.brand };
-  if (sp.size)     where.variants = { some: { size: sp.size, stock: { gt: 0 } } };
+  if (sp.colour)   where.colour   = sp.colour;
+  if (sp.gender)   where.gender   = sp.gender;
+  // Size and "in stock" both constrain variants — merge into a single `some` filter.
+  const variantSome: any = {};
+  if (sp.size)          variantSome.size = sp.size;
+  if (sp.size || sp.avail === "in") variantSome.stock = { gt: 0 };
+  if (Object.keys(variantSome).length) where.variants = { some: variantSome };
   if (sp.q)        where.OR = [
     { name:        { contains: sp.q, mode: "insensitive" } },
     { description: { contains: sp.q, mode: "insensitive" } },
   ];
 
-  const [products, categories, brands, activeCategory, activeBrand] = await Promise.all([
+  // Facet context: which brands/sizes exist within the *category + search* scope.
+  // Deliberately ignores the current brand/size selection so switching stays possible,
+  // and so we never show a filter value that has no matching products (no empty/irrelevant filters).
+  const facetWhere: any = { active: true };
+  if (sp.category) facetWhere.category = { slug: sp.category };
+  if (sp.q)        facetWhere.OR = where.OR;
+
+  const [products, categories, brands, activeCategory, activeBrand, sizeRows, colourRows, genderRows] = await Promise.all([
     db.product.findMany({ where, orderBy, include: { brand: true, images: { orderBy: { position: "asc" }, take: 2 } } }),
     db.category.findMany({ orderBy: { name: "asc" } }),
-    db.brand.findMany({    orderBy: { name: "asc" } }),
+    // Only brands that actually have products in this category/search context.
+    db.brand.findMany({ where: { products: { some: facetWhere } }, orderBy: { name: "asc" } }),
     sp.category ? db.category.findUnique({ where: { slug: sp.category } }) : Promise.resolve(null),
     sp.brand    ? db.brand.findUnique({    where: { slug: sp.brand    } }) : Promise.resolve(null),
+    // Distinct variant sizes that exist in this category/search context.
+    db.variant.findMany({ where: { product: facetWhere }, select: { size: true }, distinct: ["size"] }),
+    // Distinct colours / genders that exist in this context (only surfaced once data is entered).
+    db.product.findMany({ where: { ...facetWhere, colour: { not: null } }, select: { colour: true }, distinct: ["colour"], orderBy: { colour: "asc" } }),
+    db.product.findMany({ where: { ...facetWhere, gender: { not: null } }, select: { gender: true }, distinct: ["gender"], orderBy: { gender: "asc" } }),
   ]);
 
-  const ALL_SIZES = ["XS","S","M","L","XL","7","8","9","10","11","36","37","38","39","40","One Size","50ml","100ml"];
+  const availableColours = colourRows.map((r) => r.colour!).filter(Boolean);
+  const GENDER_ORDER = ["Men", "Women", "Unisex"];
+  const availableGenders = genderRows
+    .map((r) => r.gender!)
+    .filter(Boolean)
+    .sort((a, b) => GENDER_ORDER.indexOf(a) - GENDER_ORDER.indexOf(b));
+
+  // "Best selling" needs sales data (OrderItem → Variant → Product); resolve it in memory.
+  if (sort === "best-selling" && products.length > 0) {
+    const sales = await db.orderItem.groupBy({
+      by: ["variantId"],
+      _sum: { quantity: true },
+    });
+    const variantOwners = await db.variant.findMany({
+      where: { id: { in: sales.map((s) => s.variantId) } },
+      select: { id: true, productId: true },
+    });
+    const ownerOf = new Map(variantOwners.map((v) => [v.id, v.productId]));
+    const soldByProduct = new Map<string, number>();
+    for (const s of sales) {
+      const pid = ownerOf.get(s.variantId);
+      if (pid) soldByProduct.set(pid, (soldByProduct.get(pid) ?? 0) + (s._sum.quantity ?? 0));
+    }
+    products.sort((a, b) => (soldByProduct.get(b.id) ?? 0) - (soldByProduct.get(a.id) ?? 0));
+  }
+
+  // Canonical ordering so sizes read naturally; anything unknown is appended alphabetically.
+  const SIZE_ORDER = ["XS","S","M","L","XL","XXL","One Size","6","7","8","9","10","11","12","36","37","38","39","40","41","42","43","44","30ml","50ml","75ml","100ml","150ml","200ml"];
+  const availableSizes = sizeRows
+    .map((r) => r.size)
+    .sort((a, b) => {
+      const ia = SIZE_ORDER.indexOf(a), ib = SIZE_ORDER.indexOf(b);
+      if (ia === -1 && ib === -1) return a.localeCompare(b);
+      if (ia === -1) return 1;
+      if (ib === -1) return -1;
+      return ia - ib;
+    });
+
+  // Fragrances measure volume, not size — label the facet accordingly.
+  const sizeFacetLabel = sp.category === "fragrance" ? "Volume" : "Size";
 
   function urlFor(merge: Partial<SP>) {
     const u = new URLSearchParams();
@@ -48,7 +106,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
     : activeCategory?.name ?? activeBrand?.name ?? "Shop All";
 
   const categoryImage = activeCategory
-    ? (IMG.category as Record<string, string>)[activeCategory.slug] ?? IMG.heroAlt
+    ? activeCategory.imageUrl ?? (IMG.category as Record<string, string>)[activeCategory.slug] ?? IMG.heroAlt
     : null;
 
   // Active filter chips
@@ -56,7 +114,10 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
   if (sp.q)        activeFilters.push({ label: `Search · "${sp.q}"`, href: urlFor({ q: undefined }) });
   if (sp.category) activeFilters.push({ label: `Category · ${activeCategory?.name}`, href: urlFor({ category: undefined }) });
   if (sp.brand)    activeFilters.push({ label: `Brand · ${activeBrand?.name}`, href: urlFor({ brand: undefined }) });
-  if (sp.size)     activeFilters.push({ label: `Size · ${sp.size}`, href: urlFor({ size: undefined }) });
+  if (sp.size)     activeFilters.push({ label: `${sp.category === "fragrance" ? "Volume" : "Size"} · ${sp.size}`, href: urlFor({ size: undefined }) });
+  if (sp.colour)   activeFilters.push({ label: `Colour · ${sp.colour}`, href: urlFor({ colour: undefined }) });
+  if (sp.gender)   activeFilters.push({ label: `Gender · ${sp.gender}`, href: urlFor({ gender: undefined }) });
+  if (sp.avail)    activeFilters.push({ label: `In stock`, href: urlFor({ avail: undefined }) });
 
   return (
     <>
@@ -144,10 +205,11 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
 
             <Section title="Sort">
               {[
-                ["featured",    "Featured"],
-                ["newest",      "Newest"],
-                ["price-asc",   "Price · Low to High"],
-                ["price-desc",  "Price · High to Low"],
+                ["featured",     "Featured"],
+                ["newest",       "Newest"],
+                ["best-selling", "Best Selling"],
+                ["price-asc",    "Price · Low to High"],
+                ["price-desc",   "Price · High to Low"],
               ].map(([v, l]) => (
                 <Item key={v} href={urlFor({ sort: v })} active={sort === v}>{l}</Item>
               ))}
@@ -160,20 +222,47 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
               ))}
             </Section>
 
-            <Section title="Brand">
-              <Item href={urlFor({ brand: undefined })} active={!sp.brand}>All</Item>
-              {brands.map((b) => (
-                <Item key={b.id} href={urlFor({ brand: b.slug })} active={sp.brand === b.slug}>{b.name}</Item>
-              ))}
-            </Section>
-
-            <Section title="Size">
-              <div className="grid grid-cols-4 sm:grid-cols-3 gap-1.5">
-                <Link href={urlFor({ size: undefined })} className={`text-[12px] px-2 py-2.5 border text-center font-bold uppercase tracking-wider rounded-lg transition-colors ${!sp.size ? "border-ink bg-ink text-paper" : "border-ink/25 text-ink/70 hover:border-ink"}`}>All</Link>
-                {ALL_SIZES.map((s) => (
-                  <Link key={s} href={urlFor({ size: s })} className={`text-[12px] px-2 py-2.5 border text-center font-bold uppercase tracking-wider rounded-lg transition-colors ${sp.size === s ? "border-ink bg-ink text-paper" : "border-ink/25 text-ink/70 hover:border-ink"}`}>{s}</Link>
+            {brands.length > 0 ? (
+              <Section title="Brand">
+                <Item href={urlFor({ brand: undefined })} active={!sp.brand}>All</Item>
+                {brands.map((b) => (
+                  <Item key={b.id} href={urlFor({ brand: b.slug })} active={sp.brand === b.slug}>{b.name}</Item>
                 ))}
-              </div>
+              </Section>
+            ) : null}
+
+            {availableSizes.length > 0 ? (
+              <Section title={sizeFacetLabel}>
+                <div className="grid grid-cols-4 sm:grid-cols-3 gap-1.5">
+                  <Link href={urlFor({ size: undefined })} className={`text-[12px] px-2 py-2.5 border text-center font-bold uppercase tracking-wider rounded-lg transition-colors ${!sp.size ? "border-ink bg-ink text-paper" : "border-ink/25 text-ink/70 hover:border-ink"}`}>All</Link>
+                  {availableSizes.map((s) => (
+                    <Link key={s} href={urlFor({ size: s })} className={`text-[12px] px-2 py-2.5 border text-center font-bold uppercase tracking-wider rounded-lg transition-colors ${sp.size === s ? "border-ink bg-ink text-paper" : "border-ink/25 text-ink/70 hover:border-ink"}`}>{s}</Link>
+                  ))}
+                </div>
+              </Section>
+            ) : null}
+
+            {availableColours.length > 0 ? (
+              <Section title="Colour">
+                <Item href={urlFor({ colour: undefined })} active={!sp.colour}>All</Item>
+                {availableColours.map((c) => (
+                  <Item key={c} href={urlFor({ colour: c })} active={sp.colour === c}>{c}</Item>
+                ))}
+              </Section>
+            ) : null}
+
+            {availableGenders.length > 0 ? (
+              <Section title="Gender">
+                <Item href={urlFor({ gender: undefined })} active={!sp.gender}>All</Item>
+                {availableGenders.map((g) => (
+                  <Item key={g} href={urlFor({ gender: g })} active={sp.gender === g}>{g}</Item>
+                ))}
+              </Section>
+            ) : null}
+
+            <Section title="Availability">
+              <Item href={urlFor({ avail: undefined })} active={!sp.avail}>All</Item>
+              <Item href={urlFor({ avail: "in" })} active={sp.avail === "in"}>In stock</Item>
             </Section>
               </div>
             </details>

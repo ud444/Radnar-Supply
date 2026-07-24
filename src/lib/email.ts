@@ -188,6 +188,29 @@ export async function sendQuoteFollowup(requestId: string) {
   return send(rq.email, "Still want it? — your Radnar quote", html);
 }
 
+/** Confirm to the Radnar inbox that a quote was (re)sent to the customer. */
+export async function sendQuoteAdminConfirmation(args: {
+  requestId: string; customerName: string; customerEmail: string; item: string; amountCents: number; payUrl: string; resent?: boolean;
+}) {
+  const inbox = process.env.SOURCING_INBOX || process.env.EMAIL_FROM?.match(/<(.+)>/)?.[1] || "hello@radnarsupply.com";
+  const amount = `£${(args.amountCents / 100).toFixed(2)}`;
+  const verb = args.resent ? "re-sent" : "sent";
+  const html = `
+  <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto">
+    <div style="background:#0A0A0A;color:#fff;padding:18px 22px;font-weight:800;letter-spacing:1px;text-transform:uppercase">Quote ${verb}</div>
+    <div style="border:1px solid #eee;border-top:none;padding:22px;color:#0A0A0A;font-size:15px;line-height:1.6">
+      <p>A quote of <strong>${amount}</strong> was ${verb} to <strong>${args.customerName}</strong> (${args.customerEmail}).</p>
+      <table style="border-collapse:collapse;width:100%">
+        ${row("Item", args.item)}
+        ${row("Amount", amount)}
+        ${row("Pay link", args.payUrl)}
+      </table>
+      <div style="margin-top:18px;font-size:12px;color:#888">Request ID ${args.requestId} · Requests panel</div>
+    </div>
+  </div>`;
+  return send(inbox, `Quote ${verb} — ${args.customerName} (${amount})`, html);
+}
+
 export async function sendPasswordReset(to: string, link: string) {
   const html = await render(PasswordReset({ link }));
   return send(to, "Reset your Radnar Supply password", html);

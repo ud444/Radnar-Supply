@@ -1,16 +1,22 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { stripe, siteUrl } from "@/lib/stripe";
 import { money } from "@/lib/format";
-import { sendSourcingQuote } from "@/lib/email";
+import { sendSourcingQuote, sendQuoteAdminConfirmation } from "@/lib/email";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 
-export default async function RequestDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function RequestDetail({
+  params, searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ quote?: string }>;
+}) {
   await requireAdmin();
   const { id } = await params;
+  const { quote: quoteFlag } = await searchParams;
   const r = await db.sourcingRequest.findUnique({ where: { id } });
   if (!r) notFound();
 
@@ -31,7 +37,9 @@ export default async function RequestDetail({ params }: { params: Promise<{ id: 
     revalidatePath("/admin/requests");
   }
 
-  // Create a Stripe Payment Link for the quoted price and email it to the customer.
+  // Create (or reuse) a Stripe Payment Link for the quoted price and email it to
+  // the customer + the admin inbox. A straight re-send of an unchanged quote reuses
+  // the existing link, so "Resend" works even if Stripe is briefly unavailable.
   async function sendQuote(fd: FormData) {
     "use server";
     await requireAdmin();
@@ -41,28 +49,43 @@ export default async function RequestDetail({ params }: { params: Promise<{ id: 
     const detail = String(fd.get("detail") || "").trim() || current.item;
     if (amountCents < 50) throw new Error("Quote must be at least £0.50");
 
-    const price = await stripe().prices.create({
-      currency: "gbp",
-      unit_amount: amountCents,
-      product_data: { name: `Radnar Sourcing — ${detail}`.slice(0, 250) },
-    });
-    const link = await stripe().paymentLinks.create({
-      line_items: [{ price: price.id, quantity: 1 }],
-      metadata: { sourcingRequestId: id, email: current.email },
-      after_completion: { type: "redirect", redirect: { url: `${siteUrl()}/checkout/success` } },
-    });
+    const unchanged =
+      !!current.quoteUrl && current.quoteCents === amountCents && current.quoteDetail === detail;
+
+    let payUrl = current.quoteUrl ?? "";
+    if (!unchanged) {
+      const price = await stripe().prices.create({
+        currency: "gbp",
+        unit_amount: amountCents,
+        product_data: { name: `Radnar Sourcing — ${detail}`.slice(0, 250) },
+      });
+      const link = await stripe().paymentLinks.create({
+        line_items: [{ price: price.id, quantity: 1 }],
+        metadata: { sourcingRequestId: id, email: current.email },
+        after_completion: { type: "redirect", redirect: { url: `${siteUrl()}/checkout/success` } },
+      });
+      payUrl = link.url;
+    }
 
     await db.sourcingRequest.update({
       where: { id },
-      data: { status: "QUOTED", quoteCents: amountCents, quoteDetail: detail, quoteUrl: link.url },
+      data: { status: "QUOTED", quoteCents: amountCents, quoteDetail: detail, quoteUrl: payUrl },
     });
 
+    // Email the customer and confirm to the admin inbox. Surface failures rather
+    // than silently swallowing them, so the admin knows if the customer wasn't reached.
+    let emailed = true;
     try {
-      await sendSourcingQuote({ to: current.email, name: current.name, item: current.item, amountCents, detail, payUrl: link.url });
-    } catch (e) { console.error(e); }
+      await sendSourcingQuote({ to: current.email, name: current.name, item: current.item, amountCents, detail, payUrl });
+      await sendQuoteAdminConfirmation({
+        requestId: id, customerName: current.name, customerEmail: current.email,
+        item: current.item, amountCents, payUrl, resent: unchanged,
+      });
+    } catch (e) { console.error("[quote email] failed:", e); emailed = false; }
 
     revalidatePath(`/admin/requests/${id}`);
     revalidatePath("/admin/requests");
+    redirect(`/admin/requests/${id}?quote=${emailed ? "sent" : "emailfail"}`);
   }
 
   const field = (label: string, value?: string | null) =>
@@ -75,6 +98,11 @@ export default async function RequestDetail({ params }: { params: Promise<{ id: 
 
   return (
     <div className="max-w-4xl">
+      {quoteFlag === "sent" ? (
+        <div className="mb-4 border border-green-600/40 bg-green-50 text-green-800 px-4 py-3 text-sm">Quote sent — customer and admin inbox have been emailed.</div>
+      ) : quoteFlag === "emailfail" ? (
+        <div className="mb-4 border border-amber-600/50 bg-amber-50 text-amber-800 px-4 py-3 text-sm">Quote saved and the Stripe link is ready, but the email could not be sent. Check RESEND_API_KEY / EMAIL_FROM, then re-send.</div>
+      ) : null}
       <Link href="/admin/requests" className="text-[11px] tracking-[0.22em] uppercase font-bold text-ink/55 hover:text-accent">← All requests</Link>
       <div className="flex items-center justify-between flex-wrap gap-3 mt-3">
         <div>

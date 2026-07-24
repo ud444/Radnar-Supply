@@ -106,6 +106,8 @@ model Category {
   slug        String     @unique
   name        String
   description String?
+  imageUrl    String?                 // admin-uploaded tile image (falls back to defaults)
+  imageKey    String?                 // UploadThing key, retained so the image can be removed
   parentId    String?
   parent      Category?  @relation("CatTree", fields: [parentId], references: [id])
   children    Category[] @relation("CatTree")
@@ -118,6 +120,8 @@ model Product {
   name        String
   description String
   priceCents  Int
+  colour      String?                 // filterable attribute (backfilled over time)
+  gender      String?                 // Men / Women / Unisex — filterable, backfilled over time
   brandId     String
   brand       Brand          @relation(fields: [brandId], references: [id])
   categoryId  String

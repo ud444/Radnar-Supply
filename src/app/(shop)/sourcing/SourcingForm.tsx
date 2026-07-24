@@ -5,7 +5,8 @@ import { Field } from "@/components/ui/Field";
 import { UploadButton } from "@/lib/uploadthing";
 import { submitSourcingRequest, type SourcingResult } from "./actions";
 
-export function SourcingForm({ type }: { type: "STANDARD" | "PRIVATE" }) {
+export function SourcingForm() {
+  const type = "STANDARD";
   const [images, setImages] = useState<string[]>([]);
   const [uploadErr, setUploadErr] = useState<string | null>(null);
   const [state, action, pending] = useActionState<SourcingResult | null, FormData>(
@@ -80,7 +81,7 @@ export function SourcingForm({ type }: { type: "STANDARD" | "PRIVATE" }) {
       </div>
 
       <button disabled={pending} className="btn btn-lg btn-block">
-        {pending ? "Sending…" : type === "PRIVATE" ? "Submit Private Enquiry →" : "Start My Search →"}
+        {pending ? "Sending…" : "Start My Search →"}
       </button>
       {state && !state.ok ? <div className="field-error tracking-[0.06em] uppercase font-bold">{state.error}</div> : null}
 

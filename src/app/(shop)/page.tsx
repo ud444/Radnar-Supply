@@ -20,6 +20,17 @@ function MultilineTitle({ value }: { value: string }) {
   );
 }
 
+// Newlines become line breaks, with no accent on the final line.
+function PlainMultiline({ value }: { value: string }) {
+  return (
+    <>
+      {value.split("\n").map((line, i) => (
+        <span key={i} className="block">{line}</span>
+      ))}
+    </>
+  );
+}
+
 export default async function Home() {
   const [featured, newest, categories, brands, content, media] = await Promise.all([
     db.product.findMany({
@@ -109,14 +120,14 @@ export default async function Home() {
 
       {/* CATEGORY GRID */}
       <Reveal as="section" className="max-w-[1400px] mx-auto px-5 md:px-8 mt-24">
-        <div className="rule-eyebrow mb-3">Shop The Stock</div>
+        <div className="rule-eyebrow mb-3">{content.categoryEyebrow}</div>
         <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight">
-          Shop by<br/>category.
+          <PlainMultiline value={content.categoryTitle} />
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-10">
           {categories.map((c) => (
             <Link key={c.id} href={`/shop?category=${c.slug}`} className="relative aspect-[4/5] overflow-hidden group bg-cream hover-lift rounded-2xl">
-              <Image src={categoryImage(media, c.slug)} alt={c.name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover group-hover:scale-[1.04] transition-transform duration-700" />
+              <Image src={c.imageUrl ?? categoryImage(media, c.slug)} alt={c.name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover group-hover:scale-[1.04] transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/15 to-transparent" />
               <div className="absolute inset-x-4 bottom-4 md:inset-x-5 md:bottom-5 text-paper">
                 {/* Fluid size keeps even the longest names (ACCESSORIES) on one line in the 2-up mobile grid */}
@@ -134,50 +145,26 @@ export default async function Home() {
       <Reveal as="section" className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28">
         <div className="flex items-end justify-between mb-8 gap-6 flex-wrap">
           <div>
-            <div className="rule-eyebrow mb-3">In Stock Now</div>
+            <div className="rule-eyebrow mb-3">{content.featuredEyebrow}</div>
             <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight">
-              Best sellers.
+              <PlainMultiline value={content.featuredTitle} />
             </h2>
           </div>
-          <Link href="/shop" className="text-[11px] tracking-[0.22em] uppercase font-bold border-b-2 border-ink hover:text-accent hover:border-accent transition-colors">View Everything →</Link>
+          <Link href="/shop" className="text-[11px] tracking-[0.22em] uppercase font-bold border-b-2 border-ink hover:text-accent hover:border-accent transition-colors">{content.featuredCtaLabel} →</Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-12">
           {featured.map((p) => <ProductCard key={p.id} {...p} />)}
         </div>
       </Reveal>
 
-      {/* RADNAR PRIVATE — luxury division */}
-      <section className="mt-28 border-y border-ink/15 bg-cream">
-        <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28 grid md:grid-cols-12 gap-10 items-center">
-          <div className="group md:col-span-5 relative aspect-[5/6] overflow-hidden bg-ink/5 order-2 md:order-1 rounded-[20px] shadow-card">
-            <Image src={media.private} alt="" fill sizes="(max-width: 768px) 100vw, 40vw" className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]" />
-            <div className="absolute top-4 right-4 bg-ink text-paper px-3 py-1.5 text-[10px] tracking-[0.22em] uppercase font-bold">
-              Enquiry Only
-            </div>
-          </div>
-          <Reveal className="md:col-span-7 order-1 md:order-2">
-            <div className="rule-eyebrow">{content.privateEyebrow}</div>
-            <h2 className="mt-4 font-display font-black text-5xl md:text-7xl uppercase display-tight">
-              <MultilineTitle value={content.privateTitle} />
-            </h2>
-            <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-ink/75">
-              {content.privateBody}
-            </p>
-            <Link href="/sourcing?type=private" className="inline-block mt-8 bg-ink text-paper px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-[10px]">
-              {content.privateCtaLabel} →
-            </Link>
-          </Reveal>
-        </div>
-      </section>
-
       {/* NEW IN — secondary product rail */}
       <Reveal as="section" className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28">
         <div className="flex items-end justify-between mb-8 gap-6 flex-wrap">
           <div>
-            <div className="rule-eyebrow mb-3">Fresh Stock</div>
-            <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight">New in.</h2>
+            <div className="rule-eyebrow mb-3">{content.newInEyebrow}</div>
+            <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight"><PlainMultiline value={content.newInTitle} /></h2>
           </div>
-          <Link href="/shop?sort=newest" className="text-[11px] tracking-[0.22em] uppercase font-bold border-b-2 border-ink hover:text-accent hover:border-accent transition-colors">View All →</Link>
+          <Link href="/shop?sort=newest" className="text-[11px] tracking-[0.22em] uppercase font-bold border-b-2 border-ink hover:text-accent hover:border-accent transition-colors">{content.newInCtaLabel} →</Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-12">
           {newest.map((p) => <ProductCard key={p.id} {...p} />)}
@@ -186,7 +173,7 @@ export default async function Home() {
 
       {/* WHY RADNAR — trust */}
       <Reveal as="section" className="max-w-[1400px] mx-auto px-5 md:px-8 mt-28 mb-4">
-        <div className="rule-eyebrow mb-3">Why Radnar</div>
+        <div className="rule-eyebrow mb-3">{content.whyEyebrow}</div>
         <h2 className="font-display font-black text-5xl md:text-6xl uppercase display-tight mb-10">
           {content.whyTitle}
         </h2>

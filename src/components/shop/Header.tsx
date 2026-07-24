@@ -3,19 +3,11 @@ import Image from "next/image";
 import { db } from "@/lib/prisma";
 import { getCart } from "@/lib/cart";
 import { getSession } from "@/lib/session";
+import { getHomeContent } from "@/lib/content";
 import { HeaderNav } from "./HeaderNav";
 
-const MARQUEE = [
-  "Source · Supply · Personal Shop",
-  "Free UK Delivery Over £75",
-  "30-Day Returns",
-  "Personal Shopping Service",
-  "Klarna · Apple Pay · Google Pay",
-  "UK Sourcing & Supply",
-];
-
 export async function Header() {
-  const [cart, session, categories, brands, featured] = await Promise.all([
+  const [cart, session, categories, brands, featured, content] = await Promise.all([
     getCart(),
     getSession(),
     db.category.findMany({ orderBy: { name: "asc" } }),
@@ -24,7 +16,9 @@ export async function Header() {
       where: { active: true, featured: true }, take: 4,
       include: { brand: true, images: { take: 1, orderBy: { position: "asc" } } },
     }),
+    getHomeContent(),
   ]);
+  const MARQUEE = content.marquee;
 
   return (
     <header className="sticky top-0 z-40 bg-paper border-b border-ink/15">

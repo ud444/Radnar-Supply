@@ -12,7 +12,6 @@ export default async function ContentAdmin() {
   const mediaSlots = [
     { key: "hero", label: "Hero image", url: media.hero },
     { key: "personal", label: "Personal Shopping", url: media.personal },
-    { key: "private", label: "Radnar Private", url: media.private },
     { key: "editorial", label: "Editorial / About", url: media.editorial },
     { key: "categoryClothing", label: "Category · Clothing", url: media.categoryClothing },
     { key: "categoryShoes", label: "Category · Shoes", url: media.categoryShoes },
@@ -51,15 +50,29 @@ export default async function ContentAdmin() {
           <T label="Button label" name="personalCtaLabel" defaultValue={content.personalCtaLabel} />
         </Section>
 
-        <Section title="Radnar Private section">
-          <T label="Eyebrow" name="privateEyebrow" defaultValue={content.privateEyebrow} />
-          <TA label="Title (one line per row)" name="privateTitle" defaultValue={content.privateTitle} rows={2} />
-          <TA label="Body" name="privateBody" defaultValue={content.privateBody} rows={3} />
-          <T label="Button label" name="privateCtaLabel" defaultValue={content.privateCtaLabel} />
+        <Section title="Promo banner (scrolling, top of site)">
+          <TA label="Messages — one per line" name="marquee" defaultValue={content.marquee.join("\n")} rows={6} />
+        </Section>
+
+        <Section title="Section headings">
+          <div className="grid grid-cols-2 gap-3">
+            <T label="Category · eyebrow" name="categoryEyebrow" defaultValue={content.categoryEyebrow} />
+            <TA label="Category · title" name="categoryTitle" defaultValue={content.categoryTitle} rows={2} />
+            <T label="Best sellers · eyebrow" name="featuredEyebrow" defaultValue={content.featuredEyebrow} />
+            <TA label="Best sellers · title" name="featuredTitle" defaultValue={content.featuredTitle} rows={2} />
+            <T label="Best sellers · button" name="featuredCtaLabel" defaultValue={content.featuredCtaLabel} />
+            <div />
+            <T label="New in · eyebrow" name="newInEyebrow" defaultValue={content.newInEyebrow} />
+            <TA label="New in · title" name="newInTitle" defaultValue={content.newInTitle} rows={2} />
+            <T label="New in · button" name="newInCtaLabel" defaultValue={content.newInCtaLabel} />
+          </div>
         </Section>
 
         <Section title="Why Radnar (up to 5)">
-          <T label="Section title" name="whyTitle" defaultValue={content.whyTitle} />
+          <div className="grid grid-cols-2 gap-3">
+            <T label="Eyebrow" name="whyEyebrow" defaultValue={content.whyEyebrow} />
+            <T label="Section title" name="whyTitle" defaultValue={content.whyTitle} />
+          </div>
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-3 border-t border-line pt-3">

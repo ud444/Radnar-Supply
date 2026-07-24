@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { NewsletterForm } from "./NewsletterForm";
+import { PaymentIcons } from "./PaymentIcons";
 
 export function Footer() {
   return (
@@ -23,9 +24,9 @@ export function Footer() {
 
       <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 text-sm">
         {[
-          { h: "Radnar Select", items: [["Personal Shopping","/sourcing"],["Sourcing Requests","/sourcing"],["Radnar Private","/sourcing?type=private"],["Our Story","/about"]] },
+          { h: "Radnar Select", items: [["Personal Shopping","/sourcing"],["Sourcing Requests","/sourcing"],["Our Story","/about"]] },
           { h: "Shop",   items: [["Clothing","/shop?category=clothing"],["Shoes","/shop?category=shoes"],["Accessories","/shop?category=accessories"],["Fragrance","/shop?category=fragrance"],["Brand Roster","/brands"]] },
-          { h: "Help",   items: [["The Journal","/blog"],["Contact","mailto:hello@radnarsupply.com"],["FAQ","/policies/shipping"],["Track Order","/account/orders"]] },
+          { h: "Help",   items: [["The Journal","/blog"],["Contact","/policies/contact"],["FAQ","/policies/faq"],["Track Order","/account/orders"]] },
           { h: "Legal",  items: [["Shipping","/policies/shipping"],["Returns","/policies/returns"],["Privacy","/policies/privacy"],["Terms","/policies/terms"]] },
           { h: "Social", items: [["Instagram","https://instagram.com"],["TikTok","https://tiktok.com"],["X / Twitter","https://x.com"]] },
         ].map((col) => (
@@ -41,11 +42,11 @@ export function Footer() {
       </div>
 
       <div className="border-t border-paper/15">
-        <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-6 text-[10.5px] tracking-[0.16em] text-paper/55 flex flex-col md:flex-row justify-between gap-3">
+        <div className="max-w-[1400px] mx-auto px-5 md:px-8 py-6 text-[10.5px] tracking-[0.16em] text-paper/55 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             © {new Date().getFullYear()} Radnar Supply Ltd · Company No. 17263761 · Birmingham, UK
           </div>
-          <div className="uppercase tracking-[0.18em]">Visa · Mastercard · Apple Pay · Google Pay · PayPal · Klarna</div>
+          <PaymentIcons />
         </div>
       </div>
     </footer>

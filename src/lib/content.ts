@@ -23,20 +23,29 @@ export type HomeContent = {
   personalBody: string;
   personalCtaLabel: string;
 
-  privateEyebrow: string;
-  privateTitle: string;
-  privateBody: string;
-  privateCtaLabel: string;
+  categoryEyebrow: string;
+  categoryTitle: string;
 
+  featuredEyebrow: string;
+  featuredTitle: string;
+  featuredCtaLabel: string;
+
+  newInEyebrow: string;
+  newInTitle: string;
+  newInCtaLabel: string;
+
+  whyEyebrow: string;
   whyTitle: string;
   whyItems: WhyItem[];
+
+  // Scrolling promo banner at the very top of the site.
+  marquee: string[];
 };
 
 export type HomeMedia = {
   hero: string;
   editorial: string;
   personal: string;
-  private: string;
   categoryClothing: string;
   categoryShoes: string;
   categoryAccessories: string;
@@ -59,12 +68,18 @@ export const DEFAULT_CONTENT: HomeContent = {
     "Our team sources products through our trusted network of suppliers and industry contacts. Tell us what you want — we track it down at the right price.",
   personalCtaLabel: "Start My Search",
 
-  privateEyebrow: "Radnar Private",
-  privateTitle: "Luxury,\nsourced discreetly.",
-  privateBody:
-    "For high-value designer goods sourced privately through our network. Enquiry only — handled with discretion from first contact to delivery.",
-  privateCtaLabel: "Make A Private Enquiry",
+  categoryEyebrow: "Shop The Stock",
+  categoryTitle: "Shop by\ncategory.",
 
+  featuredEyebrow: "In Stock Now",
+  featuredTitle: "Best sellers.",
+  featuredCtaLabel: "View Everything",
+
+  newInEyebrow: "Fresh Stock",
+  newInTitle: "New in.",
+  newInCtaLabel: "View All",
+
+  whyEyebrow: "Why Radnar",
   whyTitle: "Why Radnar.",
   whyItems: [
     { h: "UK Registered Business", p: "Radnar Supply Ltd — a registered UK company, Company No. 17263761. Accountable and contactable." },
@@ -73,13 +88,20 @@ export const DEFAULT_CONTENT: HomeContent = {
     { h: "Personal Shopping Service", p: "Can't find it? We source it for you. No obligation, no payment until you approve an option." },
     { h: "Fast UK Dispatch", p: "In-stock orders ship the same working day from the UK. Tracked, with free 30-day returns." },
   ],
+  marquee: [
+    "Source · Supply · Personal Shop",
+    "Free UK Delivery Over £75",
+    "30-Day Returns",
+    "Personal Shopping Service",
+    "Klarna · Apple Pay · Google Pay",
+    "UK Sourcing & Supply",
+  ],
 };
 
 export const DEFAULT_MEDIA: HomeMedia = {
   hero: IMG.hero,
   editorial: IMG.editorial,
   personal: IMG.heroAlt,
-  private: IMG.private,
   categoryClothing: IMG.category.clothing,
   categoryShoes: IMG.category.shoes,
   categoryAccessories: IMG.category.accessories,
@@ -95,6 +117,10 @@ export async function getHomeContent(): Promise<HomeContent> {
       Array.isArray(stored?.whyItems) && stored.whyItems.length > 0
         ? stored.whyItems
         : DEFAULT_CONTENT.whyItems,
+    marquee:
+      Array.isArray(stored?.marquee) && stored.marquee.length > 0
+        ? stored.marquee
+        : DEFAULT_CONTENT.marquee,
   };
 }
 

@@ -16,7 +16,6 @@ const TOP_NAV = [
 
 const SELECT_NAV = [
   { href: "/sourcing", label: "Personal Shopping" },
-  { href: "/sourcing?type=private", label: "Radnar Private" },
 ];
 
 // Clothing sub-categories — revealed in an accordion under the Clothing row.

@@ -56,6 +56,18 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
           </label>
         </div>
         <Field label="Price (£)" name="price" type="number" step="0.01" defaultValue={(product.priceCents / 100).toString()} />
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Colour (optional)" name="colour" defaultValue={product.colour ?? ""} placeholder="e.g. Black" />
+          <label className="block">
+            <span className="text-[11px] tracking-[0.16em] uppercase text-muted">Gender (optional)</span>
+            <select name="gender" defaultValue={product.gender ?? ""} className="mt-1 w-full border border-line rounded px-3 py-3 text-sm">
+              <option value="">—</option>
+              <option value="Men">Men</option>
+              <option value="Women">Women</option>
+              <option value="Unisex">Unisex</option>
+            </select>
+          </label>
+        </div>
         <div className="flex gap-6">
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="active" defaultChecked={product.active} /> Live</label>
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="featured" defaultChecked={product.featured} /> Featured</label>

@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { slugify } from "@/lib/format";
+import { CategoryImage } from "./CategoryImage";
 
 export default async function Categories() {
   await requireAdmin();
@@ -31,10 +32,13 @@ export default async function Categories() {
       </form>
       <ul className="mt-6 divide-y divide-line border-y border-line">
         {categories.map((c) => (
-          <li key={c.id} className="py-3 flex items-center justify-between text-sm">
-            <div>
-              <div>{c.name}</div>
-              <div className="text-xs text-muted">/{c.slug} · {c.products.length} products</div>
+          <li key={c.id} className="py-3 flex items-center justify-between gap-4 text-sm">
+            <div className="flex items-center gap-4 min-w-0">
+              <CategoryImage categoryId={c.id} imageUrl={c.imageUrl} />
+              <div className="min-w-0">
+                <div>{c.name}</div>
+                <div className="text-xs text-muted">/{c.slug} · {c.products.length} products</div>
+              </div>
             </div>
             <form action={remove.bind(null, c.id)}>
               <button className="text-xs text-red-600 underline" disabled={c.products.length > 0}>
