@@ -67,6 +67,27 @@ The webhook re-verifies signatures, marks the order paid (or releases reserved s
 
 ---
 
+## Deployment — Vercel
+
+1. **Postgres** — create a free database at [neon.tech](https://neon.tech). Copy the **pooled** connection string (the one containing `-pooler`) and append `?pgbouncer=true&connection_limit=1`. Serverless functions open a connection per instance; the pooled endpoint is what stops a traffic spike exhausting the database.
+2. **Vercel** → Add New → Project → import the GitHub repo. The framework preset is detected as Next.js; leave it.
+3. Add every env var from the table above under **Settings → Environment Variables**. Set `NEXT_PUBLIC_SITE_URL` to the deployment origin with no trailing slash (e.g. `https://radnar-supply.vercel.app`) — this is read at build time by `middleware.ts` to decide the canonical host, so a wrong value here will 301 all traffic off-site.
+4. Deploy. `vercel.json` pins the build to `prisma generate && prisma db push && next build`, so the schema is created on first deploy — Vercel does not read `.replit`, so without this the tables never exist and every page 500s.
+5. Seed the catalogue once, locally, against the same database:
+   ```bash
+   DATABASE_URL="<neon-pooled-url>" npm run db:seed
+   ```
+6. Open `/setup` to create the first admin. The route self-disables afterwards.
+
+### After the domain is attached
+- Update `NEXT_PUBLIC_SITE_URL` to the custom domain and **redeploy** (it is inlined at build time — an env change alone does not take effect).
+- Repoint the Stripe webhook at `${NEXT_PUBLIC_SITE_URL}/api/webhooks/stripe` and update `STRIPE_WEBHOOK_SECRET`.
+- Set the `SITE_URL` repo variable (Settings → Secrets and variables → Actions → Variables) so the two scheduled workflows hit the live host.
+
+> `prisma db push` runs without `--accept-data-loss` by design: a destructive schema change fails the build rather than silently dropping production data. If a deploy fails on that, reconcile the schema deliberately.
+
+---
+
 ## Routes
 
 ### Storefront

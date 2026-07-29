@@ -13,5 +13,9 @@ jobs:
       - name: Trigger /api/cron/abandoned-carts
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          # Repo variable (Settings → Secrets and variables → Actions → Variables).
+          # Origin only, no trailing slash, e.g. https://radnar-supply.vercel.app
+          SITE_URL: ${{ vars.SITE_URL }}
         run: |
-          curl -fsS "https://radnarsupply.co.uk/api/cron/abandoned-carts?key=${CRON_SECRET}"
+          test -n "$SITE_URL" || { echo "SITE_URL repo variable is not set"; exit 1; }
+          curl -fsS --max-time 60 "${SITE_URL}/api/cron/abandoned-carts?key=${CRON_SECRET}"
