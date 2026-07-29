@@ -1,0 +1,58 @@
+# Render Blueprint — provisions the web service and its Postgres together.
+# Dashboard → New → Blueprint → point at this repo → Apply.
+#
+# Everything marked `sync: false` is left blank on purpose: Render prompts for
+# those values when the blueprint is applied, so no secret is ever committed.
+
+databases:
+  - name: radnar-db
+    databaseName: radnar
+    # Smallest paid tier. Deliberately NOT `free`: free Postgres instances get
+    # no automatic backups, and this database holds orders and customer data.
+    plan: basic-256mb
+    region: frankfurt
+
+services:
+  - type: web
+    name: radnar-supply
+    runtime: node
+    plan: starter
+    region: frankfurt
+    branch: main
+    healthCheckPath: /
+    buildCommand: npm ci && npx prisma generate && npm run build
+    # Schema sync runs after the build, before traffic is switched over, so a
+    # failed migration never takes the live site down with it. No
+    # --accept-data-loss: a destructive change stops the deploy instead of
+    # silently dropping production data.
+    preDeployCommand: npx prisma db push
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: radnar-db
+          property: connectionString
+      - key: NODE_VERSION
+        value: "22"
+      # Generated once by Render and then held stable. Used as a raw HMAC key
+      # for session and cart signing — changing it invalidates both.
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: CRON_SECRET
+        generateValue: true
+      # Set to the live origin (no trailing slash) after the first deploy, then
+      # redeploy — it is inlined at build time and decides the canonical host.
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: SOURCING_INBOX
+        sync: false
+      - key: UPLOADTHING_TOKEN
+        sync: false

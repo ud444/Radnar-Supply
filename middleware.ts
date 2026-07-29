@@ -25,7 +25,8 @@ export function middleware(req: NextRequest) {
   //    without this a *.vercel.app deploy 301s every request off-site, and the
   //    301 is cached permanently by the visitor's browser.
   const isCanonical   = hostNoPort === CANONICAL;
-  const isPreviewHost = hostNoPort.endsWith(".vercel.app")
+  const isPreviewHost = hostNoPort.endsWith(".onrender.com")
+    || hostNoPort.endsWith(".vercel.app")
     || hostNoPort.endsWith(".replit.app")
     || hostNoPort.endsWith(".repl.co")
     || hostNoPort.endsWith(".trycloudflare.com")

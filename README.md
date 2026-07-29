@@ -67,6 +67,46 @@ The webhook re-verifies signatures, marks the order paid (or releases reserved s
 
 ---
 
+## Deployment — Render (recommended)
+
+Closest match to the Replit workflow: one dashboard for the app, the database,
+the secrets and a shell, with a deploy button.
+
+1. **Render** → New → **Blueprint** → connect the GitHub repo → Apply. `render.yaml`
+   provisions the web service *and* its Postgres together and wires `DATABASE_URL`
+   between them automatically.
+2. Render prompts for the secrets marked `sync: false` — paste the Stripe, Resend
+   and UploadThing values. `AUTH_SECRET` and `CRON_SECRET` are generated for you.
+3. First deploy finishes → copy the `https://<name>.onrender.com` URL → set
+   `NEXT_PUBLIC_SITE_URL` to it → **Manual Deploy → Deploy latest commit**. It is
+   inlined at build time, so it only takes effect on a rebuild.
+4. Seed the catalogue from the service's **Shell** tab:
+   ```bash
+   npm run db:seed
+   ```
+5. Open `/setup` to create the first admin. The route self-disables afterwards.
+
+### Day-to-day
+- **Push to `main` → Render rebuilds and deploys automatically.** To publish an
+  existing commit instead, use **Manual Deploy → Deploy latest commit**.
+- **Shell** tab = a terminal inside the running service (`npm run db:seed`, `npx prisma studio`).
+- **Environment** tab = secrets. Changing one restarts the service; anything
+  `NEXT_PUBLIC_*` additionally needs a redeploy to take effect.
+- **Rollback** — Deploys tab → any previous deploy → Rollback.
+- Deploys are zero-downtime: the old instance serves traffic until the new one is healthy.
+
+### Coming from Replit
+
+| Replit | Render |
+|---|---|
+| Run / Publish button | Auto-deploy on push, or Manual Deploy |
+| Shell | Shell tab (paid instances) |
+| Secrets | Environment tab |
+| Built-in PostgreSQL | Managed Postgres in the same workspace |
+| — | Rollbacks, zero-downtime deploys, 7-day point-in-time recovery |
+
+---
+
 ## Deployment — Vercel
 
 1. **Postgres** — create a free database at [neon.tech](https://neon.tech). Copy the **pooled** connection string (the one containing `-pooler`) and append `?pgbouncer=true&connection_limit=1`. Serverless functions open a connection per instance; the pooled endpoint is what stops a traffic spike exhausting the database.
