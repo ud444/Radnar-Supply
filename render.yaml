@@ -20,7 +20,11 @@ services:
     region: frankfurt
     branch: main
     healthCheckPath: /
-    buildCommand: npm ci && npx prisma generate && npm run build
+    # --include=dev is required: Render sets NODE_ENV=production, which makes
+    # npm ci skip devDependencies — but typescript, tailwindcss, postcss,
+    # autoprefixer, prisma and tsx all live there and are needed to build and
+    # to run the seed script from the Shell.
+    buildCommand: npm ci --include=dev && npx prisma generate && npm run build
     # Schema sync runs after the build, before traffic is switched over, so a
     # failed migration never takes the live site down with it. No
     # --accept-data-loss: a destructive change stops the deploy instead of
