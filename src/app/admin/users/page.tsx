@@ -1,8 +1,10 @@
-import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
+import {
+  PageHeader, Button, TableWrap, Table, THead, Th, Tr, Td, EmptyState, Badge, Pagination,
+} from "@/components/admin/ui";
 
 const PER_PAGE = 25;
 
@@ -30,55 +32,69 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
 
   return (
     <div>
-      <h1 className="text-2xl font-display font-semibold tracking-tightest">Users</h1>
-      <div className="mt-6 bg-white border border-line rounded overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-soft text-muted">
+      <PageHeader
+        eyebrow="Store"
+        title="Customers"
+        description="Everyone who has registered an account, with what they have spent."
+      />
+
+      <TableWrap>
+        <Table>
+          <THead>
             <tr>
-              <th className="text-left px-4 py-2">Email</th>
-              <th className="text-left px-4 py-2">Name</th>
-              <th className="text-left px-4 py-2">Role</th>
-              <th className="text-right px-4 py-2">Orders</th>
-              <th className="text-right px-4 py-2">Spent</th>
-              <th className="text-right px-4 py-2"></th>
+              <Th>Email</Th>
+              <Th>Name</Th>
+              <Th>Role</Th>
+              <Th align="right">Orders</Th>
+              <Th align="right">Spent</Th>
+              <Th align="right" />
             </tr>
-          </thead>
+          </THead>
           <tbody>
-            {users.map((u) => {
-              const spent = u.orders.filter((o) => o.paymentStatus === "PAID").reduce((a, o) => a + o.totalCents, 0);
+            {users.length === 0 ? (
+              <tr>
+                <Td colSpan={6}>
+                  <EmptyState
+                    title="No customers yet"
+                    hint="Accounts appear here as people register on the storefront."
+                  />
+                </Td>
+              </tr>
+            ) : users.map((u) => {
+              const spent = u.orders
+                .filter((o) => o.paymentStatus === "PAID")
+                .reduce((a, o) => a + o.totalCents, 0);
               return (
-                <tr key={u.id} className="border-t border-line">
-                  <td className="px-4 py-2">{u.email}</td>
-                  <td className="px-4 py-2 text-muted">{u.name ?? "—"}</td>
-                  <td className="px-4 py-2">
-                    <span className={`text-xs px-2 py-1 rounded ${u.role === "ADMIN" ? "bg-ink text-white" : "bg-soft text-muted"}`}>{u.role.toLowerCase()}</span>
-                  </td>
-                  <td className="px-4 py-2 text-right">{u.orders.length}</td>
-                  <td className="px-4 py-2 text-right">{money(spent)}</td>
-                  <td className="px-4 py-2 text-right">
+                <Tr key={u.id}>
+                  <Td className="font-medium">{u.email}</Td>
+                  <Td className="text-muted">{u.name ?? "—"}</Td>
+                  <Td>
+                    <Badge tone={u.role === "ADMIN" ? "info" : "neutral"} dot={false}>
+                      {u.role === "ADMIN" ? "Admin" : "Customer"}
+                    </Badge>
+                  </Td>
+                  <Td align="right" numeric>{u.orders.length}</Td>
+                  <Td align="right" numeric className="font-medium">{money(spent)}</Td>
+                  <Td align="right">
                     {u.id !== me.id && (
                       <form action={setRole.bind(null, u.id, u.role === "ADMIN" ? "CUSTOMER" : "ADMIN")}>
-                        <button className="text-xs underline">Make {u.role === "ADMIN" ? "customer" : "admin"}</button>
+                        <Button variant="ghost" size="sm">
+                          Make {u.role === "ADMIN" ? "customer" : "admin"}
+                        </Button>
                       </form>
                     )}
-                  </td>
-                </tr>
+                  </Td>
+                </Tr>
               );
             })}
-            {users.length === 0 && <tr><td colSpan={6} className="px-4 py-8 text-center text-muted">No users yet.</td></tr>}
           </tbody>
-        </table>
-      </div>
+        </Table>
+      </TableWrap>
 
-      {pages > 1 ? (
-        <div className="mt-5 flex items-center justify-between text-sm">
-          <div className="text-ink/55">{total} users · page {page} of {pages}</div>
-          <div className="flex gap-2">
-            {page > 1 ? <Link href={`/admin/users?page=${page - 1}`} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">← Prev</Link> : null}
-            {page < pages ? <Link href={`/admin/users?page=${page + 1}`} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">Next →</Link> : null}
-          </div>
-        </div>
-      ) : null}
+      <Pagination
+        page={page} pages={pages} total={total} noun="customers"
+        hrefFor={(n) => (n > 1 ? `/admin/users?page=${n}` : "/admin/users")}
+      />
     </div>
   );
 }

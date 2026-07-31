@@ -7,6 +7,10 @@ import { stripe, siteUrl } from "@/lib/stripe";
 import { money } from "@/lib/format";
 import { sendSourcingQuote, sendQuoteAdminConfirmation } from "@/lib/email";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import {
+  Card, Button, Field, TextareaField, SelectField, SectionTitle, Eyebrow,
+  Notice, btn,
+} from "@/components/admin/ui";
 
 export default async function RequestDetail({
   params, searchParams,
@@ -91,7 +95,7 @@ export default async function RequestDetail({
   const field = (label: string, value?: string | null) =>
     value ? (
       <div>
-        <div className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">{label}</div>
+        <Eyebrow>{label}</Eyebrow>
         <div className="text-sm mt-1 whitespace-pre-wrap">{value}</div>
       </div>
     ) : null;
@@ -99,93 +103,123 @@ export default async function RequestDetail({
   return (
     <div className="max-w-4xl">
       {quoteFlag === "sent" ? (
-        <div className="mb-4 border border-green-600/40 bg-green-50 text-green-800 px-4 py-3 text-sm">Quote sent — customer and admin inbox have been emailed.</div>
+        <Notice tone="success">Quote sent — the customer and the admin inbox have both been emailed.</Notice>
       ) : quoteFlag === "emailfail" ? (
-        <div className="mb-4 border border-amber-600/50 bg-amber-50 text-amber-800 px-4 py-3 text-sm">Quote saved and the Stripe link is ready, but the email could not be sent. Check RESEND_API_KEY / EMAIL_FROM, then re-send.</div>
+        <Notice tone="warning">
+          Quote saved and the Stripe link is ready, but the email could not be sent.
+          Check <code className="font-mono text-[12px]">RESEND_API_KEY</code> and{" "}
+          <code className="font-mono text-[12px]">EMAIL_FROM</code>, then send it again.
+        </Notice>
       ) : null}
-      <Link href="/admin/requests" className="text-[11px] tracking-[0.22em] uppercase font-bold text-ink/55 hover:text-accent">← All requests</Link>
-      <div className="flex items-center justify-between flex-wrap gap-3 mt-3">
+
+      <Link href="/admin/requests" className="text-[13px] text-muted hover:text-ink transition-colors">
+        ← All requests
+      </Link>
+
+      <div className="mt-3 pb-5 mb-6 border-b border-line/70 flex items-start justify-between flex-wrap gap-3">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="font-display font-black text-3xl uppercase tracking-tightest">{r.name}</h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-[22px] md:text-[26px] font-semibold tracking-[-0.01em]">{r.name}</h1>
             <StatusBadge value={r.status} />
           </div>
-          <div className="text-sm text-ink/55 mt-1">
-            {r.type === "PRIVATE" ? "RADNAR Private" : "Personal Shopping"} · {r.createdAt.toLocaleString("en-GB")}
+          <div className="text-sm text-muted mt-1.5">
+            {r.type === "PRIVATE" ? "Private sourcing" : "Personal shopping"} · {r.createdAt.toLocaleString("en-GB")}
           </div>
         </div>
-        <a href={`mailto:${r.email}?subject=${encodeURIComponent(`Your Radnar Supply request: ${r.item}`)}`}
-           className="bg-ink text-paper px-4 py-2.5 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
+        <a
+          href={`mailto:${r.email}?subject=${encodeURIComponent(`Your Radnar Supply request: ${r.item}`)}`}
+          className={btn("primary")}
+        >
           Reply by email →
         </a>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6 mt-8">
-        <div className="md:col-span-2 bg-white border border-line p-6 space-y-5">
-          <div className="grid sm:grid-cols-2 gap-5">
-            {field("Email", r.email)}
-            {field("Phone", r.phone)}
-            {field("Size", r.size)}
-            {field("Budget", r.budget)}
-          </div>
-          {field("Item", r.item)}
-          {field("Detail", r.detail)}
-          {images.length > 0 ? (
-            <div>
-              <div className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold mb-2">Reference images</div>
-              <div className="grid grid-cols-4 gap-2">
-                {images.map((u) => (
-                  <a key={u} href={u} target="_blank" rel="noreferrer">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={u} alt="" className="aspect-square object-cover bg-soft border border-line" />
-                  </a>
-                ))}
-              </div>
+      <div className="grid md:grid-cols-3 gap-5 lg:gap-6">
+        <div className="md:col-span-2">
+          <Card className="space-y-5">
+            <div className="grid sm:grid-cols-2 gap-5">
+              {field("Email", r.email)}
+              {field("Phone", r.phone)}
+              {field("Size", r.size)}
+              {field("Budget", r.budget)}
             </div>
-          ) : null}
+            {field("Item", r.item)}
+            {field("Detail", r.detail)}
+            {images.length > 0 ? (
+              <div>
+                <Eyebrow className="mb-2">Reference images</Eyebrow>
+                <div className="grid grid-cols-4 gap-2">
+                  {images.map((u) => (
+                    <a
+                      key={u} href={u} target="_blank" rel="noreferrer"
+                      className="block rounded-[6px] overflow-hidden border border-line/70 hover:border-ink/40 transition-colors"
+                    >
+                      {/* Customer-supplied URL from UploadThing — dimensions unknown,
+                          and next/image would need every possible host allow-listed. */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={u} alt="" className="aspect-square object-cover bg-cream w-full" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </Card>
         </div>
 
         <div className="space-y-6 h-fit">
-          <form action={save} className="bg-white border border-line p-6 space-y-4">
-            <div>
-              <div className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold mb-1">Status</div>
-              <select name="status" defaultValue={r.status} className="w-full border border-line px-3 py-2 text-sm">
-                {["NEW", "IN_PROGRESS", "QUOTED", "SOURCED", "CLOSED"].map((s) => (
-                  <option key={s} value={s}>{s.replace(/_/g, " ").toLowerCase()}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <div className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold mb-1">Internal notes</div>
-              <textarea name="notes" rows={6} defaultValue={r.notes ?? ""} className="w-full border border-line px-3 py-2 text-sm" placeholder="Sourcing progress, supplier quotes, next steps…" />
-            </div>
-            <button className="bg-ink text-white py-3 text-sm font-medium w-full">Save</button>
-          </form>
+          <div>
+            <SectionTitle>Progress</SectionTitle>
+            <form action={save}>
+              <Card className="space-y-4">
+                <SelectField label="Status" name="status" defaultValue={r.status}>
+                  {["NEW", "IN_PROGRESS", "QUOTED", "SOURCED", "CLOSED"].map((s) => {
+                    const t = s.replace(/_/g, " ").toLowerCase();
+                    return <option key={s} value={s}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>;
+                  })}
+                </SelectField>
+                <TextareaField
+                  label="Internal notes" name="notes" rows={6} defaultValue={r.notes ?? ""}
+                  placeholder="Sourcing progress, supplier quotes, next steps…"
+                />
+                <Button className="w-full">Save</Button>
+              </Card>
+            </form>
+          </div>
 
-          {/* Quote → Stripe payment link */}
-          <form action={sendQuote} className="bg-white border border-accent/40 p-6 space-y-3">
-            <div className="text-sm font-medium text-accent">Send quote</div>
-            {r.quoteUrl ? (
-              <div className="text-xs bg-cream border border-ink/15 p-3 space-y-1">
-                <div className="font-bold">Quoted {money(r.quoteCents ?? 0)}</div>
-                <div className="text-ink/60 whitespace-pre-wrap">{r.quoteDetail}</div>
-                <a href={r.quoteUrl} target="_blank" rel="noreferrer" className="text-accent break-all hover:underline">{r.quoteUrl}</a>
+          <div>
+            <SectionTitle>Quote</SectionTitle>
+            <form action={sendQuote}>
+              <div className="bg-bone border border-accent/30 rounded-card p-5 space-y-3.5">
+                {r.quoteUrl ? (
+                  <div className="rounded-control bg-cream/70 border border-line/70 p-3 space-y-1 text-[12px]">
+                    <div className="font-medium">
+                      Quoted <span className="tabular-nums">{money(r.quoteCents ?? 0)}</span>
+                    </div>
+                    <div className="text-muted whitespace-pre-wrap">{r.quoteDetail}</div>
+                    <a
+                      href={r.quoteUrl} target="_blank" rel="noreferrer"
+                      className="text-accent break-all hover:underline block pt-1"
+                    >
+                      {r.quoteUrl}
+                    </a>
+                  </div>
+                ) : (
+                  <p className="text-[13px] text-muted">
+                    Set a price and Radnar generates a Stripe pay-now link, then emails it to {r.email}.
+                  </p>
+                )}
+                <Field label="What you're quoting" name="detail" defaultValue={r.quoteDetail ?? r.item} />
+                <Field
+                  label="Price" hint="£" name="amount" type="number" step="0.01" min="0.50"
+                  defaultValue={r.quoteCents ? (r.quoteCents / 100).toFixed(2) : ""}
+                  placeholder="0.00" className="tabular-nums"
+                />
+                <Button className="w-full">
+                  {r.quoteUrl ? "Update and re-send quote" : "Generate link and email customer"}
+                </Button>
               </div>
-            ) : (
-              <p className="text-xs text-ink/60">Set a price and we&apos;ll generate a Stripe pay-now link and email it to {r.email}.</p>
-            )}
-            <label className="block">
-              <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">What you&apos;re quoting</span>
-              <input name="detail" defaultValue={r.quoteDetail ?? r.item} className="mt-1 w-full border border-line px-3 py-2 text-sm" />
-            </label>
-            <label className="block">
-              <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">Price (£)</span>
-              <input name="amount" type="number" step="0.01" min="0.50" defaultValue={r.quoteCents ? (r.quoteCents / 100).toFixed(2) : ""} placeholder="0.00" className="mt-1 w-full border border-line px-3 py-2 text-sm" />
-            </label>
-            <button className="bg-accent text-white py-3 text-sm font-medium w-full hover:bg-ink transition-colors">
-              {r.quoteUrl ? "Re-send / update quote" : "Generate link & email customer"}
-            </button>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>

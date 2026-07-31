@@ -6,7 +6,7 @@ export function SelectAll() {
     <input
       type="checkbox"
       aria-label="Select all"
-      className="w-4 h-4"
+      className="w-4 h-4 accent-ink"
       onChange={(e) => {
         const form = e.currentTarget.closest("form");
         form?.querySelectorAll<HTMLInputElement>('input[name="ids"]').forEach((c) => {

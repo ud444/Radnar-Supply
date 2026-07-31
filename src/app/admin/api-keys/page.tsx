@@ -1,8 +1,11 @@
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
-import { SCOPES } from "@/lib/apiKey";
 import { NewKeyForm } from "./NewKeyForm";
 import { revokeKey } from "./actions";
+import {
+  PageHeader, Card, Button, SectionTitle, TableWrap, Table, THead, Th, Tr, Td,
+  Badge, EmptyState, Eyebrow, Ident,
+} from "@/components/admin/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -15,151 +18,165 @@ export default async function ApiKeys({ searchParams }: { searchParams: Promise<
 
   return (
     <div>
-      {/* Header */}
-      <div>
-        <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Integrations</div>
-        <h1 className="font-display font-black text-4xl md:text-5xl uppercase display-tight mt-1">SyncLayer Integration</h1>
-        <p className="text-sm text-ink/65 mt-2 max-w-prose">
-          Manage API keys for connecting SyncLayer to Radnar Supply.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Integrations"
+        title="API keys"
+        description="Keys for connecting SyncLayer, or any other system, to Radnar Supply."
+      />
 
-      {/* New key reveal */}
       {created ? (
-        <div className="mt-8 border-2 border-accent bg-accent/10 p-5">
-          <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-accent">New Key — Copy Now</div>
-          <p className="text-[12px] text-ink/75 mt-1">This is the only time the full token is shown. If you lose it, revoke and create a new one.</p>
-          <pre className="mt-3 bg-ink text-paper p-3 font-mono text-sm overflow-x-auto select-all break-all">{created}</pre>
+        <div className="mb-8 rounded-card border border-accent/40 bg-accent/[0.07] p-5">
+          <Eyebrow className="text-accent">Copy this now</Eyebrow>
+          <p className="text-[13px] text-muted mt-1.5">
+            This is the only time the full token is shown. If you lose it, revoke the key and create another.
+          </p>
+          <pre className="mt-3 rounded-control bg-ink text-paper p-3 font-mono text-[13px] overflow-x-auto select-all break-all">{created}</pre>
         </div>
       ) : null}
 
-      {/* Connection details panel */}
-      <section className="mt-10">
-        <h2 className="font-display font-bold uppercase text-xl tracking-tight">Connection Details</h2>
-        <p className="text-sm text-ink/65 mt-1.5">
-          Use these settings when adding <strong>Radnar Supply</strong> as a Custom Store in SyncLayer.
-        </p>
-
-        <div className="mt-5 grid md:grid-cols-2 gap-4">
-          <div className="card">
-            <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Base URL</div>
-            <code className="block mt-2 font-mono text-sm bg-cream px-3 py-2 border border-ink/15 break-all select-all">{`${SITE}/api/sync`}</code>
-          </div>
-          <div className="card">
-            <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Auth Type</div>
-            <code className="block mt-2 font-mono text-sm bg-cream px-3 py-2 border border-ink/15">Bearer Token</code>
-          </div>
+      {/* Connection details */}
+      <section className="mb-8">
+        <SectionTitle>Connection details</SectionTitle>
+        <div className="grid md:grid-cols-2 gap-4">
+          <Card>
+            <Eyebrow>Base URL</Eyebrow>
+            <code className="block mt-2 rounded-control bg-cream/70 border border-line/70 px-3 py-2 font-mono text-[13px] break-all select-all">
+              {`${SITE}/api/sync`}
+            </code>
+          </Card>
+          <Card>
+            <Eyebrow>Auth type</Eyebrow>
+            <code className="block mt-2 rounded-control bg-cream/70 border border-line/70 px-3 py-2 font-mono text-[13px]">
+              Bearer token
+            </code>
+          </Card>
         </div>
 
-        <div className="mt-5 grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-3 gap-4 mt-4">
           {[
             { h: "Products",  l: "GET /products"  },
             { h: "Inventory", l: "GET /inventory" },
             { h: "Orders",    l: "GET /orders"    },
           ].map((e) => (
-            <div key={e.h} className="card">
-              <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">{e.h}</div>
-              <code className="block mt-2 font-mono text-sm">{e.l}</code>
-            </div>
+            <Card key={e.h}>
+              <Eyebrow>{e.h}</Eyebrow>
+              <code className="block mt-2 font-mono text-[13px]">{e.l}</code>
+            </Card>
           ))}
         </div>
       </section>
 
       {/* Scopes */}
-      <section className="mt-12">
-        <h2 className="font-display font-bold uppercase text-xl tracking-tight">Available Scopes</h2>
-        <p className="text-sm text-ink/65 mt-1.5">
-          Each API key can be assigned one or more scopes that control access.
-        </p>
-
-        <div className="mt-5 grid md:grid-cols-3 gap-4">
-          <ScopeCard title="Read" desc="View products, inventory levels, and orders" endpoints={[
-            "GET /api/sync/products",
-            "GET /api/sync/products/:id",
-            "GET /api/sync/inventory",
-            "GET /api/sync/orders",
-          ]} />
-          <ScopeCard title="Write" desc="Create / update products and set inventory levels" endpoints={[
-            "POST /api/sync/products",
-            "PUT /api/sync/products/:id",
-            "POST /api/sync/inventory/set",
-            "POST /api/sync/webhooks",
-          ]} />
-          <ScopeCard title="Delete" desc="Remove products from the catalogue" endpoints={[
-            "DELETE /api/sync/products/:id",
-          ]} />
+      <section className="mb-8">
+        <SectionTitle>Available scopes</SectionTitle>
+        <div className="grid md:grid-cols-3 gap-4">
+          <ScopeCard
+            title="Read" desc="View products, inventory levels and orders"
+            endpoints={[
+              "GET /api/sync/products",
+              "GET /api/sync/products/:id",
+              "GET /api/sync/inventory",
+              "GET /api/sync/orders",
+            ]}
+          />
+          <ScopeCard
+            title="Write" desc="Create or update products and set inventory levels"
+            endpoints={[
+              "POST /api/sync/products",
+              "PUT /api/sync/products/:id",
+              "POST /api/sync/inventory/set",
+              "POST /api/sync/webhooks",
+            ]}
+          />
+          <ScopeCard
+            title="Delete" desc="Remove products from the catalogue"
+            endpoints={["DELETE /api/sync/products/:id"]}
+          />
         </div>
       </section>
 
       {/* Create form */}
-      <section className="mt-12">
-        <h2 className="font-display font-bold uppercase text-xl tracking-tight">Create API Key</h2>
-        <div className="mt-4 card-frame max-w-2xl">
+      <section className="mb-8">
+        <SectionTitle>Create a key</SectionTitle>
+        <Card className="max-w-2xl">
           <NewKeyForm />
-        </div>
+        </Card>
       </section>
 
-      {/* Active keys list */}
-      <section className="mt-12">
-        <h2 className="font-display font-bold uppercase text-xl tracking-tight mb-3">Active Keys</h2>
-        <div className="bg-bone border border-ink/15 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-cream text-ink/65">
+      {/* Active keys */}
+      <section className="mb-8">
+        <SectionTitle>Keys</SectionTitle>
+        <TableWrap>
+          <Table>
+            <THead>
               <tr>
-                <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Name</th>
-                <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Prefix</th>
-                <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Scopes</th>
-                <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Last used</th>
-                <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Created</th>
-                <th className="text-right px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold"></th>
+                <Th>Name</Th><Th>Prefix</Th><Th>Scopes</Th>
+                <Th>Last used</Th><Th>Created</Th><Th align="right" />
               </tr>
-            </thead>
+            </THead>
             <tbody>
               {keys.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-12 text-center text-ink/55">No keys yet — create one above.</td></tr>
+                <tr>
+                  <Td colSpan={6}>
+                    <EmptyState title="No keys yet" hint="Create one above to connect an external system." />
+                  </Td>
+                </tr>
               ) : keys.map((k) => (
-                <tr key={k.id} className={`border-t border-ink/10 ${k.revokedAt ? "opacity-50" : ""}`}>
-                  <td className="px-4 py-3 font-medium">{k.name}</td>
-                  <td className="px-4 py-3 font-mono text-[12px] text-ink/70">{k.prefix}…</td>
-                  <td className="px-4 py-3">
+                <Tr key={k.id} className={k.revokedAt ? "opacity-55" : ""}>
+                  <Td className="font-medium">{k.name}</Td>
+                  <Td><Ident>{k.prefix}…</Ident></Td>
+                  <Td>
                     <div className="flex flex-wrap gap-1">
                       {k.scopes.split(",").filter(Boolean).map((s) => (
-                        <span key={s} className="text-[10px] px-1.5 py-0.5 border border-ink/20 bg-cream tracking-[0.06em] uppercase font-bold">{s}</span>
+                        <Badge key={s} tone="neutral" dot={false}>{s}</Badge>
                       ))}
                     </div>
-                  </td>
-                  <td className="px-4 py-3 text-[12px] text-ink/65">{k.lastUsedAt ? k.lastUsedAt.toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "—"}</td>
-                  <td className="px-4 py-3 text-[12px] text-ink/65">{k.createdAt.toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</td>
-                  <td className="px-4 py-3 text-right">
+                  </Td>
+                  <Td className="text-muted text-[12px] whitespace-nowrap">
+                    {k.lastUsedAt
+                      ? k.lastUsedAt.toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })
+                      : "—"}
+                  </Td>
+                  <Td className="text-muted text-[12px] whitespace-nowrap">
+                    {k.createdAt.toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                  </Td>
+                  <Td align="right">
                     {k.revokedAt ? (
-                      <span className="text-[10px] tracking-[0.18em] uppercase font-bold text-red-700">Revoked</span>
+                      <Badge tone="danger">Revoked</Badge>
                     ) : (
                       <form action={revokeKey.bind(null, k.id)}>
-                        <button className="text-[11px] tracking-[0.18em] uppercase font-bold text-ink/55 hover:text-red-600 underline">Revoke</button>
+                        <Button variant="ghost" size="sm" className="text-danger hover:text-danger hover:bg-danger-tint">
+                          Revoke
+                        </Button>
                       </form>
                     )}
-                  </td>
-                </tr>
+                  </Td>
+                </Tr>
               ))}
             </tbody>
-          </table>
-        </div>
+          </Table>
+        </TableWrap>
       </section>
 
-      {/* Webhook quick note */}
-      <section className="mt-12 card">
-        <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Webhooks</div>
-        <p className="text-sm text-ink/75 mt-2">
-          With a <code className="font-mono bg-cream px-1.5 py-0.5">write</code>-scoped key, SyncLayer can subscribe to store events with:
-        </p>
-        <pre className="mt-3 bg-ink text-paper p-3 font-mono text-[12px] overflow-x-auto">{`POST ${SITE}/api/sync/webhooks
+      {/* Webhooks */}
+      <section>
+        <SectionTitle>Webhooks</SectionTitle>
+        <Card>
+          <p className="text-sm text-muted">
+            With a <code className="font-mono text-[12px] bg-cream/70 px-1.5 py-0.5 rounded">write</code>-scoped key,
+            an external system can subscribe to store events:
+          </p>
+          <pre className="mt-3 rounded-control bg-ink text-paper p-3 font-mono text-[12px] overflow-x-auto">{`POST ${SITE}/api/sync/webhooks
 {
   "url": "https://synclayer.app/webhooks/radnar",
   "events": ["order.paid", "order.shipped", "product.updated", "inventory.changed"]
 }`}</pre>
-        <p className="text-[11px] text-ink/55 mt-2">
-          Event POSTs are signed with <code className="font-mono">X-Radnar-Signature: sha256=&lt;hex&gt;</code>. The signing secret is returned only on subscription creation.
-        </p>
+          <p className="text-[12px] text-muted mt-2.5">
+            Event POSTs are signed with{" "}
+            <code className="font-mono">X-Radnar-Signature: sha256=&lt;hex&gt;</code>. The signing secret is
+            returned only when the subscription is created.
+          </p>
+        </Card>
       </section>
     </div>
   );
@@ -167,14 +184,18 @@ export default async function ApiKeys({ searchParams }: { searchParams: Promise<
 
 function ScopeCard({ title, desc, endpoints }: { title: string; desc: string; endpoints: string[] }) {
   return (
-    <div className="card-frame">
-      <div className="font-display font-black text-2xl uppercase tracking-tight">{title}</div>
-      <div className="text-sm text-ink/70 mt-1.5">{desc}</div>
-      <ul className="mt-4 space-y-1.5">
+    <Card>
+      <div className="text-[15px] font-semibold">{title}</div>
+      <div className="text-[13px] text-muted mt-1">{desc}</div>
+      <ul className="mt-3.5 space-y-1.5">
         {endpoints.map((e) => (
-          <li key={e}><code className="font-mono text-[12px] block bg-cream px-2 py-1 border border-ink/10">{e}</code></li>
+          <li key={e}>
+            <code className="block rounded-[6px] bg-cream/70 border border-line/60 px-2 py-1 font-mono text-[12px] break-all">
+              {e}
+            </code>
+          </li>
         ))}
       </ul>
-    </div>
+    </Card>
   );
 }

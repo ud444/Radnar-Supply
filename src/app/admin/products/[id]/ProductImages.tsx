@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { UploadButton } from "@/lib/uploadthing";
 import { saveUploadedImages } from "../actions";
+import { EmptyState } from "@/components/admin/ui";
 
 type Img = { id: string; url: string; alt: string | null };
 
@@ -19,18 +20,32 @@ export function ProductImages({
 
   return (
     <div>
-      <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mt-3">
-        {images.map((img) => (
-          <div key={img.id} className="relative aspect-[4/5] rounded overflow-hidden bg-soft group">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={img.url} alt="" className="w-full h-full object-cover" />
-            <button
-              onClick={() => start(async () => { await deleteImage(img.id, productId); router.refresh(); })}
-              className="absolute top-1 right-1 bg-white/90 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-            >Remove</button>
-          </div>
-        ))}
-      </div>
+      {images.length === 0 ? (
+        <EmptyState
+          title="No images yet"
+          hint="The first image is used as the product thumbnail across the storefront."
+        />
+      ) : (
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+          {images.map((img) => (
+            <div
+              key={img.id}
+              className="relative aspect-[4/5] rounded-control overflow-hidden bg-cream border border-line/70 group"
+            >
+              {/* Uploaded to UploadThing from the browser — no intrinsic size known here. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={img.url} alt="" className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={() => start(async () => { await deleteImage(img.id, productId); router.refresh(); })}
+                className="absolute top-1.5 right-1.5 rounded-[6px] bg-bone/95 text-danger text-[11px] font-medium px-2 py-1 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="mt-4">
         <UploadButton
@@ -45,9 +60,12 @@ export function ProductImages({
             });
           }}
           onUploadError={(e) => setErr((e as any).message)}
-          appearance={{ button: "bg-ink text-white px-4 py-2 rounded text-sm" }}
+          appearance={{
+            button: "h-9 px-3.5 rounded-control bg-ink text-paper text-[13px] font-medium hover:bg-accent transition-colors",
+            allowedContent: "hidden",
+          }}
         />
-        {err ? <div className="mt-2 text-xs text-red-600">{err}</div> : null}
+        {err ? <div className="mt-2 text-[12px] text-danger">{err}</div> : null}
       </div>
     </div>
   );

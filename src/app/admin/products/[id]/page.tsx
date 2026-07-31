@@ -5,6 +5,10 @@ import {
   updateProduct, deleteProduct, addVariant, setVariantStock, deleteVariant, deleteImage,
 } from "../actions";
 import { ProductImages } from "./ProductImages";
+import {
+  PageHeader, Button, Card, SectionTitle, Field, TextareaField, SelectField,
+  Checkbox, FieldRow, Table, THead, Th, Tr, Td, Ident, EmptyState,
+} from "@/components/admin/ui";
 
 export default async function EditProduct({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
@@ -25,101 +29,135 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
 
   return (
     <div className="max-w-4xl">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-display font-semibold tracking-tightest">{product.name}</h1>
-          <div className="text-sm text-muted">/{product.slug}</div>
-        </div>
-        <form action={deleteProduct.bind(null, product.id)}>
-          <button className="text-sm text-red-600 underline">Delete product</button>
-        </form>
-      </div>
+      <PageHeader
+        eyebrow="Product"
+        title={product.name}
+        description={`/${product.slug}`}
+        actions={
+          <form action={deleteProduct.bind(null, product.id)}>
+            <Button variant="danger" size="md">Delete product</Button>
+          </form>
+        }
+      />
 
-      <form action={updateProduct.bind(null, product.id)} className="mt-6 grid gap-4 bg-white border border-line rounded p-6">
-        <Field label="Name" name="name" defaultValue={product.name} />
-        <label className="block">
-          <span className="text-[11px] tracking-[0.16em] uppercase text-muted">Description</span>
-          <textarea name="description" rows={5} defaultValue={product.description} className="mt-1 w-full border border-line rounded px-3 py-3 text-sm" />
-        </label>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="block">
-            <span className="text-[11px] tracking-[0.16em] uppercase text-muted">Brand</span>
-            <select name="brandId" defaultValue={product.brandId} className="mt-1 w-full border border-line rounded px-3 py-3 text-sm">
+      <form action={updateProduct.bind(null, product.id)}>
+        <Card className="grid gap-4">
+          <Field label="Name" name="name" defaultValue={product.name} />
+          <TextareaField label="Description" name="description" rows={5} defaultValue={product.description} />
+
+          <FieldRow>
+            <SelectField label="Brand" name="brandId" defaultValue={product.brandId}>
               {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-            </select>
-          </label>
-          <label className="block">
-            <span className="text-[11px] tracking-[0.16em] uppercase text-muted">Category</span>
-            <select name="categoryId" defaultValue={product.categoryId} className="mt-1 w-full border border-line rounded px-3 py-3 text-sm">
+            </SelectField>
+            <SelectField label="Category" name="categoryId" defaultValue={product.categoryId}>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </label>
-        </div>
-        <Field label="Price (£)" name="price" type="number" step="0.01" defaultValue={(product.priceCents / 100).toString()} />
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Colour (optional)" name="colour" defaultValue={product.colour ?? ""} placeholder="e.g. Black" />
-          <label className="block">
-            <span className="text-[11px] tracking-[0.16em] uppercase text-muted">Gender (optional)</span>
-            <select name="gender" defaultValue={product.gender ?? ""} className="mt-1 w-full border border-line rounded px-3 py-3 text-sm">
+            </SelectField>
+          </FieldRow>
+
+          <FieldRow>
+            <Field
+              label="Price" hint="£" name="price" type="number" step="0.01"
+              defaultValue={(product.priceCents / 100).toString()}
+            />
+            <Field
+              label="Colour" hint="optional" name="colour"
+              defaultValue={product.colour ?? ""} placeholder="e.g. Black"
+            />
+          </FieldRow>
+
+          <FieldRow>
+            <SelectField label="Gender" hint="optional" name="gender" defaultValue={product.gender ?? ""}>
               <option value="">—</option>
               <option value="Men">Men</option>
               <option value="Women">Women</option>
               <option value="Unisex">Unisex</option>
-            </select>
-          </label>
-        </div>
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="active" defaultChecked={product.active} /> Live</label>
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="featured" defaultChecked={product.featured} /> Featured</label>
-        </div>
-        <button className="bg-ink text-white py-3 rounded text-sm font-medium mt-2 w-fit px-6">Save changes</button>
+            </SelectField>
+            <div className="flex items-end gap-6 pb-1">
+              <Checkbox label="Live" name="active" defaultChecked={product.active} />
+              <Checkbox label="Featured" name="featured" defaultChecked={product.featured} />
+            </div>
+          </FieldRow>
+
+          <div className="pt-1">
+            <Button>Save changes</Button>
+          </div>
+        </Card>
       </form>
 
-      <div className="mt-8 bg-white border border-line rounded p-6">
-        <h2 className="text-sm font-medium">Images</h2>
-        <ProductImages productId={product.id} images={product.images} deleteImage={deleteImage} />
+      <div className="mt-6">
+        <SectionTitle>Images</SectionTitle>
+        <Card>
+          <ProductImages productId={product.id} images={product.images} deleteImage={deleteImage} />
+        </Card>
       </div>
 
-      <div className="mt-8 bg-white border border-line rounded p-6">
-        <h2 className="text-sm font-medium mb-3">Variants</h2>
-        <table className="w-full text-sm">
-          <thead className="text-muted">
-            <tr><th className="text-left py-2">Size</th><th className="text-left py-2">SKU</th><th className="text-right py-2">Stock</th><th className="py-2"></th></tr>
-          </thead>
-          <tbody>
-            {product.variants.map((v) => (
-              <tr key={v.id} className="border-t border-line">
-                <td className="py-2">{v.size}</td>
-                <td className="py-2 text-muted">{v.sku}</td>
-                <td className="py-2">
-                  <form action={async (fd: FormData) => { "use server"; await setVariantStock(v.id, Number(fd.get("stock"))); }} className="flex justify-end gap-2">
-                    <input name="stock" type="number" defaultValue={v.stock} className="border border-line rounded px-2 py-1 w-20 text-right text-sm" />
-                    <button className="text-xs underline">Save</button>
-                  </form>
-                </td>
-                <td className="py-2 text-right">
-                  <form action={deleteVariant.bind(null, v.id, product.id)}>
-                    <button className="text-xs text-red-600 underline">Remove</button>
-                  </form>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <form action={async (fd: FormData) => { "use server"; await addVariant(product.id, String(fd.get("size"))); }} className="mt-4 flex gap-2">
-          <input name="size" placeholder="New size (e.g. XL)" className="border border-line rounded px-3 py-2 text-sm" required />
-          <button className="text-sm underline">Add variant</button>
-        </form>
+      <div className="mt-6">
+        <SectionTitle>Variants</SectionTitle>
+        <Card padded={false}>
+          <div className="overflow-x-auto">
+            <Table>
+              <THead>
+                <tr>
+                  <Th>Size</Th><Th>SKU</Th><Th align="right">Stock</Th><Th />
+                </tr>
+              </THead>
+              <tbody>
+                {product.variants.length === 0 ? (
+                  <tr>
+                    <Td colSpan={4}>
+                      <EmptyState
+                        title="No variants yet"
+                        hint="Add at least one size so the product can be bought."
+                      />
+                    </Td>
+                  </tr>
+                ) : product.variants.map((v) => (
+                  <Tr key={v.id}>
+                    <Td className="font-medium">{v.size}</Td>
+                    <Td><Ident>{v.sku}</Ident></Td>
+                    <Td align="right">
+                      <form
+                        action={async (fd: FormData) => {
+                          "use server";
+                          await setVariantStock(v.id, Number(fd.get("stock")));
+                        }}
+                        className="flex justify-end items-center gap-2"
+                      >
+                        <input
+                          name="stock" type="number" defaultValue={v.stock}
+                          className="h-8 w-20 rounded-control border border-ink/15 bg-bone px-2 text-right text-sm tabular-nums focus:outline-none focus:border-ink/60 focus:ring-2 focus:ring-accent/25"
+                        />
+                        <Button variant="secondary" size="sm">Save</Button>
+                      </form>
+                    </Td>
+                    <Td align="right">
+                      <form action={deleteVariant.bind(null, v.id, product.id)}>
+                        <Button variant="ghost" size="sm" className="text-danger hover:text-danger hover:bg-danger-tint">
+                          Remove
+                        </Button>
+                      </form>
+                    </Td>
+                  </Tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+
+          <form
+            action={async (fd: FormData) => {
+              "use server";
+              await addVariant(product.id, String(fd.get("size")));
+            }}
+            className="flex gap-2 border-t border-line/60 p-4"
+          >
+            <input
+              name="size" placeholder="New size, e.g. XL" required
+              className="h-9 flex-1 max-w-[220px] rounded-control border border-ink/15 bg-bone px-3 text-sm placeholder:text-ink/35 focus:outline-none focus:border-ink/60 focus:ring-2 focus:ring-accent/25"
+            />
+            <Button variant="secondary">Add variant</Button>
+          </form>
+        </Card>
       </div>
     </div>
-  );
-}
-function Field(props: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
-  const { label, ...rest } = props;
-  return (
-    <label className="block">
-      <span className="text-[11px] tracking-[0.16em] uppercase text-muted">{label}</span>
-      <input {...rest} className="mt-1 w-full border border-line rounded px-3 py-3 text-sm" />
-    </label>
   );
 }

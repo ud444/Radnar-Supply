@@ -1,6 +1,10 @@
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { createProduct } from "../actions";
+import {
+  PageHeader, Card, Button, ButtonLink, Field, TextareaField, SelectField,
+  Checkbox, FieldRow,
+} from "@/components/admin/ui";
 
 export default async function NewProduct() {
   await requireAdmin();
@@ -11,59 +15,53 @@ export default async function NewProduct() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-display font-semibold tracking-tightest">New product</h1>
-      <p className="text-sm text-muted mt-1">You'll add images and stock after creating the product.</p>
+      <PageHeader
+        eyebrow="Catalogue"
+        title="New product"
+        description="You'll add images and stock after creating it."
+        actions={<ButtonLink href="/admin/products" variant="secondary">Cancel</ButtonLink>}
+      />
 
-      <form action={createProduct} className="mt-6 grid gap-4 bg-white border border-line rounded p-6">
-        <Field label="Name" name="name" required />
-        <Field label="Slug (auto from name if blank)" name="slug" placeholder="e.g. boxy-tee-stone" />
-        <label className="block">
-          <span className="text-[11px] tracking-[0.16em] uppercase text-muted">Description</span>
-          <textarea name="description" rows={4} required className="mt-1 w-full border border-line rounded px-3 py-3 text-sm" />
-        </label>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="block">
-            <span className="text-[11px] tracking-[0.16em] uppercase text-muted">Brand</span>
-            <select name="brandId" required className="mt-1 w-full border border-line rounded px-3 py-3 text-sm">
+      <form action={createProduct}>
+        <Card className="grid gap-4">
+          <Field label="Name" name="name" required />
+          <Field label="Slug" hint="generated from the name if left blank" name="slug" placeholder="e.g. boxy-tee-stone" />
+          <TextareaField label="Description" name="description" rows={4} required />
+
+          <FieldRow>
+            <SelectField label="Brand" name="brandId" required>
               {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-            </select>
-          </label>
-          <label className="block">
-            <span className="text-[11px] tracking-[0.16em] uppercase text-muted">Category</span>
-            <select name="categoryId" required className="mt-1 w-full border border-line rounded px-3 py-3 text-sm">
+            </SelectField>
+            <SelectField label="Category" name="categoryId" required>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </label>
-        </div>
-        <Field label="Price (£)" name="price" type="number" step="0.01" required />
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Colour (optional)" name="colour" placeholder="e.g. Black" />
-          <label className="block">
-            <span className="text-[11px] tracking-[0.16em] uppercase text-muted">Gender (optional)</span>
-            <select name="gender" defaultValue="" className="mt-1 w-full border border-line rounded px-3 py-3 text-sm">
+            </SelectField>
+          </FieldRow>
+
+          <FieldRow>
+            <Field label="Price" hint="£" name="price" type="number" step="0.01" required />
+            <Field label="Colour" hint="optional" name="colour" placeholder="e.g. Black" />
+          </FieldRow>
+
+          <FieldRow>
+            <SelectField label="Gender" hint="optional" name="gender" defaultValue="">
               <option value="">—</option>
               <option value="Men">Men</option>
               <option value="Women">Women</option>
               <option value="Unisex">Unisex</option>
-            </select>
-          </label>
-        </div>
-        <Field label="Sizes (comma-separated)" name="sizes" placeholder="S, M, L, XL" required />
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="active" defaultChecked /> Live</label>
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="featured" /> Featured</label>
-        </div>
-        <button className="bg-ink text-white py-3 rounded text-sm font-medium mt-2 w-fit px-6">Create product</button>
+            </SelectField>
+            <Field label="Sizes" hint="comma-separated" name="sizes" placeholder="S, M, L, XL" required />
+          </FieldRow>
+
+          <div className="flex gap-6">
+            <Checkbox label="Live" name="active" defaultChecked />
+            <Checkbox label="Featured" name="featured" />
+          </div>
+
+          <div className="pt-1">
+            <Button>Create product</Button>
+          </div>
+        </Card>
       </form>
     </div>
-  );
-}
-function Field(props: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
-  const { label, ...rest } = props;
-  return (
-    <label className="block">
-      <span className="text-[11px] tracking-[0.16em] uppercase text-muted">{label}</span>
-      <input {...rest} className="mt-1 w-full border border-line rounded px-3 py-3 text-sm" />
-    </label>
   );
 }

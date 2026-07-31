@@ -2,6 +2,10 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import {
+  PageHeader, Toolbar, FilterTabs, TableWrap, Table, THead, Th, Tr, Td,
+  EmptyState, Badge,
+} from "@/components/admin/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -24,68 +28,68 @@ export default async function RequestsPage({
   ]);
 
   const filters = [
-    { label: "All", href: "/admin/requests" },
-    { label: "New", href: "/admin/requests?status=NEW" },
-    { label: "In progress", href: "/admin/requests?status=IN_PROGRESS" },
-    { label: "Quoted", href: "/admin/requests?status=QUOTED" },
-    { label: "Sourced", href: "/admin/requests?status=SOURCED" },
-    { label: "Private", href: "/admin/requests?type=PRIVATE" },
+    { label: "All",         href: "/admin/requests",                     active: !status && !type },
+    { label: "New",         href: "/admin/requests?status=NEW",          active: status === "NEW" },
+    { label: "In progress", href: "/admin/requests?status=IN_PROGRESS",  active: status === "IN_PROGRESS" },
+    { label: "Quoted",      href: "/admin/requests?status=QUOTED",       active: status === "QUOTED" },
+    { label: "Sourced",     href: "/admin/requests?status=SOURCED",      active: status === "SOURCED" },
+    { label: "Private",     href: "/admin/requests?type=PRIVATE",        active: type === "PRIVATE" },
   ];
 
   return (
     <div>
-      <div className="flex items-end justify-between flex-wrap gap-3">
-        <div>
-          <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Personal Shopping</div>
-          <h1 className="font-display font-black text-4xl md:text-5xl uppercase display-tight mt-1">Requests</h1>
-        </div>
-        {newCount > 0 ? (
-          <div className="text-[11px] tracking-[0.18em] uppercase font-bold text-accent">{newCount} new</div>
-        ) : null}
-      </div>
+      <PageHeader
+        eyebrow="Personal shopping"
+        title="Requests"
+        actions={newCount > 0 ? <Badge tone="accent">{newCount} new</Badge> : undefined}
+      />
 
-      <div className="flex gap-2 mt-6 flex-wrap">
-        {filters.map((f) => (
-          <Link key={f.label} href={f.href}
-            className="text-[11px] tracking-[0.16em] uppercase font-bold border border-ink/20 px-3 py-1.5 hover:border-ink hover:bg-cream">
-            {f.label}
-          </Link>
-        ))}
-      </div>
+      <Toolbar>
+        <FilterTabs items={filters} />
+      </Toolbar>
 
-      <div className="bg-bone border border-ink/15 overflow-hidden mt-5 rounded-xl">
-        <table className="w-full text-sm">
-          <thead className="bg-cream text-ink/65">
+      <TableWrap>
+        <Table>
+          <THead>
             <tr>
-              <th className="text-left px-4 py-2 text-[10px] tracking-[0.18em] uppercase font-bold">Received</th>
-              <th className="text-left px-4 py-2 text-[10px] tracking-[0.18em] uppercase font-bold">Name</th>
-              <th className="text-left px-4 py-2 text-[10px] tracking-[0.18em] uppercase font-bold">Item</th>
-              <th className="text-left px-4 py-2 text-[10px] tracking-[0.18em] uppercase font-bold">Type</th>
-              <th className="text-left px-4 py-2 text-[10px] tracking-[0.18em] uppercase font-bold">Status</th>
+              <Th>Received</Th><Th>Name</Th><Th>Item</Th><Th>Type</Th><Th>Status</Th>
             </tr>
-          </thead>
+          </THead>
           <tbody>
             {requests.length === 0 ? (
-              <tr><td colSpan={5} className="px-4 py-12 text-center text-ink/55">No requests yet.</td></tr>
-            ) : requests.map((r) => (
-              <tr key={r.id} className="border-t border-ink/10 hover:bg-cream/50">
-                <td className="px-4 py-3 text-ink/65 whitespace-nowrap">{r.createdAt.toLocaleDateString("en-GB")}</td>
-                <td className="px-4 py-3">
-                  <Link href={`/admin/requests/${r.id}`} className="hover:text-accent font-medium">{r.name}</Link>
-                  <div className="text-[11px] text-ink/55">{r.email}</div>
-                </td>
-                <td className="px-4 py-3 max-w-xs"><div className="line-clamp-1">{r.item}</div></td>
-                <td className="px-4 py-3">
-                  {r.type === "PRIVATE"
-                    ? <span className="text-[10px] tracking-[0.14em] uppercase font-bold text-accent">Private</span>
-                    : <span className="text-[10px] tracking-[0.14em] uppercase font-bold text-ink/55">Standard</span>}
-                </td>
-                <td className="px-4 py-3"><StatusBadge value={r.status} /></td>
+              <tr>
+                <Td colSpan={5}>
+                  <EmptyState
+                    title={status || type ? "No requests match" : "No requests yet"}
+                    hint={
+                      status || type
+                        ? "Try a different filter."
+                        : "Sourcing and personal-shopping enquiries land here as customers submit them."
+                    }
+                  />
+                </Td>
               </tr>
+            ) : requests.map((r) => (
+              <Tr key={r.id}>
+                <Td className="text-muted whitespace-nowrap">{r.createdAt.toLocaleDateString("en-GB")}</Td>
+                <Td>
+                  <Link href={`/admin/requests/${r.id}`} className="font-medium hover:text-accent transition-colors">
+                    {r.name}
+                  </Link>
+                  <div className="text-[12px] text-muted">{r.email}</div>
+                </Td>
+                <Td className="max-w-xs"><div className="line-clamp-1">{r.item}</div></Td>
+                <Td>
+                  <Badge tone={r.type === "PRIVATE" ? "accent" : "neutral"} dot={false}>
+                    {r.type === "PRIVATE" ? "Private" : "Standard"}
+                  </Badge>
+                </Td>
+                <Td><StatusBadge value={r.status} /></Td>
+              </Tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </Table>
+      </TableWrap>
     </div>
   );
 }

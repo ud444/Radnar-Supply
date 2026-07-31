@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { slugify } from "@/lib/format";
+import { PageHeader, Card, Button, Ident, EmptyState } from "@/components/admin/ui";
 
 export default async function Brands() {
   await requireAdmin();
@@ -24,26 +25,47 @@ export default async function Brands() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl font-display font-semibold tracking-tightest">Brands</h1>
-      <form action={add} className="mt-6 flex gap-2">
-        <input name="name" placeholder="New brand name" className="flex-1 border border-line rounded px-3 py-2 text-sm" required />
-        <button className="bg-ink text-white px-4 py-2 rounded text-sm">Add brand</button>
+      <PageHeader
+        eyebrow="Catalogue"
+        title="Brands"
+        description="A brand can only be deleted once no products reference it."
+      />
+
+      <form action={add} className="flex gap-2 mb-5">
+        <input
+          name="name" placeholder="New brand name" required
+          className="flex-1 h-9 rounded-control border border-ink/15 bg-bone px-3 text-sm placeholder:text-ink/35 focus:outline-none focus:border-ink/60 focus:ring-2 focus:ring-accent/25"
+        />
+        <Button>Add brand</Button>
       </form>
-      <ul className="mt-6 divide-y divide-line border-y border-line">
-        {brands.map((b) => (
-          <li key={b.id} className="py-3 flex items-center justify-between text-sm">
-            <div>
-              <div>{b.name}</div>
-              <div className="text-xs text-muted">/{b.slug} · {b._count.products} products</div>
-            </div>
-            <form action={remove.bind(null, b.id)}>
-              <button className="text-xs text-red-600 underline" disabled={b._count.products > 0}>
-                {b._count.products > 0 ? "In use" : "Delete"}
-              </button>
-            </form>
-          </li>
-        ))}
-      </ul>
+
+      <Card padded={false}>
+        {brands.length === 0 ? (
+          <EmptyState title="No brands yet" hint="Add a brand before creating products." />
+        ) : (
+          <ul className="divide-y divide-line/60">
+            {brands.map((b) => (
+              <li key={b.id} className="px-5 py-3.5 flex items-center justify-between gap-4 text-sm">
+                <div className="min-w-0">
+                  <div className="font-medium">{b.name}</div>
+                  <div className="text-[12px] text-muted">
+                    <Ident>/{b.slug}</Ident> · <span className="tabular-nums">{b._count.products}</span>{" "}
+                    {b._count.products === 1 ? "product" : "products"}
+                  </div>
+                </div>
+                <form action={remove.bind(null, b.id)}>
+                  <Button
+                    variant="ghost" size="sm" disabled={b._count.products > 0}
+                    className={b._count.products > 0 ? "" : "text-danger hover:text-danger hover:bg-danger-tint"}
+                  >
+                    {b._count.products > 0 ? "In use" : "Delete"}
+                  </Button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
     </div>
   );
 }

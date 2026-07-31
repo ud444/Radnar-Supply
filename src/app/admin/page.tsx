@@ -4,6 +4,10 @@ import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
 import { Sparkline, Icon } from "@/components/admin/icons";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import {
+  PageHeader, ButtonLink, StatCard, SectionTitle, TableWrap, Table, THead,
+  Th, Tr, Td, EmptyState, Num, Ident,
+} from "@/components/admin/ui";
 
 export default async function AdminHome() {
   await requireAdmin();
@@ -55,100 +59,111 @@ export default async function AdminHome() {
 
   return (
     <div>
-      <div className="flex items-end justify-between flex-wrap gap-3">
-        <div>
-          <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Overview</div>
-          <h1 className="font-display font-black text-4xl md:text-5xl uppercase display-tight mt-1">Dashboard</h1>
-        </div>
-        <Link href="/admin/products/new" className="bg-ink text-paper inline-flex items-center gap-2 px-4 py-2.5 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
-          <Icon.plus /> New Product
-        </Link>
-      </div>
+      <PageHeader
+        eyebrow="Overview"
+        title="Dashboard"
+        actions={
+          <ButtonLink href="/admin/products/new">
+            <Icon.plus /> New product
+          </ButtonLink>
+        }
+      />
 
       {newRequests > 0 ? (
-        <Link href="/admin/requests?status=NEW" className="mt-6 flex items-center justify-between gap-4 bg-ink text-paper px-5 py-4 hover:bg-accent transition-colors rounded-xl shadow-soft">
-          <span className="text-sm font-medium">
-            <span className="font-display font-black text-xl mr-2">{newRequests}</span>
+        <Link
+          href="/admin/requests?status=NEW"
+          className="mb-6 flex items-center justify-between gap-4 rounded-card border border-accent/30 bg-accent/[0.07] px-5 py-4 transition-colors hover:bg-accent/[0.12]"
+        >
+          <span className="text-sm">
+            <Num className="text-lg text-accent mr-2">{newRequests}</Num>
             new sourcing {newRequests === 1 ? "request" : "requests"} awaiting review
           </span>
-          <span className="text-[11px] tracking-[0.22em] uppercase font-bold">Review →</span>
+          <span className="text-[13px] font-medium text-accent whitespace-nowrap">Review →</span>
         </Link>
       ) : null}
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {stats.map((s, i) => (
-          <div key={i} className="bg-bone border border-ink/15 p-5 rounded-xl">
-            <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">{s.label}</div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="font-display font-black text-3xl">{s.value}</span>
-              {s.delta !== undefined && s.delta !== null ? (
-                <span className={`text-[11px] tracking-[0.16em] uppercase font-bold ${s.delta >= 0 ? "text-accent" : "text-red-600"}`}>
-                  {s.delta >= 0 ? "+" : ""}{s.delta}%
-                </span>
-              ) : null}
-            </div>
+          <StatCard key={i} label={s.label} value={s.value} delta={s.delta}>
             {s.spark ? <Sparkline values={s.spark} /> : null}
-          </div>
+          </StatCard>
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 mt-8">
+      <div className="grid lg:grid-cols-2 gap-5 lg:gap-6 mt-8">
         <div>
-          <div className="flex justify-between items-end mb-3">
-            <h2 className="text-sm font-semibold">Recent orders</h2>
-            <Link href="/admin/orders" className="text-[11px] tracking-[0.22em] uppercase font-bold underline">All orders</Link>
-          </div>
-          <div className="bg-bone border border-ink/15 overflow-hidden rounded-xl">
-            <table className="w-full text-sm">
-              <thead className="bg-cream text-ink/65">
+          <SectionTitle
+            action={
+              <Link href="/admin/orders" className="text-[13px] text-muted hover:text-ink transition-colors">
+                All orders →
+              </Link>
+            }
+          >
+            Recent orders
+          </SectionTitle>
+          <TableWrap>
+            <Table>
+              <THead>
                 <tr>
-                  <th className="text-left px-4 py-2 text-[10px] tracking-[0.18em] uppercase font-bold">Order</th>
-                  <th className="text-left px-4 py-2 text-[10px] tracking-[0.18em] uppercase font-bold">Email</th>
-                  <th className="text-left px-4 py-2 text-[10px] tracking-[0.18em] uppercase font-bold">Status</th>
-                  <th className="text-right px-4 py-2 text-[10px] tracking-[0.18em] uppercase font-bold">Total</th>
+                  <Th>Order</Th><Th>Email</Th><Th>Status</Th><Th align="right">Total</Th>
                 </tr>
-              </thead>
+              </THead>
               <tbody>
                 {recent.length === 0 ? (
-                  <tr><td colSpan={4} className="px-4 py-12 text-center text-ink/55">No orders yet.</td></tr>
-                ) : recent.map((o) => (
-                  <tr key={o.id} className="border-t border-ink/10 hover:bg-cream/50">
-                    <td className="px-4 py-3"><Link className="hover:text-accent font-medium" href={`/admin/orders/${o.id}`}>{o.number}</Link></td>
-                    <td className="px-4 py-3 text-ink/65">{o.email}</td>
-                    <td className="px-4 py-3"><StatusBadge value={o.status} /></td>
-                    <td className="px-4 py-3 text-right font-medium">{money(o.totalCents)}</td>
+                  <tr>
+                    <Td colSpan={4}>
+                      <EmptyState
+                        title="No orders yet"
+                        hint="Paid orders will appear here as they come in."
+                      />
+                    </Td>
                   </tr>
+                ) : recent.map((o) => (
+                  <Tr key={o.id}>
+                    <Td>
+                      <Link className="font-medium hover:text-accent transition-colors" href={`/admin/orders/${o.id}`}>
+                        <Ident className="text-ink">{o.number}</Ident>
+                      </Link>
+                    </Td>
+                    <Td className="text-muted">{o.email}</Td>
+                    <Td><StatusBadge value={o.status} /></Td>
+                    <Td align="right" numeric className="font-medium">{money(o.totalCents)}</Td>
+                  </Tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+            </Table>
+          </TableWrap>
         </div>
 
         <div>
-          <h2 className="text-sm font-semibold mb-3">Top products · last 30d</h2>
-          <div className="bg-bone border border-ink/15 overflow-hidden rounded-xl">
-            <table className="w-full text-sm">
-              <thead className="bg-cream text-ink/65">
-                <tr>
-                  <th className="text-left px-4 py-2 text-[10px] tracking-[0.18em] uppercase font-bold">Product</th>
-                  <th className="text-right px-4 py-2 text-[10px] tracking-[0.18em] uppercase font-bold">Units</th>
-                </tr>
-              </thead>
+          <SectionTitle>Top products · last 30 days</SectionTitle>
+          <TableWrap>
+            <Table>
+              <THead>
+                <tr><Th>Product</Th><Th align="right">Units</Th></tr>
+              </THead>
               <tbody>
                 {top.length === 0 ? (
-                  <tr><td colSpan={2} className="px-4 py-12 text-center text-ink/55">No sales yet.</td></tr>
-                ) : top.map((t, i) => (
-                  <tr key={i} className="border-t border-ink/10">
-                    <td className="px-4 py-3">
-                      <div className="text-[10px] tracking-[0.16em] uppercase text-ink/55 font-bold">{t.brandName}</div>
-                      <div>{t.productName}</div>
-                    </td>
-                    <td className="px-4 py-3 text-right font-display font-black text-xl">{t._sum.quantity}</td>
+                  <tr>
+                    <Td colSpan={2}>
+                      <EmptyState
+                        title="No sales yet"
+                        hint="Your best sellers over the last 30 days will rank here."
+                      />
+                    </Td>
                   </tr>
+                ) : top.map((t, i) => (
+                  <Tr key={i}>
+                    <Td>
+                      <div className="text-[11px] uppercase tracking-[0.12em] text-muted font-medium">{t.brandName}</div>
+                      <div className="mt-0.5">{t.productName}</div>
+                    </Td>
+                    <Td align="right"><Num className="text-lg">{t._sum.quantity}</Num></Td>
+                  </Tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+            </Table>
+          </TableWrap>
         </div>
       </div>
     </div>

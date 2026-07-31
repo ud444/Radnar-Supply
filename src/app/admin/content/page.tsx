@@ -2,6 +2,9 @@ import { requireAdmin } from "@/lib/auth";
 import { getHomeContent, getHomeMedia } from "@/lib/content";
 import { saveContent } from "./actions";
 import { MediaManager } from "./MediaManager";
+import {
+  PageHeader, Card, Button, Field, TextareaField, SectionTitle,
+} from "@/components/admin/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -21,16 +24,18 @@ export default async function ContentAdmin() {
 
   return (
     <div className="max-w-4xl">
-      <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Homepage</div>
-      <h1 className="font-display font-black text-4xl md:text-5xl uppercase display-tight mt-1">Content &amp; Media</h1>
-      <p className="text-sm text-ink/60 mt-2 max-w-xl">Edit the homepage copy and swap imagery. Changes go live immediately. Use a line break in a title field to start a new line (the last line is highlighted).</p>
+      <PageHeader
+        eyebrow="Homepage"
+        title="Content & media"
+        description="Edit the homepage copy and swap imagery — changes go live immediately. A line break in a title field starts a new line, and the last line is highlighted."
+      />
 
       {/* MEDIA */}
-      <h2 className="text-sm font-semibold mt-10 mb-3">Media</h2>
+      <SectionTitle>Media</SectionTitle>
       <MediaManager slots={mediaSlots} />
 
       {/* CONTENT */}
-      <form action={saveContent} className="mt-10 space-y-10">
+      <form action={saveContent} className="mt-8 space-y-6">
         <Section title="Hero">
           <T label="Eyebrow" name="heroEyebrow" defaultValue={content.heroEyebrow} />
           <TA label="Title (one line per row)" name="heroTitle" defaultValue={content.heroTitle} rows={3} />
@@ -85,35 +90,29 @@ export default async function ContentAdmin() {
           </div>
         </Section>
 
-        <button className="bg-ink text-white py-3 text-sm font-medium px-8 sticky bottom-4">Save content</button>
+        <div className="sticky bottom-4">
+          <Button>Save content</Button>
+        </div>
       </form>
     </div>
   );
 }
 
+// Local wrappers over the shared primitives so the many call sites below stay
+// terse — every field on this page is a plain labelled input or textarea.
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white border border-line p-6">
-      <h2 className="text-sm font-semibold mb-4">{title}</h2>
-      <div className="space-y-3">{children}</div>
+    <div>
+      <SectionTitle>{title}</SectionTitle>
+      <Card className="space-y-4">{children}</Card>
     </div>
   );
 }
 
-function T({ label, ...rest }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
-  return (
-    <label className="block">
-      <span className="text-[10px] tracking-[0.16em] uppercase text-muted font-bold">{label}</span>
-      <input {...rest} className="mt-1 w-full border border-line px-3 py-2.5 text-sm" />
-    </label>
-  );
+function T(props: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
+  return <Field {...props} />;
 }
 
-function TA({ label, ...rest }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }) {
-  return (
-    <label className="block">
-      <span className="text-[10px] tracking-[0.16em] uppercase text-muted font-bold">{label}</span>
-      <textarea {...rest} className="mt-1 w-full border border-line px-3 py-2.5 text-sm" />
-    </label>
-  );
+function TA(props: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }) {
+  return <TextareaField {...props} />;
 }

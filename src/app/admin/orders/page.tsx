@@ -3,9 +3,12 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
-import { Icon } from "@/components/admin/icons";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { SelectAll } from "./SelectAll";
+import {
+  PageHeader, btn, Button, Toolbar, SearchInput, FilterTabs, TableWrap,
+  Table, THead, Th, Tr, Td, EmptyState, Pagination, Eyebrow, Ident,
+} from "@/components/admin/ui";
 
 type SP = { q?: string; status?: string; page?: string };
 
@@ -71,93 +74,111 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
   if (sp.q) exportQs.set("q", sp.q);
   if (sp.status) exportQs.set("status", sp.status);
 
+  const qs = sp.q ? `q=${encodeURIComponent(sp.q)}` : "";
+  const tabs = [
+    { href: "/admin/orders", label: "All", active: !sp.status },
+    ...STATUSES.map((s) => ({
+      href: `/admin/orders?status=${s}${qs ? `&${qs}` : ""}`,
+      label: s.charAt(0) + s.slice(1).toLowerCase(),
+      active: sp.status === s,
+    })),
+  ];
+
   return (
     <div>
-      <div className="flex items-end justify-between flex-wrap gap-3">
-        <div>
-          <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Orders</div>
-          <h1 className="font-display font-black text-4xl md:text-5xl uppercase display-tight mt-1">All Orders</h1>
-        </div>
-        <a href={`/admin/orders/export${exportQs.toString() ? `?${exportQs}` : ""}`}
-          className="inline-flex items-center gap-2 border border-ink px-4 py-2.5 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-ink hover:text-paper transition-colors">
-          Export CSV
-        </a>
-      </div>
+      <PageHeader
+        eyebrow="Orders"
+        title="All orders"
+        actions={
+          // Plain anchor, not next/link: this hits a route handler that streams a
+          // CSV download, which client-side navigation would swallow.
+          <a
+            href={`/admin/orders/export${exportQs.toString() ? `?${exportQs}` : ""}`}
+            className={btn("secondary")}
+          >
+            Export CSV
+          </a>
+        }
+      />
 
-      <div className="mt-6 flex flex-wrap gap-3 items-center">
-        <form action="/admin/orders" className="flex-1 min-w-[260px] relative">
+      <Toolbar>
+        <form action="/admin/orders" className="flex-1 min-w-[240px]">
           {sp.status && <input type="hidden" name="status" value={sp.status} />}
-          <Icon.search className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40" />
-          <input name="q" defaultValue={sp.q ?? ""} placeholder="Search order # or email…" className="w-full bg-bone border border-ink/20 pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:border-ink" />
+          <SearchInput defaultValue={sp.q ?? ""} placeholder="Search order number or email…" />
         </form>
-        <div className="flex gap-1.5 flex-wrap">
-          <Link href="/admin/orders" className={`text-[11px] tracking-[0.18em] uppercase font-bold px-3 py-2 border ${!sp.status ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"}`}>All</Link>
-          {STATUSES.map((s) => (
-            <Link key={s} href={`/admin/orders?status=${s}${sp.q ? `&q=${sp.q}` : ""}`}
-              className={`text-[11px] tracking-[0.18em] uppercase font-bold px-3 py-2 border ${sp.status === s ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"}`}>
-              {s.toLowerCase()}
-            </Link>
-          ))}
-        </div>
-      </div>
+        <FilterTabs items={tabs} />
+      </Toolbar>
 
-      <form action={bulkUpdate} className="mt-6">
-        {/* Bulk action bar */}
-        <div className="flex flex-wrap items-center gap-3 bg-cream border border-ink/15 border-b-0 px-4 py-3 text-sm">
-          <span className="text-[10px] tracking-[0.18em] uppercase font-bold text-ink/55">Bulk action</span>
-          <select name="bulkStatus" defaultValue="SHIPPED" className="border border-ink/20 px-3 py-1.5 text-sm bg-bone">
-            {STATUSES.map((s) => <option key={s} value={s}>Mark {s.toLowerCase()}</option>)}
+      <form action={bulkUpdate}>
+        {/* Bulk action bar — sits flush on top of the table */}
+        <div className="flex flex-wrap items-center gap-3 bg-cream/70 border border-line/70 rounded-t-card px-4 py-3 text-sm">
+          <Eyebrow>Bulk action</Eyebrow>
+          <select
+            name="bulkStatus"
+            defaultValue="SHIPPED"
+            className="h-8 rounded-control border border-ink/15 bg-bone px-2.5 text-[13px] focus:outline-none focus:border-ink/60 focus:ring-2 focus:ring-accent/25"
+          >
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>Mark {s.toLowerCase()}</option>
+            ))}
           </select>
-          <label className="flex items-center gap-2 text-xs text-ink/70">
-            <input type="checkbox" name="notify" defaultChecked className="w-4 h-4" />
-            Email on shipped
+          <label className="flex items-center gap-2 text-[13px] text-muted">
+            <input type="checkbox" name="notify" defaultChecked className="w-4 h-4 accent-ink" />
+            Email the customer
           </label>
-          <button className="bg-ink text-paper px-4 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:bg-accent transition-colors">
-            Apply to selected
-          </button>
+          <Button size="sm" className="ml-auto">Apply to selected</Button>
         </div>
 
-        <div className="bg-bone border border-ink/15 overflow-hidden rounded-xl">
-          <table className="w-full text-sm">
-            <thead className="bg-cream text-ink/65">
+        <TableWrap className="rounded-t-none border-t-0">
+          <Table>
+            <THead>
               <tr>
-                <th className="w-10 px-4 py-2.5"><SelectAll /></th>
-                <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Order</th>
-                <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Date</th>
-                <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Customer</th>
-                <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Payment</th>
-                <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Status</th>
-                <th className="text-right px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Total</th>
+                <Th className="w-10"><SelectAll /></Th>
+                <Th>Order</Th>
+                <Th>Date</Th>
+                <Th>Customer</Th>
+                <Th>Payment</Th>
+                <Th>Status</Th>
+                <Th align="right">Total</Th>
               </tr>
-            </thead>
+            </THead>
             <tbody>
               {orders.length === 0 ? (
-                <tr><td colSpan={7} className="px-4 py-16 text-center text-ink/55">No orders match.</td></tr>
-              ) : orders.map((o) => (
-                <tr key={o.id} className="border-t border-ink/10 hover:bg-cream/50 transition-colors">
-                  <td className="px-4 py-3"><input type="checkbox" name="ids" value={o.id} className="w-4 h-4" /></td>
-                  <td className="px-4 py-3"><Link href={`/admin/orders/${o.id}`} className="hover:text-accent font-medium">{o.number}</Link></td>
-                  <td className="px-4 py-3 text-ink/65">{o.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</td>
-                  <td className="px-4 py-3">{o.email}</td>
-                  <td className="px-4 py-3"><StatusBadge value={o.paymentStatus} /></td>
-                  <td className="px-4 py-3"><StatusBadge value={o.status} /></td>
-                  <td className="px-4 py-3 text-right font-medium">{money(o.totalCents)}</td>
+                <tr>
+                  <Td colSpan={7}>
+                    <EmptyState
+                      title={sp.q || sp.status ? "No orders match" : "No orders yet"}
+                      hint={
+                        sp.q || sp.status
+                          ? "Try clearing the search or choosing a different status."
+                          : "Orders appear here the moment a checkout completes."
+                      }
+                    />
+                  </Td>
                 </tr>
+              ) : orders.map((o) => (
+                <Tr key={o.id}>
+                  <Td><input type="checkbox" name="ids" value={o.id} className="w-4 h-4 accent-ink" /></Td>
+                  <Td>
+                    <Link href={`/admin/orders/${o.id}`} className="font-medium hover:text-accent transition-colors">
+                      <Ident className="text-ink">{o.number}</Ident>
+                    </Link>
+                  </Td>
+                  <Td className="text-muted whitespace-nowrap">
+                    {o.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                  </Td>
+                  <Td>{o.email}</Td>
+                  <Td><StatusBadge value={o.paymentStatus} /></Td>
+                  <Td><StatusBadge value={o.status} /></Td>
+                  <Td align="right" numeric className="font-medium">{money(o.totalCents)}</Td>
+                </Tr>
               ))}
             </tbody>
-          </table>
-        </div>
+          </Table>
+        </TableWrap>
       </form>
 
-      {pages > 1 ? (
-        <div className="mt-5 flex items-center justify-between text-sm">
-          <div className="text-ink/55">{total} orders · page {page} of {pages}</div>
-          <div className="flex gap-2">
-            {page > 1 ? <Link href={pageHref(page - 1)} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">← Prev</Link> : null}
-            {page < pages ? <Link href={pageHref(page + 1)} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">Next →</Link> : null}
-          </div>
-        </div>
-      ) : null}
+      <Pagination page={page} pages={pages} total={total} noun="orders" hrefFor={pageHref} />
     </div>
   );
 }

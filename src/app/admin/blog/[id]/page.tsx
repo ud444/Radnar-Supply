@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { updatePost, deletePost } from "../actions";
 import { PostForm } from "../PostForm";
+import { PageHeader, Button } from "@/components/admin/ui";
 
 export default async function EditPost({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
@@ -16,18 +17,31 @@ export default async function EditPost({ params }: { params: Promise<{ id: strin
 
   return (
     <div>
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <Link href="/admin/blog" className="text-[11px] tracking-[0.22em] uppercase font-bold text-ink/55 hover:text-accent">← All posts</Link>
-        <div className="flex items-center gap-3">
-          {post.published ? (
-            <Link href={`/blog/${post.slug}`} target="_blank" className="text-[11px] tracking-[0.22em] uppercase font-bold underline hover:text-accent">View live →</Link>
-          ) : null}
-          <form action={remove}>
-            <button className="text-[11px] tracking-[0.22em] uppercase font-bold text-red-600 hover:text-red-800">Delete</button>
-          </form>
-        </div>
-      </div>
-      <h1 className="font-display font-black text-3xl uppercase tracking-tightest mt-3 mb-6">Edit Post</h1>
+      <Link href="/admin/blog" className="text-[13px] text-muted hover:text-ink transition-colors">
+        ← All posts
+      </Link>
+
+      <PageHeader
+        eyebrow="Content"
+        title="Edit post"
+        description={post.title}
+        actions={
+          <>
+            {post.published ? (
+              <Link
+                href={`/blog/${post.slug}`} target="_blank"
+                className="text-[13px] text-muted hover:text-ink transition-colors"
+              >
+                View live →
+              </Link>
+            ) : null}
+            <form action={remove}>
+              <Button variant="danger" size="md">Delete</Button>
+            </form>
+          </>
+        }
+      />
+
       <PostForm action={update} post={post} submitLabel="Save changes" />
     </div>
   );

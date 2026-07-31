@@ -3,6 +3,9 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import {
+  PageHeader, Button, TableWrap, Table, THead, Th, Tr, Td, EmptyState, Badge,
+} from "@/components/admin/ui";
 
 async function approve(fd: FormData) {
   "use server";
@@ -31,52 +34,75 @@ export default async function AdminReviews() {
 
   return (
     <div>
-      <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Moderation</div>
-      <h1 className="font-display font-black text-4xl md:text-5xl uppercase display-tight mt-1">Reviews</h1>
-      <p className="mt-3 text-sm text-ink/65">{pending} awaiting approval · approved reviews show on the storefront.</p>
+      <PageHeader
+        eyebrow="Moderation"
+        title="Reviews"
+        description="Approved reviews appear on the storefront. Pending ones are hidden until you approve them."
+        actions={pending > 0 ? <Badge tone="accent">{pending} awaiting approval</Badge> : undefined}
+      />
 
-      <div className="mt-6 bg-bone border border-ink/15 overflow-hidden rounded-xl">
-        <table className="w-full text-sm">
-          <thead className="bg-cream text-ink/65">
+      <TableWrap>
+        <Table>
+          <THead>
             <tr>
-              <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Product</th>
-              <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Review</th>
-              <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Status</th>
-              <th className="text-right px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Actions</th>
+              <Th>Product</Th><Th>Review</Th><Th>Status</Th><Th align="right">Actions</Th>
             </tr>
-          </thead>
+          </THead>
           <tbody>
             {reviews.length === 0 ? (
-              <tr><td colSpan={4} className="px-4 py-16 text-center text-ink/55">No reviews yet.</td></tr>
-            ) : reviews.map((r) => (
-              <tr key={r.id} className="border-t border-ink/10 align-top">
-                <td className="px-4 py-3">
-                  <Link href={`/product/${r.product.slug}`} className="hover:text-accent font-medium">{r.product.name}</Link>
-                  <div className="text-xs text-ink/45 mt-0.5">{r.createdAt.toLocaleDateString("en-GB")}</div>
-                </td>
-                <td className="px-4 py-3 max-w-md">
-                  <div className="text-accent">{"★".repeat(r.rating)}<span className="text-ink/20">{"★".repeat(5 - r.rating)}</span></div>
-                  <div className="font-bold text-xs mt-1">{r.author}</div>
-                  <div className="text-ink/75 mt-0.5">{r.body}</div>
-                </td>
-                <td className="px-4 py-3"><StatusBadge value={r.status} /></td>
-                <td className="px-4 py-3 text-right whitespace-nowrap">
-                  {r.status === "PENDING" ? (
-                    <form action={approve} className="inline">
-                      <input type="hidden" name="id" value={r.id} />
-                      <button className="text-[11px] tracking-[0.16em] uppercase font-bold text-green-700 hover:text-green-900 mr-3">Approve</button>
-                    </form>
-                  ) : null}
-                  <form action={remove} className="inline">
-                    <input type="hidden" name="id" value={r.id} />
-                    <button className="text-[11px] tracking-[0.16em] uppercase font-bold text-red-600 hover:text-red-800">Delete</button>
-                  </form>
-                </td>
+              <tr>
+                <Td colSpan={4}>
+                  <EmptyState
+                    title="No reviews yet"
+                    hint="Customer reviews land here for approval before they go live."
+                  />
+                </Td>
               </tr>
+            ) : reviews.map((r) => (
+              <Tr key={r.id} className="align-top">
+                <Td>
+                  <Link href={`/product/${r.product.slug}`} className="font-medium hover:text-accent transition-colors">
+                    {r.product.name}
+                  </Link>
+                  <div className="text-[12px] text-muted mt-0.5">{r.createdAt.toLocaleDateString("en-GB")}</div>
+                </Td>
+                <Td className="max-w-md">
+                  <div className="text-accent tracking-[0.1em]" aria-label={`${r.rating} out of 5`}>
+                    {"★".repeat(r.rating)}<span className="text-ink/15">{"★".repeat(5 - r.rating)}</span>
+                  </div>
+                  <div className="font-medium text-[13px] mt-1">{r.author}</div>
+                  <div className="text-muted mt-0.5">{r.body}</div>
+                </Td>
+                <Td><StatusBadge value={r.status} /></Td>
+                <Td align="right" className="whitespace-nowrap">
+                  <div className="inline-flex gap-1.5">
+                    {r.status === "PENDING" ? (
+                      <form action={approve}>
+                        <input type="hidden" name="id" value={r.id} />
+                        <Button
+                          variant="ghost" size="sm"
+                          className="text-success hover:text-success hover:bg-success-tint"
+                        >
+                          Approve
+                        </Button>
+                      </form>
+                    ) : null}
+                    <form action={remove}>
+                      <input type="hidden" name="id" value={r.id} />
+                      <Button
+                        variant="ghost" size="sm"
+                        className="text-danger hover:text-danger hover:bg-danger-tint"
+                      >
+                        Delete
+                      </Button>
+                    </form>
+                  </div>
+                </Td>
+              </Tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </Table>
+      </TableWrap>
     </div>
   );
 }

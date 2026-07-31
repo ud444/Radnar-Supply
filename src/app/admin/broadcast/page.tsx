@@ -1,5 +1,8 @@
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
+import {
+  PageHeader, Card, Button, Field, TextareaField, FieldRow, Notice,
+} from "@/components/admin/ui";
 
 type SP = { sent?: string; error?: string };
 
@@ -52,38 +55,37 @@ export default async function BroadcastPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="max-w-2xl">
-      <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Marketing</div>
-      <h1 className="font-display font-black text-4xl md:text-5xl uppercase display-tight mt-1">Drop Announcement</h1>
-      <p className="mt-3 text-sm text-ink/65">Broadcast to your newsletter audience — new stock, drops, restocks.</p>
+      <PageHeader
+        eyebrow="Marketing"
+        title="Drop announcement"
+        description="Broadcast to your newsletter audience — new stock, drops, restocks."
+      />
 
-      {sp.sent ? <div className="mt-5 border border-green-300 bg-green-50 text-green-900 px-4 py-3 text-sm rounded-xl">Broadcast sent to your audience.</div> : null}
-      {sp.error ? <div className="mt-5 border border-red-300 bg-red-50 text-red-900 px-4 py-3 text-sm rounded-xl">{sp.error}</div> : null}
-      {!configured ? <div className="mt-5 border border-amber-300 bg-amber-50 text-amber-900 px-4 py-3 text-sm rounded-xl">Set <code>RESEND_API_KEY</code> and <code>RESEND_AUDIENCE_ID</code> to enable broadcasts.</div> : null}
+      {sp.sent ? <Notice tone="success">Broadcast sent to your audience.</Notice> : null}
+      {sp.error ? <Notice tone="danger">{sp.error}</Notice> : null}
+      {!configured ? (
+        <Notice tone="warning">
+          Set <code className="font-mono text-[12px]">RESEND_API_KEY</code> and{" "}
+          <code className="font-mono text-[12px]">RESEND_AUDIENCE_ID</code> to enable broadcasts.
+        </Notice>
+      ) : null}
 
-      <form action={sendBroadcast} className="mt-6 space-y-4 bg-white border border-ink/12 rounded-2xl p-6 shadow-card">
-        <label className="block">
-          <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">Subject line</span>
-          <input name="subject" required placeholder="New in: this week's drop" className="mt-1 w-full border border-ink/20 px-3 py-2.5 text-base focus:outline-none focus:border-ink rounded-[10px]" />
-        </label>
-        <label className="block">
-          <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">Heading (black bar)</span>
-          <input name="heading" required placeholder="Fresh Stock" className="mt-1 w-full border border-ink/20 px-3 py-2.5 text-base focus:outline-none focus:border-ink rounded-[10px]" />
-        </label>
-        <label className="block">
-          <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">Body (one paragraph per line)</span>
-          <textarea name="body" required rows={5} placeholder={"Just landed — limited pairs, verified and below RRP.\nFirst access for the list before it goes public."} className="mt-1 w-full border border-ink/20 px-3 py-2.5 text-base focus:outline-none focus:border-ink rounded-[10px]" />
-        </label>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <label className="block">
-            <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">Button label (optional)</span>
-            <input name="ctaLabel" placeholder="Shop The Drop" className="mt-1 w-full border border-ink/20 px-3 py-2.5 text-base focus:outline-none focus:border-ink rounded-[10px]" />
-          </label>
-          <label className="block">
-            <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">Button link (optional)</span>
-            <input name="ctaHref" placeholder="https://radnarsupply.co.uk/shop?sort=newest" className="mt-1 w-full border border-ink/20 px-3 py-2.5 text-base focus:outline-none focus:border-ink rounded-[10px]" />
-          </label>
-        </div>
-        <button disabled={!configured} className="btn btn-lg btn-block">Send to audience →</button>
+      <form action={sendBroadcast}>
+        <Card className="space-y-4">
+          <Field label="Subject line" name="subject" required placeholder="New in: this week's drop" />
+          <Field label="Heading" hint="shown in the black bar" name="heading" required placeholder="Fresh stock" />
+          <TextareaField
+            label="Body" hint="one paragraph per line" name="body" required rows={5}
+            placeholder={"Just landed — limited pairs, verified and below RRP.\nFirst access for the list before it goes public."}
+          />
+          <FieldRow>
+            <Field label="Button label" hint="optional" name="ctaLabel" placeholder="Shop the drop" />
+            <Field label="Button link" hint="optional" name="ctaHref" placeholder="https://…/shop?sort=newest" />
+          </FieldRow>
+          <div className="pt-1">
+            <Button disabled={!configured} className="w-full">Send to audience →</Button>
+          </div>
+        </Card>
       </form>
     </div>
   );

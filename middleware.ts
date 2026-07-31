@@ -54,7 +54,13 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  // Expose the resolved pathname to server components. Next 15 no longer sets
+  // x-invoke-path, and there is no other reliable way for a layout to know
+  // which route is rendering — the admin layout needs it to tell the login
+  // page apart from a gated page.
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-pathname", p);
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 // Run on all routes EXCEPT static assets, _next, and machine-to-machine API

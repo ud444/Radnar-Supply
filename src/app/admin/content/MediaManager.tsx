@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { UploadButton } from "@/lib/uploadthing";
 import { saveMediaImage, resetMediaImage } from "./actions";
+import { Eyebrow, Button } from "@/components/admin/ui";
 
 type Slot = { key: string; label: string; url: string };
 
@@ -15,11 +16,15 @@ export function MediaManager({ slots }: { slots: Slot[] }) {
   return (
     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
       {slots.map((slot) => (
-        <div key={slot.key} className="border border-line p-3 bg-white">
-          <div className="text-[10px] tracking-[0.18em] uppercase font-bold text-ink/55 mb-2">{slot.label}</div>
-          <div className="aspect-[4/5] bg-soft overflow-hidden mb-3">
+        <div key={slot.key} className="rounded-card border border-line/70 bg-bone p-3">
+          <Eyebrow className="mb-2">{slot.label}</Eyebrow>
+          <div className="aspect-[4/5] rounded-control bg-cream overflow-hidden mb-3">
+            {/* Uploaded to UploadThing from the browser — no intrinsic size known here. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={slot.url} alt="" className={`w-full h-full object-cover transition-opacity ${busy === slot.key ? "opacity-40" : ""}`} />
+            <img
+              src={slot.url} alt=""
+              className={`w-full h-full object-cover transition-opacity ${busy === slot.key ? "opacity-40" : ""}`}
+            />
           </div>
           <div className="flex items-center justify-between gap-2">
             <UploadButton
@@ -32,22 +37,21 @@ export function MediaManager({ slots }: { slots: Slot[] }) {
               }}
               onUploadError={(e) => { setErr((e as any).message); setBusy(null); }}
               appearance={{
-                button: "bg-ink text-white px-3 py-1.5 text-[11px] tracking-[0.16em] uppercase font-bold",
+                button: "h-8 px-3 rounded-control bg-ink text-paper text-[12px] font-medium hover:bg-accent transition-colors",
                 allowedContent: "hidden",
               }}
               content={{ button: "Replace" }}
             />
-            <button
-              type="button"
+            <Button
+              type="button" variant="ghost" size="sm"
               onClick={() => start(async () => { setBusy(slot.key); await resetMediaImage(slot.key); setBusy(null); router.refresh(); })}
-              className="text-[11px] tracking-[0.16em] uppercase font-bold text-ink/45 hover:text-ink"
             >
               Reset
-            </button>
+            </Button>
           </div>
         </div>
       ))}
-      {err ? <div className="col-span-full text-xs text-red-600">{err}</div> : null}
+      {err ? <div className="col-span-full text-[12px] text-danger">{err}</div> : null}
     </div>
   );
 }

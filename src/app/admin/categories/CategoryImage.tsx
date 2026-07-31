@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { UploadButton } from "@/lib/uploadthing";
 import { setCategoryImage, clearCategoryImage } from "./actions";
+import { Button } from "@/components/admin/ui";
 
 export function CategoryImage({
   categoryId,
@@ -18,15 +19,16 @@ export function CategoryImage({
 
   return (
     <div className="flex items-center gap-3">
-      <div className="w-14 h-16 bg-cream border border-line overflow-hidden shrink-0">
+      <div className="w-14 h-16 rounded-control bg-cream border border-line/70 overflow-hidden shrink-0">
         {imageUrl ? (
+          // Uploaded to UploadThing from the browser — no intrinsic size known here.
           // eslint-disable-next-line @next/next/no-img-element
           <img src={imageUrl} alt="" className={`w-full h-full object-cover ${busy ? "opacity-40" : ""}`} />
         ) : (
-          <div className="w-full h-full grid place-items-center text-[9px] uppercase tracking-widest text-muted">None</div>
+          <div className="w-full h-full grid place-items-center text-[10px] text-muted">None</div>
         )}
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col items-start gap-1">
         <UploadButton
           endpoint="contentImage"
           onUploadBegin={() => { setBusy(true); setErr(null); }}
@@ -39,21 +41,21 @@ export function CategoryImage({
           }}
           onUploadError={(e) => { setErr(e.message); setBusy(false); }}
           appearance={{
-            button: "bg-ink text-white px-3 py-1 text-[10px] tracking-[0.16em] uppercase font-bold",
+            button: "h-7 px-2.5 rounded-control bg-ink text-paper text-[12px] font-medium hover:bg-accent transition-colors",
             allowedContent: "hidden",
           }}
           content={{ button: imageUrl ? "Replace" : "Upload" }}
         />
         {imageUrl ? (
-          <button
-            type="button"
+          <Button
+            type="button" variant="ghost" size="sm"
+            className="h-7 px-2.5 text-danger hover:text-danger hover:bg-danger-tint"
             onClick={() => start(async () => { setBusy(true); await clearCategoryImage(categoryId); setBusy(false); router.refresh(); })}
-            className="text-[10px] tracking-[0.16em] uppercase font-bold text-red-600/80 hover:text-red-600 text-left"
           >
             Delete
-          </button>
+          </Button>
         ) : null}
-        {err ? <div className="text-[10px] text-red-600">{err}</div> : null}
+        {err ? <div className="text-[11px] text-danger">{err}</div> : null}
       </div>
     </div>
   );

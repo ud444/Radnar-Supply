@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
+import Image from "next/image";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
@@ -8,6 +9,9 @@ import { stripe } from "@/lib/stripe";
 import { sendShippingUpdate, sendRefundConfirmation } from "@/lib/email";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { CARRIER_OPTIONS, trackingLink } from "@/lib/tracking";
+import {
+  Card, Button, Field, TextareaField, SelectField, Checkbox, SectionTitle, Ident, Eyebrow,
+} from "@/components/admin/ui";
 
 export default async function OrderDetail({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
@@ -100,108 +104,149 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
 
   return (
     <div className="max-w-4xl">
-      <Link href="/admin/orders" className="text-[11px] tracking-[0.22em] uppercase font-bold text-ink/55 hover:text-accent">← All orders</Link>
-      <div className="flex items-center justify-between flex-wrap gap-3 mt-3">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-display font-semibold tracking-tightest">{order.number}</h1>
-            <StatusBadge value={order.status} />
-            <StatusBadge value={order.paymentStatus} />
-          </div>
-          <div className="text-sm text-muted mt-1">{order.createdAt.toLocaleString("en-GB")} · {order.email}</div>
+      <Link href="/admin/orders" className="text-[13px] text-muted hover:text-ink transition-colors">
+        ← All orders
+      </Link>
+
+      <div className="mt-3 pb-5 mb-6 border-b border-line/70">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="text-[22px] md:text-[26px] font-semibold tracking-[-0.01em]">
+            <Ident className="text-ink text-[20px] md:text-[24px]">{order.number}</Ident>
+          </h1>
+          <StatusBadge value={order.status} />
+          <StatusBadge value={order.paymentStatus} />
+        </div>
+        <div className="text-sm text-muted mt-1.5">
+          {order.createdAt.toLocaleString("en-GB")} · {order.email}
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6 mt-8">
+      <div className="grid md:grid-cols-3 gap-5 lg:gap-6">
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-white border border-line rounded p-6">
-            <div className="text-sm font-medium mb-3">Items</div>
-            <ul className="divide-y divide-line">
-              {order.items.map((i) => (
-                <li key={i.id} className="py-3 flex gap-3 text-sm">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={i.imageUrl} alt="" className="w-14 h-16 object-cover rounded bg-soft" />
-                  <div className="flex-1">
-                    <div className="text-[11px] tracking-[0.16em] uppercase text-muted">{i.brandName}</div>
-                    <div>{i.productName}</div>
-                    <div className="text-xs text-muted">Size {i.size} · qty {i.quantity}</div>
+          <div>
+            <SectionTitle>Items</SectionTitle>
+            <Card>
+              <ul className="divide-y divide-line/60 -my-3">
+                {order.items.map((i) => (
+                  <li key={i.id} className="py-3 flex gap-3 text-sm items-center">
+                    <Image
+                      src={i.imageUrl} alt="" width={56} height={64}
+                      className="w-14 h-16 object-cover rounded-[6px] bg-cream shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[11px] uppercase tracking-[0.12em] text-muted font-medium">{i.brandName}</div>
+                      <div className="truncate">{i.productName}</div>
+                      <div className="text-[12px] text-muted">Size {i.size} · qty {i.quantity}</div>
+                    </div>
+                    <div className="tabular-nums font-medium">{money(i.unitPriceCents * i.quantity)}</div>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-5 pt-4 border-t border-line/60 space-y-1.5 text-sm max-w-[240px] ml-auto">
+                <div className="flex justify-between">
+                  <span className="text-muted">Subtotal</span>
+                  <span className="tabular-nums">{money(order.subtotalCents)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted">Shipping</span>
+                  <span className="tabular-nums">
+                    {order.shippingCents === 0 ? "Free" : money(order.shippingCents)}
+                  </span>
+                </div>
+                <div className="flex justify-between font-medium pt-2 mt-2 border-t border-line/60">
+                  <span>Total</span>
+                  <span className="tabular-nums">{money(order.totalCents)}</span>
+                </div>
+                {order.refundedCents > 0 ? (
+                  <div className="flex justify-between text-warning">
+                    <span>Refunded</span>
+                    <span className="tabular-nums">−{money(order.refundedCents)}</span>
                   </div>
-                  <div>{money(i.unitPriceCents * i.quantity)}</div>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4 space-y-1 text-sm max-w-xs ml-auto">
-              <div className="flex justify-between"><span>Subtotal</span><span>{money(order.subtotalCents)}</span></div>
-              <div className="flex justify-between"><span>Shipping</span><span>{order.shippingCents === 0 ? "Free" : money(order.shippingCents)}</span></div>
-              <div className="flex justify-between font-medium pt-2 border-t border-line mt-2"><span>Total</span><span>{money(order.totalCents)}</span></div>
-              {order.refundedCents > 0 ? (
-                <div className="flex justify-between text-orange-700"><span>Refunded</span><span>−{money(order.refundedCents)}</span></div>
-              ) : null}
-            </div>
+                ) : null}
+              </div>
+            </Card>
           </div>
 
-          {/* Internal notes */}
-          <form action={saveNotes} className="bg-white border border-line rounded p-6">
-            <div className="text-sm font-medium mb-2">Internal notes</div>
-            <textarea name="notes" rows={3} defaultValue={order.notes ?? ""} placeholder="Private notes about this order…"
-              className="w-full border border-line px-3 py-2 text-sm" />
-            <button className="mt-3 bg-ink text-white px-4 py-2 rounded text-sm">Save notes</button>
-          </form>
+          <div>
+            <SectionTitle>Internal notes</SectionTitle>
+            <form action={saveNotes}>
+              <Card>
+                <textarea
+                  name="notes" rows={3} defaultValue={order.notes ?? ""}
+                  placeholder="Private notes about this order — never shown to the customer."
+                  className="w-full bg-bone border border-ink/15 rounded-control px-3 py-2.5 text-sm placeholder:text-ink/35 focus:outline-none focus:border-ink/60 focus:ring-2 focus:ring-accent/25"
+                />
+                <div className="mt-3">
+                  <Button variant="secondary" size="sm">Save notes</Button>
+                </div>
+              </Card>
+            </form>
+          </div>
         </div>
 
         <div className="space-y-6">
-          {/* Fulfilment */}
-          <form action={saveFulfilment} className="bg-white border border-line rounded p-6 text-sm space-y-3">
-            <div className="font-medium">Fulfilment</div>
-            <label className="block">
-              <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">Status</span>
-              <select name="status" defaultValue={order.status} className="mt-1 w-full border border-line px-3 py-2 text-sm">
-                {["PENDING","PAID","SHIPPED","DELIVERED","CANCELLED"].map((s) => <option key={s} value={s}>{s.toLowerCase()}</option>)}
-              </select>
-            </label>
-            <label className="block">
-              <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">Carrier</span>
-              <select name="trackingCarrier" defaultValue={order.trackingCarrier ?? ""} className="mt-1 w-full border border-line px-3 py-2 text-sm">
-                <option value="">— none —</option>
-                {CARRIER_OPTIONS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-              </select>
-            </label>
-            <label className="block">
-              <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">Tracking number</span>
-              <input name="trackingNumber" defaultValue={order.trackingNumber ?? ""} className="mt-1 w-full border border-line px-3 py-2 text-sm" />
-            </label>
-            <label className="block">
-              <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">Tracking URL (optional)</span>
-              <input name="trackingUrl" defaultValue={order.trackingUrl ?? ""} placeholder="Overrides carrier link" className="mt-1 w-full border border-line px-3 py-2 text-sm" />
-            </label>
-            <label className="flex items-center gap-2 pt-1">
-              <input type="checkbox" name="notify" defaultChecked className="w-4 h-4" />
-              <span className="text-xs text-ink/70">Email customer when status is "shipped"</span>
-            </label>
-            <button className="bg-ink text-white py-2.5 rounded text-sm font-medium w-full">Save & notify</button>
-          </form>
-
-          {/* Shipping address */}
-          <div className="bg-white border border-line rounded p-6 text-sm">
-            <div className="font-medium mb-2">Shipping</div>
-            <div className="text-muted">{order.shipName}<br/>{order.shipLine1}{order.shipLine2 ? `, ${order.shipLine2}` : ""}<br/>{order.shipCity}, {order.shipPostcode}<br/>{order.shipCountry}</div>
-            <div className="font-medium mt-6 mb-2">Payment</div>
-            <div className="text-muted">Method · {order.paymentMethod ?? "—"}</div>
-            <div className="text-muted break-all">Stripe · {order.stripePaymentIntentId ?? order.stripeSessionId ?? "—"}</div>
+          <div>
+            <SectionTitle>Fulfilment</SectionTitle>
+            <form action={saveFulfilment}>
+              <Card className="space-y-3.5">
+                <SelectField label="Status" name="status" defaultValue={order.status}>
+                  {["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"].map((s) => (
+                    <option key={s} value={s}>{s.charAt(0) + s.slice(1).toLowerCase()}</option>
+                  ))}
+                </SelectField>
+                <SelectField label="Carrier" name="trackingCarrier" defaultValue={order.trackingCarrier ?? ""}>
+                  <option value="">— none —</option>
+                  {CARRIER_OPTIONS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+                </SelectField>
+                <Field label="Tracking number" name="trackingNumber" defaultValue={order.trackingNumber ?? ""} />
+                <Field
+                  label="Tracking URL" hint="optional" name="trackingUrl"
+                  defaultValue={order.trackingUrl ?? ""} placeholder="Overrides the carrier link"
+                />
+                <Checkbox label="Email the customer when shipped or delivered" name="notify" defaultChecked />
+                <Button className="w-full">Save and notify</Button>
+              </Card>
+            </form>
           </div>
 
-          {/* Refund */}
+          <div>
+            <SectionTitle>Shipping</SectionTitle>
+            <Card className="text-sm">
+              <div className="text-muted leading-relaxed">
+                {order.shipName}<br />
+                {order.shipLine1}{order.shipLine2 ? `, ${order.shipLine2}` : ""}<br />
+                {order.shipCity}, {order.shipPostcode}<br />
+                {order.shipCountry}
+              </div>
+
+              <Eyebrow className="mt-5 mb-1.5">Payment</Eyebrow>
+              <div className="text-muted">Method · {order.paymentMethod ?? "—"}</div>
+              <div className="text-muted break-all">
+                Stripe · <Ident>{order.stripePaymentIntentId ?? order.stripeSessionId ?? "—"}</Ident>
+              </div>
+            </Card>
+          </div>
+
           {(order.paymentStatus === "PAID" || order.paymentStatus === "REFUNDED") && order.stripePaymentIntentId && refundable > 0 ? (
-            <form action={refund} className="bg-white border border-orange-300 rounded p-6 text-sm space-y-3">
-              <div className="font-medium text-orange-800">Refund</div>
-              <p className="text-xs text-ink/60">Up to {money(refundable)} refundable. Full refunds restock the items.</p>
-              <label className="block">
-                <span className="text-[10px] tracking-[0.18em] uppercase text-ink/55 font-bold">Amount (£)</span>
-                <input name="amount" type="number" step="0.01" min="0" max={(refundable / 100).toFixed(2)}
-                  defaultValue={(refundable / 100).toFixed(2)} className="mt-1 w-full border border-line px-3 py-2 text-sm" />
-              </label>
-              <button className="bg-orange-600 text-white py-2.5 rounded text-sm font-medium w-full hover:bg-orange-700">Refund via Stripe</button>
-            </form>
+            <div>
+              <SectionTitle>Refund</SectionTitle>
+              <form action={refund}>
+                <div className="bg-warning-tint border border-warning-line rounded-card p-5 space-y-3.5">
+                  <p className="text-[13px] text-warning">
+                    Up to <span className="tabular-nums font-medium">{money(refundable)}</span> refundable.
+                    A full refund restocks the items and cancels the order.
+                  </p>
+                  <Field
+                    label="Amount" hint="£" name="amount" type="number" step="0.01" min="0"
+                    max={(refundable / 100).toFixed(2)}
+                    defaultValue={(refundable / 100).toFixed(2)}
+                    className="tabular-nums"
+                  />
+                  <Button variant="danger" className="w-full bg-transparent">Refund via Stripe</Button>
+                </div>
+              </form>
+            </div>
           ) : null}
         </div>
       </div>

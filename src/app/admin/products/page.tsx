@@ -1,8 +1,13 @@
 import Link from "next/link";
+import Image from "next/image";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { money } from "@/lib/format";
 import { Icon } from "@/components/admin/icons";
+import {
+  PageHeader, ButtonLink, Toolbar, SearchInput, FilterTabs, TableWrap, Table,
+  THead, Th, Tr, Td, Badge, EmptyState, Pagination, Notice, Ident,
+} from "@/components/admin/ui";
 
 type SP = { q?: string; status?: "live" | "hidden"; archived?: string; deleted?: string; page?: string };
 
@@ -39,101 +44,112 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
     return `/admin/products${u.toString() ? `?${u}` : ""}`;
   };
 
+  const qs = sp.q ? `q=${encodeURIComponent(sp.q)}` : "";
+  const tabs = [
+    { href: `/admin/products${qs ? `?${qs}` : ""}`, label: "All", active: !sp.status },
+    { href: `/admin/products?status=live${qs ? `&${qs}` : ""}`, label: "Live", active: sp.status === "live" },
+    { href: `/admin/products?status=hidden${qs ? `&${qs}` : ""}`, label: "Hidden", active: sp.status === "hidden" },
+  ];
+
   return (
     <div>
-      <div className="flex items-end justify-between flex-wrap gap-3">
-        <div>
-          <div className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink/55">Catalogue</div>
-          <h1 className="font-display font-black text-4xl md:text-5xl uppercase display-tight mt-1">Products</h1>
-        </div>
-        <Link href="/admin/products/new" className="bg-ink text-paper inline-flex items-center gap-2 px-4 py-2.5 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-accent transition-colors">
-          <Icon.plus /> New Product
-        </Link>
-      </div>
+      <PageHeader
+        eyebrow="Catalogue"
+        title="Products"
+        actions={
+          <ButtonLink href="/admin/products/new">
+            <Icon.plus /> New product
+          </ButtonLink>
+        }
+      />
 
       {sp.archived ? (
-        <div className="mt-5 border border-amber-300 bg-amber-50 text-amber-900 px-4 py-3 text-sm">
-          This product had order history, so it was <strong>archived</strong> (hidden from the storefront) rather than deleted — its orders stay intact. Filter by <strong>Hidden</strong> to find it.
-        </div>
+        <Notice tone="warning">
+          This product had order history, so it was <strong className="font-semibold">archived</strong> — hidden
+          from the storefront rather than deleted, so its orders stay intact. Filter by <strong className="font-semibold">Hidden</strong> to find it.
+        </Notice>
       ) : null}
-      {sp.deleted ? (
-        <div className="mt-5 border border-green-300 bg-green-50 text-green-900 px-4 py-3 text-sm">
-          Product deleted.
-        </div>
-      ) : null}
+      {sp.deleted ? <Notice tone="success">Product deleted.</Notice> : null}
 
-      <div className="mt-6 flex flex-wrap gap-3 items-center">
-        <form action="/admin/products" className="flex-1 min-w-[260px] relative">
+      <Toolbar>
+        <form action="/admin/products" className="flex-1 min-w-[240px]">
           {sp.status && <input type="hidden" name="status" value={sp.status} />}
-          <Icon.search className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40" />
-          <input name="q" defaultValue={sp.q ?? ""} placeholder="Search by name, slug, brand…" className="w-full bg-bone border border-ink/20 pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:border-ink" />
+          <SearchInput defaultValue={sp.q ?? ""} placeholder="Search by name, slug or brand…" />
         </form>
-        <div className="flex gap-1.5">
-          <Link href={`/admin/products${sp.q ? `?q=${sp.q}` : ""}`} className={`text-[11px] tracking-[0.18em] uppercase font-bold px-3 py-2 border ${!sp.status ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"}`}>All</Link>
-          <Link href={`/admin/products?status=live${sp.q ? `&q=${sp.q}` : ""}`} className={`text-[11px] tracking-[0.18em] uppercase font-bold px-3 py-2 border ${sp.status === "live" ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"}`}>Live</Link>
-          <Link href={`/admin/products?status=hidden${sp.q ? `&q=${sp.q}` : ""}`} className={`text-[11px] tracking-[0.18em] uppercase font-bold px-3 py-2 border ${sp.status === "hidden" ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"}`}>Hidden</Link>
-        </div>
-      </div>
+        <FilterTabs items={tabs} />
+      </Toolbar>
 
-      <div className="mt-6 bg-bone border border-ink/15 overflow-hidden rounded-xl">
-        <table className="w-full text-sm">
-          <thead className="bg-cream text-ink/65">
+      <TableWrap>
+        <Table>
+          <THead>
             <tr>
-              <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Product</th>
-              <th className="text-left px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Brand</th>
-              <th className="text-right px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Price</th>
-              <th className="text-right px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Stock</th>
-              <th className="text-right px-4 py-2.5 text-[10px] tracking-[0.18em] uppercase font-bold">Status</th>
+              <Th>Product</Th>
+              <Th>Brand</Th>
+              <Th align="right">Price</Th>
+              <Th align="right">Stock</Th>
+              <Th align="right">Status</Th>
             </tr>
-          </thead>
+          </THead>
           <tbody>
             {products.length === 0 ? (
-              <tr><td colSpan={5} className="px-4 py-16 text-center text-ink/55">
-                {sp.q ? "Nothing matches." : <>No products yet — <Link href="/admin/products/new" className="underline text-ink">create one</Link>.</>}
-              </td></tr>
+              <tr>
+                <Td colSpan={5}>
+                  {sp.q ? (
+                    <EmptyState
+                      title="Nothing matches that search"
+                      hint="Try a different name, slug or brand."
+                    />
+                  ) : (
+                    <EmptyState
+                      title="No products yet"
+                      hint="Add your first product and it will appear on the storefront once it is live."
+                      action={<ButtonLink href="/admin/products/new"><Icon.plus /> New product</ButtonLink>}
+                    />
+                  )}
+                </Td>
+              </tr>
             ) : products.map((p) => {
               const stock = p.variants.reduce((a, v) => a + v.stock, 0);
               const oos = stock === 0;
               const low = stock > 0 && stock <= 5;
               return (
-                <tr key={p.id} className="border-t border-ink/10 hover:bg-cream/50">
-                  <td className="px-4 py-3">
-                    <Link href={`/admin/products/${p.id}`} className="flex items-center gap-3">
-                      {p.images[0] ? (/* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={p.images[0].url} alt="" className="w-10 h-12 object-cover bg-cream" />
-                      ) : <div className="w-10 h-12 bg-cream border border-ink/10" />}
-                      <div>
-                        <div className="font-medium hover:text-accent">{p.name}</div>
-                        <div className="text-xs text-ink/55">/{p.slug}</div>
+                <Tr key={p.id}>
+                  <Td>
+                    <Link href={`/admin/products/${p.id}`} className="group flex items-center gap-3">
+                      {p.images[0] ? (
+                        <Image
+                          src={p.images[0].url} alt="" width={40} height={48}
+                          className="w-10 h-12 object-cover rounded-[6px] bg-cream shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-12 rounded-[6px] bg-cream border border-line/70 shrink-0" />
+                      )}
+                      <div className="min-w-0">
+                        <div className="font-medium truncate group-hover:text-accent transition-colors">{p.name}</div>
+                        <Ident>/{p.slug}</Ident>
                       </div>
                     </Link>
-                  </td>
-                  <td className="px-4 py-3">{p.brand.name}</td>
-                  <td className="px-4 py-3 text-right font-medium">{money(p.priceCents)}</td>
-                  <td className={`px-4 py-3 text-right font-medium ${oos ? "text-red-600" : low ? "text-amber-600" : ""}`}>
-                    {stock}{oos ? <span className="ml-1.5 text-[9px] tracking-[0.14em] uppercase">out</span> : low ? <span className="ml-1.5 text-[9px] tracking-[0.14em] uppercase">low</span> : null}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <span className={`text-[10px] px-2 py-1 border tracking-[0.14em] uppercase font-bold ${p.active ? "bg-green-100 text-green-800 border-green-300" : "bg-cream text-ink/55 border-ink/20"}`}>
-                      {p.active ? "Live" : "Hidden"}
+                  </Td>
+                  <Td className="text-muted">{p.brand.name}</Td>
+                  <Td align="right" numeric className="font-medium">{money(p.priceCents)}</Td>
+                  <Td align="right" numeric>
+                    <span className={oos ? "text-danger font-medium" : low ? "text-warning font-medium" : ""}>
+                      {stock}
                     </span>
-                  </td>
-                </tr>
+                    {oos ? <span className="ml-1.5 text-[10px] text-danger">out</span>
+                         : low ? <span className="ml-1.5 text-[10px] text-warning">low</span> : null}
+                  </Td>
+                  <Td align="right">
+                    <Badge tone={p.active ? "success" : "neutral"}>{p.active ? "Live" : "Hidden"}</Badge>
+                  </Td>
+                </Tr>
               );
             })}
           </tbody>
-        </table>
-      </div>
+        </Table>
+      </TableWrap>
 
-      {pages > 1 ? (
-        <div className="mt-5 flex items-center justify-between text-sm">
-          <div className="text-ink/55">{total} products · page {page} of {pages}</div>
-          <div className="flex gap-2">
-            {page > 1 ? <Link href={pageHref(page - 1)} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">← Prev</Link> : null}
-            {page < pages ? <Link href={pageHref(page + 1)} className="border border-ink/20 px-3 py-1.5 text-[11px] tracking-[0.18em] uppercase font-bold hover:border-ink rounded-lg">Next →</Link> : null}
-          </div>
-        </div>
-      ) : null}
+      <Pagination page={page} pages={pages} total={total} noun="products" hrefFor={pageHref} />
     </div>
   );
 }
