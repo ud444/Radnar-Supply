@@ -116,7 +116,7 @@ export default async function RequestDetail({
         ← All requests
       </Link>
 
-      <div className="mt-3 pb-5 mb-6 border-b border-line/70 flex items-start justify-between flex-wrap gap-3">
+      <div className="mt-3 pb-5 mb-6 border-b border-line flex items-start justify-between flex-wrap gap-3">
         <div>
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-[22px] md:text-[26px] font-semibold tracking-[-0.01em]">{r.name}</h1>
@@ -152,7 +152,7 @@ export default async function RequestDetail({
                   {images.map((u) => (
                     <a
                       key={u} href={u} target="_blank" rel="noreferrer"
-                      className="block rounded-[6px] overflow-hidden border border-line/70 hover:border-ink/40 transition-colors"
+                      className="block rounded-[6px] overflow-hidden border border-line hover:border-ink/40 transition-colors"
                     >
                       {/* Customer-supplied URL from UploadThing — dimensions unknown,
                           and next/image would need every possible host allow-listed. */}
@@ -191,7 +191,7 @@ export default async function RequestDetail({
             <form action={sendQuote}>
               <div className="bg-bone border border-accent/30 rounded-card p-5 space-y-3.5">
                 {r.quoteUrl ? (
-                  <div className="rounded-control bg-cream/70 border border-line/70 p-3 space-y-1 text-[12px]">
+                  <div className="rounded-control bg-cream border border-line p-3 space-y-1 text-[12px]">
                     <div className="font-medium">
                       Quoted <span className="tabular-nums">{money(r.quoteCents ?? 0)}</span>
                     </div>

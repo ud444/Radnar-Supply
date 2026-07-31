@@ -68,7 +68,7 @@ export default async function AdminReviews() {
                 </Td>
                 <Td className="max-w-md">
                   <div className="text-accent tracking-[0.1em]" aria-label={`${r.rating} out of 5`}>
-                    {"★".repeat(r.rating)}<span className="text-ink/15">{"★".repeat(5 - r.rating)}</span>
+                    {"★".repeat(r.rating)}<span className="text-muted/30">{"★".repeat(5 - r.rating)}</span>
                   </div>
                   <div className="font-medium text-[13px] mt-1">{r.author}</div>
                   <div className="text-muted mt-0.5">{r.body}</div>

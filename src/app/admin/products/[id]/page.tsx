@@ -148,7 +148,7 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
               "use server";
               await addVariant(product.id, String(fd.get("size")));
             }}
-            className="flex gap-2 border-t border-line/60 p-4"
+            className="flex gap-2 border-t border-line p-4"
           >
             <input
               name="size" placeholder="New size, e.g. XL" required

@@ -19,7 +19,7 @@ export function CategoryImage({
 
   return (
     <div className="flex items-center gap-3">
-      <div className="w-14 h-16 rounded-control bg-cream border border-line/70 overflow-hidden shrink-0">
+      <div className="w-14 h-16 rounded-control bg-cream border border-line overflow-hidden shrink-0">
         {imageUrl ? (
           // Uploaded to UploadThing from the browser — no intrinsic size known here.
           // eslint-disable-next-line @next/next/no-img-element

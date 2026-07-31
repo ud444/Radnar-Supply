@@ -31,7 +31,7 @@ export default async function EditPage({ params }: { params: Promise<{ slug: str
         ← All pages
       </Link>
 
-      <div className="mt-3 pb-5 mb-6 border-b border-line/70">
+      <div className="mt-3 pb-5 mb-6 border-b border-line">
         <h1 className="text-[22px] md:text-[26px] font-semibold tracking-[-0.01em]">{PAGE_LABELS[slug]}</h1>
         <p className="text-sm text-muted mt-1.5">
           Live at{" "}
@@ -56,7 +56,7 @@ export default async function EditPage({ params }: { params: Promise<{ slug: str
           <SectionTitle>Sections</SectionTitle>
           <Card className="space-y-5">
             {Array.from({ length: rows }).map((_, i) => (
-              <div key={i} className="border-t border-line/60 pt-5 first:border-t-0 first:pt-0 space-y-3">
+              <div key={i} className="border-t border-line pt-5 first:border-t-0 first:pt-0 space-y-3">
                 <Field
                   label={`Section ${i + 1} heading`}
                   name={`sec_h_${i}`}

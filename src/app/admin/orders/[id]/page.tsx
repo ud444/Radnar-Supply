@@ -108,7 +108,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
         ← All orders
       </Link>
 
-      <div className="mt-3 pb-5 mb-6 border-b border-line/70">
+      <div className="mt-3 pb-5 mb-6 border-b border-line">
         <div className="flex items-center gap-3 flex-wrap">
           <h1 className="text-[22px] md:text-[26px] font-semibold tracking-[-0.01em]">
             <Ident className="text-ink text-[20px] md:text-[24px]">{order.number}</Ident>
@@ -126,7 +126,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
           <div>
             <SectionTitle>Items</SectionTitle>
             <Card>
-              <ul className="divide-y divide-line/60 -my-3">
+              <ul className="divide-y divide-line -my-3">
                 {order.items.map((i) => (
                   <li key={i.id} className="py-3 flex gap-3 text-sm items-center">
                     <Image
@@ -143,7 +143,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
                 ))}
               </ul>
 
-              <div className="mt-5 pt-4 border-t border-line/60 space-y-1.5 text-sm max-w-[240px] ml-auto">
+              <div className="mt-5 pt-4 border-t border-line space-y-1.5 text-sm max-w-[240px] ml-auto">
                 <div className="flex justify-between">
                   <span className="text-muted">Subtotal</span>
                   <span className="tabular-nums">{money(order.subtotalCents)}</span>
@@ -154,7 +154,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
                     {order.shippingCents === 0 ? "Free" : money(order.shippingCents)}
                   </span>
                 </div>
-                <div className="flex justify-between font-medium pt-2 mt-2 border-t border-line/60">
+                <div className="flex justify-between font-medium pt-2 mt-2 border-t border-line">
                   <span>Total</span>
                   <span className="tabular-nums">{money(order.totalCents)}</span>
                 </div>

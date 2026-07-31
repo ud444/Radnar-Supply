@@ -30,7 +30,7 @@ export function ProductImages({
           {images.map((img) => (
             <div
               key={img.id}
-              className="relative aspect-[4/5] rounded-control overflow-hidden bg-cream border border-line/70 group"
+              className="relative aspect-[4/5] rounded-control overflow-hidden bg-cream border border-line group"
             >
               {/* Uploaded to UploadThing from the browser — no intrinsic size known here. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}

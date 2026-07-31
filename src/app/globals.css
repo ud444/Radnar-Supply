@@ -22,6 +22,73 @@ body::before {
 
 header, main, footer { position: relative; z-index: 2; }
 
+/* ---------------------------------------------------------------------------
+   Brand colour channels. Tailwind reads these via rgb(var(--c-x) / <alpha>).
+   The :root set is the storefront palette, unchanged.
+   --------------------------------------------------------------------------- */
+:root {
+  --c-ink:    10 10 10;
+  --c-paper:  244 241 234;
+  --c-cream:  239 234 224;
+  --c-bone:   255 254 251;
+  --c-muted:  92 88 83;
+  --c-line:   217 209 194;
+  --c-accent: 255 77 0;
+
+  --c-success: 47 107 79;   --c-success-tint: 231 240 233; --c-success-line: 193 215 199;
+  --c-info:    53 86 111;   --c-info-tint:    232 238 243; --c-info-line:    196 211 222;
+  --c-warning: 138 90 18;   --c-warning-tint: 247 238 220; --c-warning-line: 228 208 168;
+  --c-danger:  142 47 42;   --c-danger-tint:  247 231 228; --c-danger-line:  230 195 189;
+}
+
+/* ---------------------------------------------------------------------------
+   "Night atelier" — the admin canvas.
+   Three surface levels do the work light UI does with borders alone:
+     paper = canvas (deepest)  ·  bone = panel  ·  cream = raised
+   Statuses brighten so they read against the dark without glaring, and the
+   orange finally has somewhere to burn.
+   --------------------------------------------------------------------------- */
+.admin-dark {
+  --c-ink:    242 239 233;  /* foreground */
+  --c-paper:  14 15 17;     /* canvas     */
+  --c-bone:   23 25 28;     /* panel      */
+  --c-cream:  31 34 38;     /* raised     */
+  --c-muted:  154 160 168;
+  --c-line:   42 46 51;     /* hairline   */
+  --c-accent: 255 77 0;
+
+  --c-success: 53 192 138;  --c-success-tint: 18 36 28;  --c-success-line: 30 69 54;
+  --c-info:    79 168 255;  --c-info-tint:    16 28 40;  --c-info-line:    30 58 82;
+  --c-warning: 255 176 32;  --c-warning-tint: 36 27 12;  --c-warning-line: 74 55 20;
+  --c-danger:  255 92 92;   --c-danger-tint:  42 20 20;  --c-danger-line:  79 34 34;
+
+  color-scheme: dark;
+}
+
+/* The paper-grain overlay multiplies, which just muddies a dark canvas. */
+.admin-dark::before { display: none; }
+
+/* Elevation for dark: a hairline of light along the top edge reads as a lit
+   surface far better than a drop shadow, which is nearly invisible on black. */
+.lift-1 {
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.04),
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 12px 28px -18px rgb(0 0 0 / 0.9);
+}
+.lift-2 {
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.06),
+    0 2px 4px rgb(0 0 0 / 0.45),
+    0 24px 48px -24px rgb(0 0 0 / 0.95);
+}
+/* Inset well — used for KPI numerals so figures sit *in* the panel, not on it. */
+.well {
+  box-shadow:
+    inset 0 1px 3px rgb(0 0 0 / 0.5),
+    inset 0 -1px 0 0 rgb(255 255 255 / 0.03);
+}
+
 /* Boutique radius scale (elevated streetwear-reseller, not boxy) */
 :root {
   --r-xs: 6px;

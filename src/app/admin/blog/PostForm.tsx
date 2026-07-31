@@ -42,7 +42,7 @@ export function PostForm({
       <Card>
         <Label>Cover image</Label>
         {cover ? (
-          <div className="relative w-full max-w-sm aspect-[16/9] rounded-control bg-cream overflow-hidden mb-3 border border-line/70">
+          <div className="relative w-full max-w-sm aspect-[16/9] rounded-control bg-cream overflow-hidden mb-3 border border-line">
             {/* Uploaded to UploadThing from the browser — no intrinsic size known here. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={cover} alt="" className="w-full h-full object-cover" />

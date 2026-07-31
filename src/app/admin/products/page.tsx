@@ -122,7 +122,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
                           className="w-10 h-12 object-cover rounded-[6px] bg-cream shrink-0"
                         />
                       ) : (
-                        <div className="w-10 h-12 rounded-[6px] bg-cream border border-line/70 shrink-0" />
+                        <div className="w-10 h-12 rounded-[6px] bg-cream border border-line shrink-0" />
                       )}
                       <div className="min-w-0">
                         <div className="font-medium truncate group-hover:text-accent transition-colors">{p.name}</div>

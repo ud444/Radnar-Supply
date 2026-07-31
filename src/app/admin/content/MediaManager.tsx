@@ -16,7 +16,7 @@ export function MediaManager({ slots }: { slots: Slot[] }) {
   return (
     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
       {slots.map((slot) => (
-        <div key={slot.key} className="rounded-card border border-line/70 bg-bone p-3">
+        <div key={slot.key} className="rounded-card border border-line bg-bone p-3">
           <Eyebrow className="mb-2">{slot.label}</Eyebrow>
           <div className="aspect-[4/5] rounded-control bg-cream overflow-hidden mb-3">
             {/* Uploaded to UploadThing from the browser — no intrinsic size known here. */}

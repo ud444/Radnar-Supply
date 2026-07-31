@@ -13,7 +13,7 @@ export function NewKeyForm() {
           {SCOPES.map((s) => (
             <label
               key={s.id}
-              className="flex items-start gap-2.5 rounded-control border border-ink/15 p-3 cursor-pointer text-sm transition-colors hover:border-ink/40 hover:bg-cream/50 has-[:checked]:border-ink has-[:checked]:bg-cream/70"
+              className="flex items-start gap-2.5 rounded-control border border-ink/15 p-3 cursor-pointer text-sm transition-colors hover:border-ink/40 hover:bg-cream/60 has-[:checked]:border-ink has-[:checked]:bg-cream"
             >
               <input type="checkbox" name="scopes" value={s.id} className="mt-0.5 w-4 h-4 accent-ink" />
               <span className="min-w-0">

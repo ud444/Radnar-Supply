@@ -40,13 +40,13 @@ export default async function ApiKeys({ searchParams }: { searchParams: Promise<
         <div className="grid md:grid-cols-2 gap-4">
           <Card>
             <Eyebrow>Base URL</Eyebrow>
-            <code className="block mt-2 rounded-control bg-cream/70 border border-line/70 px-3 py-2 font-mono text-[13px] break-all select-all">
+            <code className="block mt-2 rounded-control bg-cream border border-line px-3 py-2 font-mono text-[13px] break-all select-all">
               {`${SITE}/api/sync`}
             </code>
           </Card>
           <Card>
             <Eyebrow>Auth type</Eyebrow>
-            <code className="block mt-2 rounded-control bg-cream/70 border border-line/70 px-3 py-2 font-mono text-[13px]">
+            <code className="block mt-2 rounded-control bg-cream border border-line px-3 py-2 font-mono text-[13px]">
               Bearer token
             </code>
           </Card>
@@ -163,7 +163,7 @@ export default async function ApiKeys({ searchParams }: { searchParams: Promise<
         <SectionTitle>Webhooks</SectionTitle>
         <Card>
           <p className="text-sm text-muted">
-            With a <code className="font-mono text-[12px] bg-cream/70 px-1.5 py-0.5 rounded">write</code>-scoped key,
+            With a <code className="font-mono text-[12px] bg-cream px-1.5 py-0.5 rounded">write</code>-scoped key,
             an external system can subscribe to store events:
           </p>
           <pre className="mt-3 rounded-control bg-ink text-paper p-3 font-mono text-[12px] overflow-x-auto">{`POST ${SITE}/api/sync/webhooks
@@ -190,7 +190,7 @@ function ScopeCard({ title, desc, endpoints }: { title: string; desc: string; en
       <ul className="mt-3.5 space-y-1.5">
         {endpoints.map((e) => (
           <li key={e}>
-            <code className="block rounded-[6px] bg-cream/70 border border-line/60 px-2 py-1 font-mono text-[12px] break-all">
+            <code className="block rounded-[6px] bg-cream border border-line px-2 py-1 font-mono text-[12px] break-all">
               {e}
             </code>
           </li>

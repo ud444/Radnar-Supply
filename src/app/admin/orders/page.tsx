@@ -111,7 +111,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
 
       <form action={bulkUpdate}>
         {/* Bulk action bar — sits flush on top of the table */}
-        <div className="flex flex-wrap items-center gap-3 bg-cream/70 border border-line/70 rounded-t-card px-4 py-3 text-sm">
+        <div className="flex flex-wrap items-center gap-3 bg-cream border border-line rounded-t-card px-4 py-3 text-sm">
           <Eyebrow>Bulk action</Eyebrow>
           <select
             name="bulkStatus"

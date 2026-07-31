@@ -43,7 +43,7 @@ export default async function Brands() {
         {brands.length === 0 ? (
           <EmptyState title="No brands yet" hint="Add a brand before creating products." />
         ) : (
-          <ul className="divide-y divide-line/60">
+          <ul className="divide-y divide-line">
             {brands.map((b) => (
               <li key={b.id} className="px-5 py-3.5 flex items-center justify-between gap-4 text-sm">
                 <div className="min-w-0">

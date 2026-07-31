@@ -6,6 +6,13 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { Icon } from "./icons";
 
+/**
+ * The rail sits one step BELOW the canvas rather than above it — on a dark UI a
+ * recessed navigation edge reads as structure, where a lighter panel would
+ * compete with the content for attention.
+ */
+const RAIL = "bg-[#0A0B0D]";
+
 const SECTIONS: { label: string; items: { href: string; label: string; icon: keyof typeof Icon }[] }[] = [
   {
     label: "Operate",
@@ -49,7 +56,6 @@ export function AdminSidebar({ email }: { email?: string | null }) {
   const isActive = (href: string) =>
     href === "/admin" ? pathname === "/admin" : !!pathname?.startsWith(href);
 
-  // Close drawer on navigation; lock body scroll while open
   useEffect(() => { setOpen(false); }, [pathname]);
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -57,10 +63,10 @@ export function AdminSidebar({ email }: { email?: string | null }) {
   }, [open]);
 
   const Nav = (
-    <nav className="flex-1 py-4 overflow-y-auto">
+    <nav className="flex-1 py-4 overflow-y-auto no-scrollbar">
       {SECTIONS.map((s) => (
         <div key={s.label} className="px-3 mb-5 last:mb-2">
-          <div className="px-3 mb-1.5 text-[10px] tracking-[0.18em] uppercase font-semibold text-paper/35">
+          <div className="px-3 mb-1.5 text-[10px] tracking-[0.18em] uppercase font-semibold text-muted/70">
             {s.label}
           </div>
           <div className="space-y-0.5">
@@ -77,14 +83,16 @@ export function AdminSidebar({ email }: { email?: string | null }) {
                     "relative flex items-center gap-3 px-3 h-9 rounded-[8px] text-[13px] transition-colors duration-150",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70",
                     active
-                      ? "bg-paper/[0.10] text-paper font-medium"
-                      : "text-paper/60 hover:text-paper hover:bg-paper/[0.05]",
+                      // Raised surface + a lit top edge: the active item reads as
+                      // physically closer than the rail behind it.
+                      ? "bg-cream text-ink font-medium shadow-[inset_0_1px_0_0_rgb(255_255_255/0.06)]"
+                      : "text-muted hover:text-ink hover:bg-bone/70",
                   )}
                 >
                   {active ? (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2px] rounded-full bg-accent" />
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2px] rounded-full bg-accent shadow-[0_0_8px_rgb(255_77_0/0.7)]" />
                   ) : null}
-                  <I className={active ? "text-accent" : "text-paper/45"} />
+                  <I className={active ? "text-accent" : "text-muted/70"} />
                   <span className="truncate">{it.label}</span>
                 </Link>
               );
@@ -96,22 +104,22 @@ export function AdminSidebar({ email }: { email?: string | null }) {
   );
 
   const Account = (
-    <div className="border-t border-paper/10 p-3">
+    <div className="border-t border-line p-3">
       {email ? (
         <div className="px-3 pt-1 pb-2.5">
-          <div className="text-[10px] tracking-[0.18em] uppercase font-semibold text-paper/35">Signed in</div>
-          <div className="mt-1 text-[12px] text-paper/75 truncate" title={email}>{email}</div>
+          <div className="text-[10px] tracking-[0.18em] uppercase font-semibold text-muted/70">Signed in</div>
+          <div className="mt-1 text-[12px] text-ink/85 truncate" title={email}>{email}</div>
         </div>
       ) : null}
       <Link
         href="/"
         target="_blank"
-        className="flex items-center justify-between px-3 h-8 rounded-[8px] text-[12px] text-paper/60 hover:text-paper hover:bg-paper/[0.05] transition-colors"
+        className="flex items-center justify-between px-3 h-8 rounded-[8px] text-[12px] text-muted hover:text-ink hover:bg-bone/70 transition-colors"
       >
         View store <span aria-hidden>↗</span>
       </Link>
       <form action="/api/auth/logout" method="post">
-        <button className="w-full text-left px-3 h-8 rounded-[8px] text-[12px] text-paper/60 hover:text-accent hover:bg-paper/[0.05] transition-colors">
+        <button className="w-full text-left px-3 h-8 rounded-[8px] text-[12px] text-muted hover:text-accent hover:bg-bone/70 transition-colors">
           Sign out
         </button>
       </form>
@@ -121,37 +129,37 @@ export function AdminSidebar({ email }: { email?: string | null }) {
   const Brand = (
     <Link href="/admin" className="flex items-center gap-2.5">
       <Image src="/radnar-mark-light.png" alt="Radnar" width={1600} height={593} className="h-5 w-auto" />
-      <span className="text-[10px] tracking-[0.18em] uppercase font-semibold text-paper/40">Admin</span>
+      <span className="text-[10px] tracking-[0.18em] uppercase font-semibold text-muted/70">Admin</span>
     </Link>
   );
 
   return (
     <>
       {/* Mobile top bar */}
-      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between bg-ink text-paper px-4 h-14">
+      <div className={clsx("md:hidden sticky top-0 z-40 flex items-center justify-between px-4 h-14 border-b border-line", RAIL)}>
         {Brand}
         <button
           onClick={() => setOpen(true)}
           aria-label="Open menu"
-          className="inline-flex flex-col gap-[5px] p-2 -mr-2 rounded-[8px] hover:bg-paper/10 transition-colors"
+          className="inline-flex flex-col gap-[5px] p-2 -mr-2 rounded-[8px] hover:bg-bone transition-colors"
         >
-          <span className="block w-5 h-[2px] rounded-full bg-paper" />
-          <span className="block w-5 h-[2px] rounded-full bg-paper" />
-          <span className="block w-5 h-[2px] rounded-full bg-paper" />
+          <span className="block w-5 h-[2px] rounded-full bg-ink" />
+          <span className="block w-5 h-[2px] rounded-full bg-ink" />
+          <span className="block w-5 h-[2px] rounded-full bg-ink" />
         </button>
       </div>
 
       {/* Mobile slide-in drawer */}
       {open ? (
         <div className="md:hidden fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/50 anim-fade-in" onClick={() => setOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-[82vw] max-w-xs bg-ink text-paper flex flex-col anim-slide-in-left">
-            <div className="px-5 pt-5 pb-4 border-b border-paper/10 flex items-center justify-between">
+          <div className="absolute inset-0 bg-black/70 anim-fade-in" onClick={() => setOpen(false)} />
+          <aside className={clsx("absolute left-0 top-0 bottom-0 w-[82vw] max-w-xs flex flex-col anim-slide-in-left lift-2", RAIL)}>
+            <div className="px-5 pt-5 pb-4 border-b border-line flex items-center justify-between">
               {Brand}
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Close menu"
-                className="text-paper/60 hover:text-paper p-2 -mr-2 rounded-[8px] hover:bg-paper/10 transition-colors"
+                className="text-muted hover:text-ink p-2 -mr-2 rounded-[8px] hover:bg-bone transition-colors"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <path d="M6 6l12 12M6 18 18 6" />
@@ -164,9 +172,9 @@ export function AdminSidebar({ email }: { email?: string | null }) {
         </div>
       ) : null}
 
-      {/* Desktop static sidebar */}
-      <aside className="hidden md:flex w-60 shrink-0 bg-ink text-paper flex-col sticky top-0 h-screen">
-        <div className="px-5 pt-6 pb-5 border-b border-paper/10">{Brand}</div>
+      {/* Desktop static rail */}
+      <aside className={clsx("hidden md:flex w-60 shrink-0 flex-col sticky top-0 h-screen border-r border-line", RAIL)}>
+        <div className="px-5 pt-6 pb-5 border-b border-line">{Brand}</div>
         {Nav}
         {Account}
       </aside>

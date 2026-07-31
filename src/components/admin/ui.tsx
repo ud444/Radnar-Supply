@@ -52,10 +52,12 @@ type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md";
 
 const VARIANTS: Record<Variant, string> = {
-  primary:   "bg-ink text-paper border border-ink hover:bg-accent hover:border-accent",
-  secondary: "bg-bone text-ink border border-ink/20 hover:border-ink/60 hover:bg-cream/60",
-  ghost:     "bg-transparent text-muted border border-transparent hover:text-ink hover:bg-cream/70",
-  danger:    "bg-bone text-danger border border-danger/30 hover:bg-danger hover:text-bone hover:border-danger",
+  // Primary is the foreground colour filled — near-white on the dark canvas,
+  // near-black on light — so it stays the loudest control in either theme.
+  primary:   "bg-ink text-paper border border-ink hover:bg-accent hover:border-accent hover:text-paper",
+  secondary: "bg-cream text-ink border border-line hover:border-ink/40 hover:bg-cream",
+  ghost:     "bg-transparent text-muted border border-transparent hover:text-ink hover:bg-cream",
+  danger:    "bg-transparent text-danger border border-danger/40 hover:bg-danger hover:text-paper hover:border-danger",
 };
 
 const SIZES: Record<Size, string> = {
@@ -90,7 +92,7 @@ export function PageHeader({
   eyebrow, title, description, actions,
 }: { eyebrow?: string; title: string; description?: string; actions?: React.ReactNode }) {
   return (
-    <div className="flex items-start justify-between flex-wrap gap-4 pb-5 mb-6 border-b border-line/70">
+    <div className="flex items-start justify-between flex-wrap gap-4 pb-5 mb-6 border-b border-line">
       <div className="min-w-0">
         {eyebrow ? <Eyebrow className="mb-1.5">{eyebrow}</Eyebrow> : null}
         <h1 className="text-[22px] md:text-[26px] font-semibold tracking-[-0.01em] leading-tight">{title}</h1>
@@ -108,8 +110,7 @@ export function Card({
 }: { children: React.ReactNode; className?: string; padded?: boolean }) {
   return (
     <div className={clsx(
-      "bg-bone border border-line/70 rounded-card",
-      "shadow-[0_1px_2px_rgba(10,10,10,0.03)]",
+      "bg-bone border border-line rounded-card lift-1",
       padded && "p-5", className,
     )}>
       {children}
@@ -133,8 +134,7 @@ export function SectionTitle({
 export function TableWrap({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={clsx(
-      "bg-bone border border-line/70 rounded-card overflow-hidden",
-      "shadow-[0_1px_2px_rgba(10,10,10,0.03)]", className,
+      "bg-bone border border-line rounded-card overflow-hidden lift-1", className,
     )}>
       <div className="overflow-x-auto">{children}</div>
     </div>
@@ -146,7 +146,7 @@ export function Table({ children }: { children: React.ReactNode }) {
 }
 
 export function THead({ children }: { children: React.ReactNode }) {
-  return <thead className="bg-cream/60 text-muted">{children}</thead>;
+  return <thead className="bg-cream text-muted">{children}</thead>;
 }
 
 export function Th({
@@ -165,7 +165,7 @@ export function Th({
 
 export function Tr({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <tr className={clsx("border-t border-line/60 transition-colors hover:bg-cream/40", className)}>
+    <tr className={clsx("border-t border-line transition-colors hover:bg-cream/60", className)}>
       {children}
     </tr>
   );
@@ -243,11 +243,13 @@ export function FilterTabs({
   items,
 }: { items: { href: string; label: string; active: boolean }[] }) {
   return (
-    <div className="inline-flex items-center gap-1 p-1 bg-cream/70 border border-line/70 rounded-control">
+    <div className="inline-flex items-center gap-1 p-1 bg-paper border border-line rounded-control well">
       {items.map((it) => (
         <Link key={it.href} href={it.href} className={clsx(
           "px-3 h-7 inline-flex items-center rounded-[6px] text-[12px] font-medium transition-colors", RING,
-          it.active ? "bg-ink text-paper" : "text-muted hover:text-ink hover:bg-bone",
+          it.active
+            ? "bg-cream text-ink shadow-[inset_0_1px_0_0_rgb(255_255_255/0.07)]"
+            : "text-muted hover:text-ink hover:bg-bone",
         )}>
           {it.label}
         </Link>
@@ -283,20 +285,26 @@ export function StatCard({
 }: { label: string; value: React.ReactNode; delta?: number | null; children?: React.ReactNode }) {
   const up = typeof delta === "number" && delta >= 0;
   return (
-    <div className="bg-bone border border-line/70 rounded-card p-4 sm:p-5 flex flex-col">
+    // The signature of the dark canvas: the figure sits in an inset well, lit
+    // by a thin accent rule beneath it — an instrument reading, not a text
+    // label. The numbers are the content of an ops tool, so they get the depth.
+    <div className="bg-bone border border-line rounded-card p-4 sm:p-5 flex flex-col lift-1">
       <Eyebrow>{label}</Eyebrow>
-      <div className="mt-2.5 flex items-baseline gap-2 flex-wrap">
-        <Num className="text-[28px] sm:text-[32px] leading-none">{value}</Num>
-        {typeof delta === "number" ? (
-          <span className={clsx(
-            "inline-flex items-center gap-0.5 rounded-full border px-1.5 py-[2px]",
-            "text-[11px] font-medium leading-none tabular-nums",
-            up ? "bg-success-tint text-success border-success-line"
-               : "bg-danger-tint text-danger border-danger-line",
-          )}>
-            {up ? "↑" : "↓"}{Math.abs(delta)}%
-          </span>
-        ) : null}
+      <div className="mt-3 rounded-control bg-paper well px-3.5 py-3">
+        <div className="flex items-baseline gap-2 flex-wrap">
+          <Num className="text-[28px] sm:text-[32px] leading-none text-ink">{value}</Num>
+          {typeof delta === "number" ? (
+            <span className={clsx(
+              "inline-flex items-center gap-0.5 rounded-full border px-1.5 py-[2px]",
+              "text-[11px] font-medium leading-none tabular-nums",
+              up ? "bg-success-tint text-success border-success-line"
+                 : "bg-danger-tint text-danger border-danger-line",
+            )}>
+              {up ? "↑" : "↓"}{Math.abs(delta)}%
+            </span>
+          ) : null}
+        </div>
+        <div className="mt-2.5 h-[2px] w-10 rounded-full bg-accent shadow-[0_0_10px_rgb(255_77_0/0.55)]" />
       </div>
       {children ? <div className="mt-auto">{children}</div> : null}
     </div>
@@ -317,9 +325,9 @@ export function SearchInput({
       <input
         name={name} defaultValue={defaultValue} placeholder={placeholder}
         className={clsx(
-          "w-full h-9 bg-bone border border-ink/15 rounded-control pl-9 pr-3 text-sm",
-          "placeholder:text-ink/35 transition-colors hover:border-ink/30",
-          "focus:outline-none focus:border-ink/60 focus:ring-2 focus:ring-accent/25",
+          "w-full h-9 bg-paper border border-line rounded-control pl-9 pr-3 text-sm text-ink",
+          "placeholder:text-muted/60 transition-colors hover:border-ink/25",
+          "focus:outline-none focus:border-accent/60 focus:ring-2 focus:ring-accent/25",
         )}
       />
     </div>
@@ -328,10 +336,12 @@ export function SearchInput({
 
 /* -------------------------------------------------------------- form fields */
 
+// Inputs sit on the CANVAS colour rather than the panel, so on the dark theme
+// they read as recessed into the card instead of floating on it.
 const CONTROL =
-  "w-full bg-bone border border-ink/15 rounded-control px-3 text-sm text-ink " +
-  "placeholder:text-ink/35 transition-colors hover:border-ink/30 " +
-  "focus:outline-none focus:border-ink/60 focus:ring-2 focus:ring-accent/25 " +
+  "w-full bg-paper border border-line rounded-control px-3 text-sm text-ink " +
+  "placeholder:text-muted/60 transition-colors hover:border-ink/25 " +
+  "focus:outline-none focus:border-accent/60 focus:ring-2 focus:ring-accent/25 " +
   "disabled:opacity-50 disabled:pointer-events-none";
 
 export function Label({ children, hint }: { children: React.ReactNode; hint?: string }) {

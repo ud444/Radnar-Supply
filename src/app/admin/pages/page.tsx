@@ -20,10 +20,10 @@ export default async function PagesAdmin() {
       />
 
       <Card padded={false}>
-        <ul className="divide-y divide-line/60">
+        <ul className="divide-y divide-line">
           {pages.map((p) => (
             <li key={p.slug}>
-              <Link href={`/admin/pages/${p.slug}`} className="flex items-center justify-between gap-4 px-5 py-4 group transition-colors hover:bg-cream/40">
+              <Link href={`/admin/pages/${p.slug}`} className="flex items-center justify-between gap-4 px-5 py-4 group transition-colors hover:bg-cream/60">
                 <div className="min-w-0">
                   <div className="font-medium group-hover:text-accent transition-colors">{p.label}</div>
                   <div className="text-[12px] text-muted mt-0.5">

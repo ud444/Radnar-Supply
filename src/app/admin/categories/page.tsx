@@ -44,7 +44,7 @@ export default async function Categories() {
         {categories.length === 0 ? (
           <EmptyState title="No categories yet" hint="Add a category before creating products." />
         ) : (
-          <ul className="divide-y divide-line/60">
+          <ul className="divide-y divide-line">
             {categories.map((c) => (
               <li key={c.id} className="px-5 py-3.5 flex items-center justify-between gap-4 text-sm">
                 <div className="flex items-center gap-4 min-w-0">
