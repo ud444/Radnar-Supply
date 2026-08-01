@@ -41,8 +41,9 @@ export function CategoryImage({
           }}
           onUploadError={(e) => { setErr(e.message); setBusy(false); }}
           appearance={{
-            button: "h-7 px-2.5 rounded-control bg-ink text-paper text-[12px] font-medium hover:bg-accent transition-colors",
+            button: "h-7 px-2.5 rounded-control bg-ink text-paper text-[12px] font-medium hover:bg-accent hover:text-paper transition-colors w-auto",
             allowedContent: "hidden",
+            container: "w-auto items-start",
           }}
           content={{ button: imageUrl ? "Replace" : "Upload" }}
         />

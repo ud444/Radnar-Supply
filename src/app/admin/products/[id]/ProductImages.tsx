@@ -61,8 +61,9 @@ export function ProductImages({
           }}
           onUploadError={(e) => setErr((e as any).message)}
           appearance={{
-            button: "h-9 px-3.5 rounded-control bg-ink text-paper text-[13px] font-medium hover:bg-accent transition-colors",
+            button: "h-9 px-3.5 rounded-control bg-ink text-paper text-[13px] font-medium hover:bg-accent hover:text-paper transition-colors w-auto",
             allowedContent: "hidden",
+            container: "w-auto items-start",
           }}
         />
         {err ? <div className="mt-2 text-[12px] text-danger">{err}</div> : null}

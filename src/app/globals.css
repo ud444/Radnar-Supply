@@ -1,3 +1,8 @@
+/* UploadThing's own styles. Without this the components render unstyled: the
+   native "Choose file" input becomes visible and the label loses its width
+   constraint, so upload controls break out of their container. */
+@import "@uploadthing/react/styles.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

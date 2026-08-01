@@ -58,8 +58,9 @@ export function PostForm({
             }}
             onUploadError={(e) => setErr((e as any).message)}
             appearance={{
-              button: "h-8 px-3 rounded-control bg-ink text-paper text-[12px] font-medium hover:bg-accent transition-colors",
+              button: "h-8 px-3 rounded-control bg-ink text-paper text-[12px] font-medium hover:bg-accent hover:text-paper transition-colors w-auto",
               allowedContent: "hidden",
+              container: "w-auto items-start",
             }}
             content={{ button: cover ? "Replace" : "Upload" }}
           />
