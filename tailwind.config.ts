@@ -22,6 +22,10 @@ export default {
         line:   "rgb(var(--c-line) / <alpha-value>)",
         accent: "rgb(var(--c-accent) / <alpha-value>)",
 
+        // Navigation rail stays dark in both themes and carries its own foreground.
+        rail:   "rgb(var(--c-rail) / <alpha-value>)",
+        railfg: "rgb(var(--c-rail-fg) / <alpha-value>)",
+
         // Semantic status scale. Warm and desaturated on light; brightened for
         // the dark canvas so it reads without glaring. `accent` stays reserved
         // for interaction (focus, active nav, live alerts), never for "good",

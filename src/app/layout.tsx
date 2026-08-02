@@ -25,9 +25,45 @@ export const metadata: Metadata = {
   openGraph: { type: "website", siteName: "Radnar Supply" },
 };
 
+/**
+ * Resolve and apply the theme before first paint.
+ *
+ * This has to run as a blocking inline script: React cannot read localStorage
+ * on the server, so any theme decision made in a component happens after the
+ * browser has already painted, producing a visible flash of the wrong palette.
+ *
+ * Precedence: an explicit stored choice wins everywhere. Otherwise the default
+ * depends on the surface — the storefront reads light (it is a shop, and the
+ * imagery is shot on warm paper), the admin reads dark (the night-atelier
+ * canvas it was designed for). System preference breaks the tie on the
+ * storefront only.
+ */
+const THEME_SCRIPT = `
+(function () {
+  try {
+    var stored = localStorage.getItem('rs-theme');
+    var isAdmin = location.pathname.indexOf('/admin') === 0;
+    var theme;
+    if (stored === 'light' || stored === 'dark') {
+      theme = stored;
+    } else if (isAdmin) {
+      theme = 'dark';
+    } else {
+      theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable}`}>
+    <html lang="en" className={`${display.variable} ${sans.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-screen flex flex-col bg-paper text-ink font-sans">
         {children}
         {process.env.NEXT_PUBLIC_GA_ID ? <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} /> : null}

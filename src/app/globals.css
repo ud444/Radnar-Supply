@@ -7,7 +7,7 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body { background: #F4F1EA; color: #0A0A0A; width: 100%; max-width: 100%; overflow-x: hidden; }
+html, body { background: rgb(var(--c-paper)); color: rgb(var(--c-ink)); width: 100%; max-width: 100%; overflow-x: hidden; }
 html { -webkit-text-size-adjust: 100%; }
 body { -webkit-font-smoothing: antialiased; }
 
@@ -40,6 +40,10 @@ header, main, footer { position: relative; z-index: 2; }
   --c-line:   217 209 194;
   --c-accent: 255 77 0;
 
+  /* Navigation rail: dark in both themes, so it needs its own foreground. */
+  --c-rail:    10 10 10;
+  --c-rail-fg: 244 241 234;
+
   --c-success: 47 107 79;   --c-success-tint: 231 240 233; --c-success-line: 193 215 199;
   --c-info:    53 86 111;   --c-info-tint:    232 238 243; --c-info-line:    196 211 222;
   --c-warning: 138 90 18;   --c-warning-tint: 247 238 220; --c-warning-line: 228 208 168;
@@ -47,13 +51,13 @@ header, main, footer { position: relative; z-index: 2; }
 }
 
 /* ---------------------------------------------------------------------------
-   "Night atelier" — the admin canvas.
+   "Night atelier" — the dark theme, shared by the storefront and the admin.
    Three surface levels do the work light UI does with borders alone:
      paper = canvas (deepest)  ·  bone = panel  ·  cream = raised
    Statuses brighten so they read against the dark without glaring, and the
    orange finally has somewhere to burn.
    --------------------------------------------------------------------------- */
-.admin-dark {
+html[data-theme="dark"] {
   --c-ink:    242 239 233;  /* foreground */
   --c-paper:  14 15 17;     /* canvas     */
   --c-bone:   23 25 28;     /* panel      */
@@ -61,6 +65,9 @@ header, main, footer { position: relative; z-index: 2; }
   --c-muted:  154 160 168;
   --c-line:   42 46 51;     /* hairline   */
   --c-accent: 255 77 0;
+
+  --c-rail:    10 11 13;
+  --c-rail-fg: 242 239 233;
 
   --c-success: 53 192 138;  --c-success-tint: 18 36 28;  --c-success-line: 30 69 54;
   --c-info:    79 168 255;  --c-info-tint:    16 28 40;  --c-info-line:    30 58 82;
@@ -71,7 +78,7 @@ header, main, footer { position: relative; z-index: 2; }
 }
 
 /* The paper-grain overlay multiplies, which just muddies a dark canvas. */
-.admin-dark::before { display: none; }
+html[data-theme="dark"] body::before { display: none; }
 
 /* Elevation for dark: a hairline of light along the top edge reads as a lit
    surface far better than a drop shadow, which is nearly invisible on black. */
@@ -145,7 +152,7 @@ button, input, select, textarea { border-radius: var(--r-sm); }
   font-size: 10.5px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #0A0A0A;
+  color: rgb(var(--c-ink));
 }
 .rule-eyebrow::before,
 .rule-eyebrow::after {
@@ -160,7 +167,7 @@ button, input, select, textarea { border-radius: var(--r-sm); }
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 700;
-  color: #0A0A0A;
+  color: rgb(var(--c-ink));
 }
 .eyebrow-lead::before {
   content: ""; width: 22px; height: 1px; background: currentColor;
@@ -172,22 +179,22 @@ button, input, select, textarea { border-radius: var(--r-sm); }
   font-weight: 900;
   font-size: 10px;
   letter-spacing: 0.22em;
-  color: #FF4D00;
+  color: rgb(var(--c-accent));
 }
 
 /* Field: editorial input wrapper with floating label feel */
 .field { position: relative; }
 .field-input {
   width: 100%;
-  background: #FFFEFB;
-  border: 2px solid rgba(10,10,10,0.18);
+  background: rgb(var(--c-bone));
+  border: 2px solid rgb(var(--c-ink) / 0.18);
   padding: 18px 14px 10px;
   /* 16px so iOS Safari doesn't zoom the viewport on focus */
   font-size: 16px;
   outline: none;
   transition: border-color 120ms ease;
 }
-.field-input:focus { border-color: #0A0A0A; box-shadow: inset 0 -2px 0 0 #FF4D00; }
+.field-input:focus { border-color: rgb(var(--c-ink)); box-shadow: inset 0 -2px 0 0 rgb(var(--c-accent)); }
 .field-input:disabled { opacity: 0.5; }
 .field-label {
   position: absolute;
@@ -196,48 +203,48 @@ button, input, select, textarea { border-radius: var(--r-sm); }
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 700;
-  color: rgba(10,10,10,0.55);
+  color: rgb(var(--c-ink) / 0.55);
   pointer-events: none;
 }
-.field-error { color: #b91c1c; font-size: 11px; margin-top: 4px; letter-spacing: 0.06em; }
+.field-error { color: rgb(var(--c-danger)); font-size: 11px; margin-top: 4px; letter-spacing: 0.06em; }
 
 /* Primary button (heavy / blocky) */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  background: #0A0A0A; color: #F4F1EA;
+  background: rgb(var(--c-ink)); color: rgb(var(--c-paper));
   padding: 16px 22px;
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 700;
   transition: background 120ms ease, color 120ms ease, transform 120ms ease, box-shadow 200ms ease;
-  border: 2px solid #0A0A0A;
+  border: 2px solid rgb(var(--c-ink));
   border-radius: var(--r-sm);
 }
-.btn:hover:not(:disabled) { background: #FF4D00; border-color: #FF4D00; transform: translateY(-1px); box-shadow: 0 10px 24px -12px rgba(255,77,0,0.5); }
+.btn:hover:not(:disabled) { background: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); transform: translateY(-1px); box-shadow: 0 10px 24px -12px rgb(var(--c-accent) / 0.5); }
 .btn:active:not(:disabled) { transform: translateY(1px); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-ghost {
-  background: transparent; color: #0A0A0A; border: 2px solid #0A0A0A;
+  background: transparent; color: rgb(var(--c-ink)); border: 2px solid rgb(var(--c-ink));
 }
-.btn-ghost:hover:not(:disabled) { background: #0A0A0A; color: #F4F1EA; }
-.btn-accent { background: #FF4D00; color: #fff; border-color: #FF4D00; }
-.btn-accent:hover:not(:disabled) { background: #0A0A0A; border-color: #0A0A0A; }
+.btn-ghost:hover:not(:disabled) { background: rgb(var(--c-ink)); color: rgb(var(--c-paper)); }
+.btn-accent { background: rgb(var(--c-accent)); color: #fff; border-color: rgb(var(--c-accent)); }
+.btn-accent:hover:not(:disabled) { background: rgb(var(--c-ink)); border-color: rgb(var(--c-ink)); }
 .btn-block { width: 100%; }
 .btn-lg { padding: 20px 26px; font-size: 12px; }
 
 /* Card frame for the design system */
 .card {
-  background: #FFFEFB;
-  border: 1px solid rgba(10,10,10,0.12);
+  background: rgb(var(--c-bone));
+  border: 1px solid rgb(var(--c-ink) / 0.12);
   padding: 22px;
   border-radius: var(--r-md);
   box-shadow: 0 1px 2px rgba(10,10,10,0.04), 0 16px 40px -24px rgba(10,10,10,0.28);
 }
 .card-tight { padding: 14px; }
 .card-frame {
-  background: #FFFEFB;
-  border: 1px solid rgba(10,10,10,0.12);
+  background: rgb(var(--c-bone));
+  border: 1px solid rgb(var(--c-ink) / 0.12);
   padding: 24px;
   border-radius: var(--r-lg);
   box-shadow: 0 1px 2px rgba(10,10,10,0.04), 0 18px 44px -26px rgba(10,10,10,0.3);
@@ -250,13 +257,13 @@ button, input, select, textarea { border-radius: var(--r-sm); }
 /* Visible keyboard focus everywhere (a11y) — many components set
    focus:outline-none, this restores an accent ring for keyboard users. */
 :where(a, button, [role="button"], input, select, textarea, summary):focus-visible {
-  outline: 2px solid #FF4D00;
+  outline: 2px solid rgb(var(--c-accent));
   outline-offset: 2px;
 }
 
 html { scroll-behavior: smooth; }
 :where([id]) { scroll-margin-top: 96px; } /* anchors clear the sticky header */
-::selection { background: #FF4D00; color: #fff; }
+::selection { background: rgb(var(--c-accent)); color: #fff; }
 
 /* Hover lift for cards / tiles */
 .hover-lift { transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease; }
@@ -264,7 +271,7 @@ html { scroll-behavior: smooth; }
 
 /* Animated left-to-right link underline */
 .link-underline {
-  background-image: linear-gradient(#FF4D00, #FF4D00);
+  background-image: linear-gradient(rgb(var(--c-accent)), rgb(var(--c-accent)));
   background-size: 0% 2px; background-position: 0 100%; background-repeat: no-repeat;
   transition: background-size .3s ease;
 }

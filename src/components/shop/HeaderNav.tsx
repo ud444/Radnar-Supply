@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 type Item = { id: string; slug: string; name: string };
 type Feat = { id: string; slug: string; name: string; imageUrl: string; brandName: string };
@@ -92,6 +93,7 @@ export function HeaderNav({
           <Link href={signedIn ? "/account" : "/login"} className="hidden sm:inline hover:text-accent">
             {signedIn ? "Account" : "Sign In"}
           </Link>
+          <ThemeToggle className="-mx-1" />
           <Link href="/cart" className="bg-ink text-paper px-3.5 py-2 inline-flex items-center gap-2 hover:bg-accent transition-all hover:-translate-y-0.5 active:translate-y-0 rounded-full">
             <span>Bag</span>
             <span className="bg-paper text-ink min-w-[20px] h-[20px] inline-flex items-center justify-center text-[10px] font-bold rounded-full">
