@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
@@ -66,7 +67,14 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
                 .reduce((a, o) => a + o.totalCents, 0);
               return (
                 <Tr key={u.id}>
-                  <Td className="font-medium">{u.email}</Td>
+                  <Td>
+                    <Link
+                      href={`/admin/users/${u.id}`}
+                      className="font-medium hover:text-accent transition-colors"
+                    >
+                      {u.email}
+                    </Link>
+                  </Td>
                   <Td className="text-muted">{u.name ?? "—"}</Td>
                   <Td>
                     <Badge tone={u.role === "ADMIN" ? "info" : "neutral"} dot={false}>

@@ -167,7 +167,20 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
                   <Td className="text-muted whitespace-nowrap">
                     {o.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
                   </Td>
-                  <Td>{o.email}</Td>
+                  <Td>
+                    {o.userId ? (
+                      <Link
+                        href={`/admin/users/${o.userId}`}
+                        className="hover:text-accent transition-colors"
+                        title="View customer"
+                      >
+                        {o.email}
+                      </Link>
+                    ) : (
+                      // Guest checkout — no account to open.
+                      <span title="Guest checkout — no account">{o.email}</span>
+                    )}
+                  </Td>
                   <Td><StatusBadge value={o.paymentStatus} /></Td>
                   <Td><StatusBadge value={o.status} /></Td>
                   <Td align="right" numeric className="font-medium">{money(o.totalCents)}</Td>

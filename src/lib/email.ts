@@ -15,10 +15,67 @@ function r() {
   return new Resend(k);
 }
 
+/**
+ * The Resend SDK does NOT throw when the API rejects a send — it resolves with
+ * `{ data, error }`. This function previously returned that object untouched,
+ * so an unverified sending domain, a bad key or a rejected recipient all looked
+ * like success and every try/catch around a send was dead code. Inspect the
+ * result and throw, so failures actually surface.
+ */
 async function send(to: string, subject: string, html: string) {
   const client = r();
-  if (!client) { console.log(`[email:dev] -> ${to} :: ${subject}`); return { id: "dev" }; }
-  return client.emails.send({ from: FROM, to, subject, html });
+  if (!client) {
+    console.log(`[email:skipped] no RESEND_API_KEY -> ${to} :: ${subject}`);
+    return { id: "dev" };
+  }
+
+  const { data, error } = await client.emails.send({ from: FROM, to, subject, html });
+
+  if (error) {
+    const detail = [error.name, error.message].filter(Boolean).join(": ");
+    console.error(`[email:failed] ${to} :: ${subject} :: ${detail}`);
+    throw new Error(`Email send failed (${detail || "unknown Resend error"})`);
+  }
+
+  console.log(`[email:sent] ${to} :: ${subject} :: ${data?.id ?? "no id"}`);
+  return data ?? { id: "sent" };
+}
+
+/**
+ * Whether email is configured at all, and what it would send as. Used by the
+ * admin Emails screen so the operator can see the real state rather than
+ * guessing why nothing arrived.
+ */
+export function emailConfig() {
+  const key = process.env.RESEND_API_KEY;
+  const from = FROM;
+  const address = from.match(/<(.+)>/)?.[1] ?? from;
+  const domain = address.split("@")[1] ?? "";
+  return {
+    configured: !!key,
+    from,
+    address,
+    domain,
+    // resend.dev only ever delivers to the account owner's own address.
+    usingTestDomain: domain === "resend.dev",
+    inbox: process.env.SOURCING_INBOX || address,
+    audienceConfigured: !!process.env.RESEND_AUDIENCE_ID,
+  };
+}
+
+/** Send a one-off branded email composed in the admin. */
+export async function sendCustomEmail(args: {
+  to: string; subject: string; heading: string; body: string;
+  ctaLabel?: string; ctaHref?: string;
+}) {
+  const { renderShell } = await import("./emailShell");
+  const html = renderShell({
+    heading: args.heading,
+    body: args.body,
+    ctaLabel: args.ctaLabel,
+    ctaHref: args.ctaHref,
+  });
+  return send(args.to, args.subject, html);
 }
 
 export async function sendOrderConfirmation(orderId: string) {

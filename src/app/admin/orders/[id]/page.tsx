@@ -117,7 +117,14 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
           <StatusBadge value={order.paymentStatus} />
         </div>
         <div className="text-sm text-muted mt-1.5">
-          {order.createdAt.toLocaleString("en-GB")} · {order.email}
+          {order.createdAt.toLocaleString("en-GB")} ·{" "}
+          {order.userId ? (
+            <Link href={`/admin/users/${order.userId}`} className="hover:text-ink transition-colors underline underline-offset-2">
+              {order.email}
+            </Link>
+          ) : (
+            <span title="Guest checkout — no account">{order.email}</span>
+          )}
         </div>
       </div>
 
