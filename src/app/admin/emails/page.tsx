@@ -67,9 +67,14 @@ export default async function EmailsAdmin({ searchParams }: { searchParams: Prom
           </Card>
 
           <Card>
-            <Eyebrow>Your inbox</Eyebrow>
-            <div className="mt-2 text-[13px] break-all">{cfg.inbox}</div>
-            <p className="text-[12px] text-muted mt-2">Where order and enquiry alerts arrive.</p>
+            <Eyebrow>Replies go to</Eyebrow>
+            <div className="mt-2 text-[13px] break-all">{cfg.replyTo ?? cfg.address}</div>
+            <p className="text-[12px] text-muted mt-2">
+              {cfg.replyTo
+                ? <>Alerts arrive at <span className="break-all">{cfg.inbox}</span>.</>
+                : <>Set <code className="font-mono">EMAIL_REPLY_TO</code> to a mailbox you read — the
+                   sending domain may not have one, and replies would bounce.</>}
+            </p>
           </Card>
 
           <Card>

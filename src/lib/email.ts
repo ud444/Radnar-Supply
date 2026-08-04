@@ -29,7 +29,15 @@ async function send(to: string, subject: string, html: string) {
     return { id: "dev" };
   }
 
-  const { data, error } = await client.emails.send({ from: FROM, to, subject, html });
+  // Sending happens from a verified (often sub)domain, which usually has no
+  // mailbox behind it. Point replies at somewhere a human actually reads, or
+  // every customer reply bounces.
+  const replyTo = process.env.EMAIL_REPLY_TO || process.env.SOURCING_INBOX;
+
+  const { data, error } = await client.emails.send({
+    from: FROM, to, subject, html,
+    ...(replyTo ? { replyTo } : {}),
+  });
 
   if (error) {
     const detail = [error.name, error.message].filter(Boolean).join(": ");
@@ -59,6 +67,7 @@ export function emailConfig() {
     // resend.dev only ever delivers to the account owner's own address.
     usingTestDomain: domain === "resend.dev",
     inbox: process.env.SOURCING_INBOX || address,
+    replyTo: process.env.EMAIL_REPLY_TO || process.env.SOURCING_INBOX || null,
     audienceConfigured: !!process.env.RESEND_AUDIENCE_ID,
   };
 }
